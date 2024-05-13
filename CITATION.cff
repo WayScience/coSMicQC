@@ -1,0 +1,46 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+---
+cff-version: 1.2.0
+title: CytoTable
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - given-names: Jenna
+    family-names: Tomkinson
+    orcid: 'https://orcid.org/0000-0003-2676-5813'
+  - given-names: David
+    family-names: Bunten
+    orcid: 'https://orcid.org/0000-0001-6041-3665'
+  - given-names: Gregory
+    family-names: Way
+    orcid: 'https://orcid.org/0000-0002-0503-9348'
+repository-code: 'https://github.com/WayScience/SCupltQC'
+abstract: >-
+  SCulptQC is a software tool for single-cell quality control of morphology datasets.
+keywords:
+  - python
+  - single-cell-analysis
+  - profiling
+  - quality-control
+  - way-lab
+license: BSD-3-Clause
+references:
+  - authors:
+      - name: "Way Lab CFReT_data Team"
+    date-accessed: "2024-05-13"
+    title: Way Lab CFReT_data CytoTable Data
+    type: data
+    repository-code: "https://github.com/WayScience/CFReT_data"
+    url: "https://github.com/WayScience/CFReT_data/blob/main/3.process_cfret_features/data/converted_profiles/localhost231120090001_converted.parquet"
+    scope: "localhost231120090001_converted.parquet"
+    notes: >-
+      Data from CFReT_data project is used to help validate
+      expected results. Data is generated from CellProfiler
+      and CytoTable.
+    identifiers:
+      - description: "Github Link with Contributors"
+        type: url
+        value: "https://github.com/WayScience/CFReT_data/graphs/contributors"
