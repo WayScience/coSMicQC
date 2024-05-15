@@ -53,9 +53,24 @@ select = [
 # Ignore `E402` and `F401` (unused imports) in all `__init__.py` files
 "__init__.py" = ["E402", "F401"]
 
+# set dynamic versioning capabilities for project
+[tool.poetry-dynamic-versioning]
+enable = true
+style = "pep440"
+vcs = "git"
+
+# specify where version replacement is performed
+[tool.poetry-dynamic-versioning.substitution]
+files = ["src/sculptqc/__init__.py"]
+
+# set persistent versions within the __init__.py file in cases
+# where we may not have or want access to full git history
+[tool.poetry-dynamic-versioning.files."src/sculptqc/__init__.py"]
+persistent-substitution = true
+
 [build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+requires = ["poetry-core>=1.0.0", "poetry-dynamic-versioning>=1.0.0,<2.0.0"]
+build-backend = "poetry_dynamic_versioning.backend"
 
 [tool.setuptools_scm]
 root = "."
