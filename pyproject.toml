@@ -1,0 +1,61 @@
+[tool.poetry]
+name = "SCulptQC"
+version = "0.0.1"
+description = "SCulptQC is a software tool for single-cell quality control of morphology datasets."
+authors = ["Way Science Community"]
+license = "BSD-3-Clause"
+readme = "README.md"
+packages = [{include = "sculptqc", from = "src"}]
+
+[tool.poetry.dependencies]
+python = ">=3.9,<3.13"
+pandas = "^2.2.2"
+scipy = "^1.13.0"
+pyarrow = "^16.0.0"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.2.0"
+
+[tool.isort]
+profile = "black"
+
+[tool.bandit]
+exclude_dirs = ["tests"]
+
+[tool.ruff]
+target-version = "py311"
+line-length = 88
+fix = true
+
+[tool.ruff.lint]
+select = [
+    # pycodestyle
+    "E", "W",
+    # isort
+    "I",
+    # pyflakes
+    "F",
+    # pylint
+    "PL",
+    # mccabe
+    "C90",
+    # ruff
+    "RUF",
+    # flake8-builtins
+    "A",
+    # flake8-comprehensions
+    "C4",
+    # flake8-simplify
+    "SIM"
+]
+
+[tool.ruff.lint.per-file-ignores]
+# Ignore `E402` and `F401` (unused imports) in all `__init__.py` files
+"__init__.py" = ["E402", "F401"]
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.setuptools_scm]
+root = "."
