@@ -1,9 +1,9 @@
 """
-Tests sculptqc analyze module
+Tests cosmicqc analyze module
 """
 
 import pandas as pd
-from sculptqc import analyze
+from cosmicqc import analyze
 
 
 def test_find_outliers_cfret(cytotable_CFReT_data_df: pd.DataFrame):

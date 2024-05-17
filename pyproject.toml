@@ -1,11 +1,11 @@
 [tool.poetry]
-name = "SCulptQC"
+name = "coSMicQC"
 version = "0.0.1"
-description = "SCulptQC is a software tool for single-cell quality control of morphology datasets."
+description = "coSMicQC is a software tool for single-cell quality control of morphology datasets."
 authors = ["Way Science Community"]
 license = "BSD-3-Clause"
 readme = "README.md"
-packages = [{include = "sculptqc", from = "src"}]
+packages = [{include = "cosmicqc", from = "src"}]
 
 [tool.poetry.dependencies]
 python = ">=3.9,<3.13"
@@ -61,11 +61,11 @@ vcs = "git"
 
 # specify where version replacement is performed
 [tool.poetry-dynamic-versioning.substitution]
-files = ["src/sculptqc/__init__.py"]
+files = ["src/cosmicqc/__init__.py"]
 
 # set persistent versions within the __init__.py file in cases
 # where we may not have or want access to full git history
-[tool.poetry-dynamic-versioning.files."src/sculptqc/__init__.py"]
+[tool.poetry-dynamic-versioning.files."src/cosmicqc/__init__.py"]
 persistent-substitution = true
 
 [build-system]
