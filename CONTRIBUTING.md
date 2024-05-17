@@ -11,7 +11,7 @@ If you are stuck, please feel free to ask any questions or ask for help.
 This project is governed by our [code of conduct](CODE_OF_CONDUCT.md). By participating, you are expected to uphold this code.
 Instances of abusive, harassing, or otherwise unacceptable behavior may be
 reported to community leaders responsible for enforcement.
-Please open a [new security advisory notice](https://github.com/WayScience/SCupltQC/security/advisories/new) (using defaults or "n/a" where unable to fill in the form) to privately notify us of any incidents of this nature.
+Please open a [new security advisory notice](https://github.com/WayScience/coSMicQC/security/advisories/new) (using defaults or "n/a" where unable to fill in the form) to privately notify us of any incidents of this nature.
 
 ## Development
 
@@ -59,7 +59,7 @@ We welcome anyone to use [GitHub issues](https://docs.github.com/en/issues/track
 
 Specifically, there are several ways to suggest or make changes to this repository:
 
-1. Open a GitHub issue: https://github.com/WayScience/SCupltQC/issues
+1. Open a GitHub issue: https://github.com/WayScience/coSMicQC/issues
 1. Create a pull request from a forked branch of the repository
 
 ### Creating a pull request

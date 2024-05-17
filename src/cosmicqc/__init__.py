@@ -1,5 +1,5 @@
 """
-Initialization for scupltqc package
+Initialization for cosmicqc package
 """
 
 from .analyze import find_outliers
