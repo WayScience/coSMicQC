@@ -12,7 +12,7 @@ import yaml
 from scipy.stats import zscore as scipy_zscore
 
 DEFAULT_QC_THRESHOLD_FILE = (
-    f"{pathlib.Path(__file__).parent!s}/data/qc_thresholds_default.yml"
+    f"{pathlib.Path(__file__).parent!s}/data/qc_nuclei_thresholds_default.yml"
 )
 
 
