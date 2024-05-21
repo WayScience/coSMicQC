@@ -7,6 +7,26 @@ import pytest
 from cosmicqc import analyze
 
 
+def test_find_outliers_basic(basic_outlier_dataframe: pd.DataFrame):
+    """
+    Testing find_outliers with basic/simulated data.
+    """
+
+    # add metadata to basic data
+    metadata_column_name = "Image_Metadata_Plate"
+    basic_outlier_dataframe[metadata_column_name] = "A"
+
+    # assert that we have the output we expect
+    assert analyze.find_outliers(
+        df=basic_outlier_dataframe,
+        feature_thresholds={"example_feature": 1},
+        metadata_columns=[metadata_column_name],
+    ).to_dict(orient="dict") == {
+        "example_feature": {8: 9, 9: 10},
+        "Image_Metadata_Plate": {8: "A", 9: "A"},
+    }
+
+
 def test_find_outliers_cfret(cytotable_CFReT_data_df: pd.DataFrame):
     """
     Testing find_outliers with CytoTable CFReT data.
@@ -215,6 +235,17 @@ def test_read_thresholds_set_from_file():
         feature_thresholds_file=analyze.DEFAULT_QC_THRESHOLD_FILE,
     ) == {"Nuclei_AreaShape_Area": 2, "Nuclei_AreaShape_FormFactor": -2}
 
+    assert analyze.read_thresholds_set_from_file(
+        feature_thresholds_file=analyze.DEFAULT_QC_THRESHOLD_FILE,
+    ) == {
+        "small_and_low_formfactor_nuclei": {
+            "Nuclei_AreaShape_Area": -1,
+            "Nuclei_AreaShape_FormFactor": -1,
+        },
+        "elongated_nuclei": {"Nuclei_AreaShape_Eccentricity": 2},
+        "large_nuclei": {"Nuclei_AreaShape_Area": 2, "Nuclei_AreaShape_FormFactor": -2},
+    }
+
 
 def test_find_outliers_dict_and_default_config_cfret(
     cytotable_CFReT_data_df: pd.DataFrame,
@@ -279,4 +310,131 @@ def test_find_outliers_dict_and_default_config_cfret(
             feature_thresholds="large_nuclei",
             metadata_columns=metadata_columns,
         ),
+    )
+
+
+def test_label_outliers(
+    basic_outlier_dataframe: pd.DataFrame,
+    cytotable_CFReT_data_df: pd.DataFrame,
+):
+    # test basic single-column result
+    assert analyze.label_outliers(
+        df=basic_outlier_dataframe, feature_thresholds={"example_feature": 1}
+    ).to_dict(orient="dict") == {
+        "example_feature": {
+            0: 1,
+            1: 2,
+            2: 3,
+            3: 4,
+            4: 5,
+            5: 6,
+            6: 7,
+            7: 8,
+            8: 9,
+            9: 10,
+        },
+        "Z_Score_example_feature": {
+            0: -1.5666989036012806,
+            1: -1.2185435916898848,
+            2: -0.8703882797784892,
+            3: -0.5222329678670935,
+            4: -0.17407765595569785,
+            5: 0.17407765595569785,
+            6: 0.5222329678670935,
+            7: 0.8703882797784892,
+            8: 1.2185435916898848,
+            9: 1.5666989036012806,
+        },
+        "outlier_custom": {
+            0: False,
+            1: False,
+            2: False,
+            3: False,
+            4: False,
+            5: False,
+            6: False,
+            7: False,
+            8: True,
+            9: True,
+        },
+    }
+
+    # test single-column result
+    test_df = analyze.label_outliers(
+        df=cytotable_CFReT_data_df, feature_thresholds="large_nuclei"
+    )
+    pd.testing.assert_frame_equal(
+        test_df,
+        pd.read_parquet(
+            path="tests/data/coSMicQC/test_label_outliers_output.parquet",
+            columns=test_df.columns.tolist(),
+        ),
+    )
+
+    # test full dataset
+    pd.testing.assert_frame_equal(
+        analyze.label_outliers(df=cytotable_CFReT_data_df),
+        pd.read_parquet(path="tests/data/coSMicQC/test_label_outliers_output.parquet"),
+    )
+
+
+def test_identify_outliers(
+    basic_outlier_dataframe: pd.DataFrame,
+    cytotable_CFReT_data_df: pd.DataFrame,
+):
+    """
+    Tests identify_outliers
+    """
+
+    assert analyze.identify_outliers(
+        df=basic_outlier_dataframe,
+        feature_thresholds={"example_feature": 1},
+        include_threshold_scores=True,
+    ).to_dict(orient="dict") == {
+        "Z_Score_example_feature": {
+            0: -1.5666989036012806,
+            1: -1.2185435916898848,
+            2: -0.8703882797784892,
+            3: -0.5222329678670935,
+            4: -0.17407765595569785,
+            5: 0.17407765595569785,
+            6: 0.5222329678670935,
+            7: 0.8703882797784892,
+            8: 1.2185435916898848,
+            9: 1.5666989036012806,
+        },
+        "outlier_custom": {
+            0: False,
+            1: False,
+            2: False,
+            3: False,
+            4: False,
+            5: False,
+            6: False,
+            7: False,
+            8: True,
+            9: True,
+        },
+    }
+
+    pd.testing.assert_frame_equal(
+        analyze.identify_outliers(
+            df=cytotable_CFReT_data_df,
+            feature_thresholds="large_nuclei",
+            include_threshold_scores=True,
+        ),
+        pd.read_parquet("tests/data/coSMicQC/test_identifier_outliers_output.parquet"),
+    )
+
+    identified_df = analyze.identify_outliers(
+        df=cytotable_CFReT_data_df,
+        feature_thresholds="large_nuclei",
+    )
+    pd.testing.assert_series_equal(
+        identified_df,
+        pd.read_parquet(
+            "tests/data/coSMicQC/test_identifier_outliers_output.parquet",
+            columns=["outlier_large_nuclei"],
+        )["outlier_large_nuclei"],
+        check_names=False,
     )

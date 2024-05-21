@@ -16,3 +16,11 @@ def fixture_cytotable_CFReT_df():
     return pd.read_parquet(
         "tests/data/cytotable/CFRet_data/test_localhost231120090001_converted.parquet"
     )
+
+
+@pytest.fixture(name="basic_outlier_dataframe")
+def fixture_basic_outlier_dataframe():
+    """
+    Creates basic example data for use in tests
+    """
+    return pd.DataFrame({"example_feature": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]})
