@@ -3,6 +3,7 @@ Tests cosmicqc analyze module
 """
 
 import pandas as pd
+import pytest
 from cosmicqc import analyze
 
 
@@ -183,3 +184,99 @@ def test_find_outliers_cfret(cytotable_CFReT_data_df: pd.DataFrame):
             14811: "f01",
         },
     }
+
+
+def test_read_thresholds_set_from_file():
+    """
+    Tests read_thresholds_set_from_file
+    """
+
+    # test that an exception is raised on receiving a bad
+    # lookup value from the thresholds file.
+    with pytest.raises(LookupError):
+        analyze.read_thresholds_set_from_file(
+            feature_thresholds="bad_lookup_value",
+            feature_thresholds_file=analyze.DEFAULT_QC_THRESHOLD_FILE,
+        )
+
+    # test default threshold sets
+    assert analyze.read_thresholds_set_from_file(
+        feature_thresholds="small_and_low_formfactor_nuclei",
+        feature_thresholds_file=analyze.DEFAULT_QC_THRESHOLD_FILE,
+    ) == {"Nuclei_AreaShape_Area": -1, "Nuclei_AreaShape_FormFactor": -1}
+
+    assert analyze.read_thresholds_set_from_file(
+        feature_thresholds="elongated_nuclei",
+        feature_thresholds_file=analyze.DEFAULT_QC_THRESHOLD_FILE,
+    ) == {"Nuclei_AreaShape_Eccentricity": 2}
+
+    assert analyze.read_thresholds_set_from_file(
+        feature_thresholds="large_nuclei",
+        feature_thresholds_file=analyze.DEFAULT_QC_THRESHOLD_FILE,
+    ) == {"Nuclei_AreaShape_Area": 2, "Nuclei_AreaShape_FormFactor": -2}
+
+
+def test_find_outliers_dict_and_default_config_cfret(
+    cytotable_CFReT_data_df: pd.DataFrame,
+):
+    """
+    Testing find_outliers with dictionary vs yaml threshold sets
+    using CytoTable CFReT data.
+    """
+
+    # metadata columns to include in output data frame
+    metadata_columns = [
+        "Image_Metadata_Plate",
+        "Image_Metadata_Well",
+        "Image_Metadata_Site",
+    ]
+
+    # test that the output is the same from dict vs yaml
+    pd.testing.assert_frame_equal(
+        analyze.find_outliers(
+            df=cytotable_CFReT_data_df,
+            feature_thresholds={
+                "Nuclei_AreaShape_Area": -1,
+                "Nuclei_AreaShape_FormFactor": -1,
+            },
+            metadata_columns=metadata_columns,
+        ),
+        analyze.find_outliers(
+            df=cytotable_CFReT_data_df,
+            feature_thresholds="small_and_low_formfactor_nuclei",
+            metadata_columns=metadata_columns,
+        ),
+    )
+
+    # test that the output is the same from dict vs yaml
+    pd.testing.assert_frame_equal(
+        analyze.find_outliers(
+            df=cytotable_CFReT_data_df,
+            feature_thresholds={
+                "Nuclei_AreaShape_Eccentricity": 2,
+            },
+            metadata_columns=metadata_columns,
+        ),
+        analyze.find_outliers(
+            df=cytotable_CFReT_data_df,
+            feature_thresholds="elongated_nuclei",
+            metadata_columns=metadata_columns,
+        ),
+    )
+
+    # test that the output is the same from dict vs yaml
+    pd.testing.assert_frame_equal(
+        analyze.find_outliers(
+            df=cytotable_CFReT_data_df,
+            feature_thresholds={
+                "Nuclei_AreaShape_Area": 2,
+                "Nuclei_AreaShape_FormFactor": -2,
+            },
+            metadata_columns=metadata_columns,
+        ),
+        analyze.find_outliers(
+            df=cytotable_CFReT_data_df,
+            feature_thresholds="large_nuclei",
+            metadata_columns=metadata_columns,
+        ),
+    )
