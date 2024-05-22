@@ -21,7 +21,7 @@ def identify_outliers(
     feature_thresholds: Union[Dict[str, float], str],
     feature_thresholds_file: Optional[str] = DEFAULT_QC_THRESHOLD_FILE,
     include_threshold_scores: bool = False,
-) -> pd.Series:
+) -> Union[pd.Series, pd.DataFrame]:
     """
     This function uses z-scoring to format the data for detecting outlier
     nuclei or cells using specific CellProfiler features. Thresholds are
@@ -47,12 +47,14 @@ def identify_outliers(
             defined within a file.
 
     Returns:
-        pd.Series, df:
+        Union[pd.Series, pd.DataFrame]:
             Outlier series with booleans based on whether outliers were detected
             or not for use within other functions.
     """
 
-    outlier_df = df
+    # create a copy of the dataframe to ensure
+    # we don't modify the supplied dataframe inplace.
+    outlier_df = df.copy()
 
     thresholds_name = (
         f"outlier_{feature_thresholds}"
@@ -87,14 +89,15 @@ def identify_outliers(
             condition = outlier_df[zscore_columns[feature]] < threshold
         conditions.append(condition)
 
-    # create a boolean pd.series identifier for dataframe
-    # based on all conditions for use within other functions.
-
     return (
+        # create a boolean pd.series identifier for dataframe
+        # based on all conditions for use within other functions.
         reduce(operator.and_, conditions)
         if not include_threshold_scores
+        # otherwise, provide the threshold zscore col and the above column
         else pd.concat(
             [
+                # grab only the outlier zscore columns from the outlier_df
                 outlier_df[zscore_columns.values()],
                 pd.DataFrame({thresholds_name: reduce(operator.and_, conditions)}),
             ],
@@ -169,7 +172,8 @@ def label_outliers(
     df: pd.DataFrame,
     feature_thresholds: Optional[Union[Dict[str, float], str]] = None,
     feature_thresholds_file: Optional[str] = DEFAULT_QC_THRESHOLD_FILE,
-) -> pd.Series:
+    include_threshold_scores: bool = True,
+) -> pd.DataFrame:
     """
     This function uses z-scoring to format the data for detecting outlier
     nuclei or cells using specific CellProfiler features. Thresholds are
@@ -191,15 +195,18 @@ def label_outliers(
         feature_thresholds_file: Optional[str] = DEFAULT_QC_THRESHOLD_FILE,
             An optional feature thresholds file where thresholds may be
             defined within a file.
+        include_threshold_scores: bool = True
+            Whether to include the scores in addition to whether an outlier
+            was detected or not.
 
     Returns:
-        pd.Series:
-            Outlier series with booleans based on whether outliers were detected
-            or not for use within other functions.
+        pd.DataFrame:
+            Full dataframe with optional scores and outlier boolean column.
     """
 
     # for single outlier processing
     if isinstance(feature_thresholds, (str, dict)):
+        # return the outlier dataframe for one threshold rule
         return pd.concat(
             [
                 df,
@@ -207,34 +214,39 @@ def label_outliers(
                     df=df,
                     feature_thresholds=feature_thresholds,
                     feature_thresholds_file=feature_thresholds_file,
-                    include_threshold_scores=True,
+                    include_threshold_scores=include_threshold_scores,
                 ),
             ],
             axis=1,
         )
 
+    # for multiple outlier processing
     elif feature_thresholds is None:
+        # return the outlier dataframe for all threshold rules
         labeled_df = pd.concat(
             [df]
             + [
+                # identify outliers for each threshold rule
                 identify_outliers(
                     df=df,
                     feature_thresholds=thresholds,
                     feature_thresholds_file=feature_thresholds_file,
-                    include_threshold_scores=True,
+                    include_threshold_scores=include_threshold_scores,
                 )
+                # loop through each threshold rule
                 for thresholds in read_thresholds_set_from_file(
                     feature_thresholds_file=feature_thresholds_file,
                 )
             ],
             axis=1,
         )
+        # return a dataframe with a deduplicated columns by name
         return labeled_df.loc[:, ~labeled_df.columns.duplicated()]
 
 
 def read_thresholds_set_from_file(
     feature_thresholds_file: str, feature_thresholds: Optional[str] = None
-):
+) -> Union[Dict[str, int], Dict[str, Dict[str, int]]]:
     """
     Reads a set of feature thresholds from a specified file.
 
@@ -256,9 +268,11 @@ def read_thresholds_set_from_file(
         LookupError: If the file does not contain the specified feature_thresholds key.
     """
 
+    # open the yaml file
     with open(feature_thresholds_file, "r") as file:
         thresholds = yaml.safe_load(file)
 
+    # if no feature thresholds name is specified, return all thresholds
     if feature_thresholds is None:
         return thresholds["thresholds"]
 
