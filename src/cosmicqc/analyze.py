@@ -175,29 +175,30 @@ def label_outliers(
     include_threshold_scores: bool = True,
 ) -> pd.DataFrame:
     """
-Use identify_outliers to label the original dataset for where a cell passed or failed the quality control condition(s).
+    Use identify_outliers to label the original dataset for
+    where a cell passed or failed the quality control condition(s).
 
-    Args:
-        df: pd.DataFrame
-            Data frame with converted output from CytoTable.
-        feature_thresholds: Dict[str, float]
-            One of two options:
-            A dictionary with the feature name(s) as the key(s) and their assigned
-            threshold for identifying outliers. Positive int for the threshold
-            will detect outliers "above" than the mean, negative int will detect
-            outliers "below" the mean.
-            Or a string which is a named key reference found within
-            the feature_thresholds_file yaml file.
-        feature_thresholds_file: Optional[str] = DEFAULT_QC_THRESHOLD_FILE,
-            An optional feature thresholds file where thresholds may be
-            defined within a file.
-        include_threshold_scores: bool = True
-            Whether to include the scores in addition to whether an outlier
-            was detected or not.
+        Args:
+            df: pd.DataFrame
+                Data frame with converted output from CytoTable.
+            feature_thresholds: Dict[str, float]
+                One of two options:
+                A dictionary with the feature name(s) as the key(s) and their assigned
+                threshold for identifying outliers. Positive int for the threshold
+                will detect outliers "above" than the mean, negative int will detect
+                outliers "below" the mean.
+                Or a string which is a named key reference found within
+                the feature_thresholds_file yaml file.
+            feature_thresholds_file: Optional[str] = DEFAULT_QC_THRESHOLD_FILE,
+                An optional feature thresholds file where thresholds may be
+                defined within a file.
+            include_threshold_scores: bool = True
+                Whether to include the scores in addition to whether an outlier
+                was detected or not.
 
-    Returns:
-        pd.DataFrame:
-            Full dataframe with optional scores and outlier boolean column.
+        Returns:
+            pd.DataFrame:
+                Full dataframe with optional scores and outlier boolean column.
     """
 
     # for single outlier processing
