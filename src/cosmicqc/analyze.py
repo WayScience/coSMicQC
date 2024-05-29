@@ -175,11 +175,7 @@ def label_outliers(
     include_threshold_scores: bool = True,
 ) -> pd.DataFrame:
     """
-    This function uses z-scoring to format the data for detecting outlier
-    nuclei or cells using specific CellProfiler features. Thresholds are
-    the number of standard deviations away from the mean, either above
-    (positive) or below (negative). We recommend making sure to not use a
-    threshold of 0 as that would represent the whole dataset.
+Use identify_outliers to label the original dataset for where a cell passed or failed the quality control condition(s).
 
     Args:
         df: pd.DataFrame
