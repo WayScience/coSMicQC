@@ -47,12 +47,16 @@ select = [
     # flake8-comprehensions
     "C4",
     # flake8-simplify
-    "SIM"
+    "SIM",
+    # flake8-annotations
+    "ANN"
 ]
 
 [tool.ruff.lint.per-file-ignores]
 # Ignore `E402` and `F401` (unused imports) in all `__init__.py` files
 "__init__.py" = ["E402", "F401"]
+# ignore typing rules for tests
+"tests/*" = ["ANN201"]
 
 # set dynamic versioning capabilities for project
 [tool.poetry-dynamic-versioning]
