@@ -317,9 +317,15 @@ def test_label_outliers(
     basic_outlier_dataframe: pd.DataFrame,
     cytotable_CFReT_data_df: pd.DataFrame,
 ):
-    # test basic single-column result
+    """
+    Tests label_outliers
+    """
+
+    # test basic single-column result with zscores
     assert analyze.label_outliers(
-        df=basic_outlier_dataframe, feature_thresholds={"example_feature": 1}
+        df=basic_outlier_dataframe,
+        feature_thresholds={"example_feature": 1},
+        include_threshold_scores=True,
     ).to_dict(orient="dict") == {
         "example_feature": {
             0: 1,
@@ -359,9 +365,43 @@ def test_label_outliers(
         },
     }
 
+    # test for case when zscores are excluded
+    assert analyze.label_outliers(
+        df=basic_outlier_dataframe,
+        feature_thresholds={"example_feature": 1},
+        include_threshold_scores=False,
+    ).to_dict(orient="dict") == {
+        "example_feature": {
+            0: 1,
+            1: 2,
+            2: 3,
+            3: 4,
+            4: 5,
+            5: 6,
+            6: 7,
+            7: 8,
+            8: 9,
+            9: 10,
+        },
+        "outlier_custom": {
+            0: False,
+            1: False,
+            2: False,
+            3: False,
+            4: False,
+            5: False,
+            6: False,
+            7: False,
+            8: True,
+            9: True,
+        },
+    }
+
     # test single-column result
     test_df = analyze.label_outliers(
-        df=cytotable_CFReT_data_df, feature_thresholds="large_nuclei"
+        df=cytotable_CFReT_data_df,
+        feature_thresholds="large_nuclei",
+        include_threshold_scores=True,
     )
     pd.testing.assert_frame_equal(
         test_df,
@@ -373,7 +413,9 @@ def test_label_outliers(
 
     # test full dataset
     pd.testing.assert_frame_equal(
-        analyze.label_outliers(df=cytotable_CFReT_data_df),
+        analyze.label_outliers(
+            df=cytotable_CFReT_data_df, include_threshold_scores=True
+        ),
         pd.read_parquet(path="tests/data/coSMicQC/test_label_outliers_output.parquet"),
     )
 

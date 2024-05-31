@@ -172,7 +172,7 @@ def label_outliers(
     df: pd.DataFrame,
     feature_thresholds: Optional[Union[Dict[str, float], str]] = None,
     feature_thresholds_file: Optional[str] = DEFAULT_QC_THRESHOLD_FILE,
-    include_threshold_scores: bool = True,
+    include_threshold_scores: bool = False,
 ) -> pd.DataFrame:
     """
     Use identify_outliers to label the original dataset for
@@ -192,7 +192,7 @@ def label_outliers(
             feature_thresholds_file: Optional[str] = DEFAULT_QC_THRESHOLD_FILE,
                 An optional feature thresholds file where thresholds may be
                 defined within a file.
-            include_threshold_scores: bool = True
+            include_threshold_scores: bool = False
                 Whether to include the scores in addition to whether an outlier
                 was detected or not.
 
@@ -204,14 +204,27 @@ def label_outliers(
     # for single outlier processing
     if isinstance(feature_thresholds, (str, dict)):
         # return the outlier dataframe for one threshold rule
+        identified_outliers = identify_outliers(
+            df=df,
+            feature_thresholds=feature_thresholds,
+            feature_thresholds_file=feature_thresholds_file,
+            include_threshold_scores=include_threshold_scores,
+        )
         return pd.concat(
             [
                 df,
-                identify_outliers(
-                    df=df,
-                    feature_thresholds=feature_thresholds,
-                    feature_thresholds_file=feature_thresholds_file,
-                    include_threshold_scores=include_threshold_scores,
+                (
+                    identified_outliers
+                    if isinstance(identified_outliers, pd.DataFrame)
+                    else pd.DataFrame(
+                        {
+                            (
+                                f"outlier_{feature_thresholds}"
+                                if isinstance(feature_thresholds, str)
+                                else "outlier_custom"
+                            ): identified_outliers
+                        }
+                    )
                 ),
             ],
             axis=1,
