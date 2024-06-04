@@ -8,9 +8,15 @@ readme = "README.md"
 packages = [{include = "cosmicqc", from = "src"}]
 
 [tool.poetry.dependencies]
-python = ">=3.9,<3.13"
-pandas = "^2.2.2"
-scipy = "^1.13.0"
+python = ">=3.8,<3.13"
+pandas = [
+  {version = "<2.2.2", python = "<3.9"},
+  {version = "^2.2.2", python = ">=3.9"}
+]
+scipy = [
+  {version = "<1.13.0", python = "<3.9"},
+  {version = "^1.13.0", python = ">=3.9"}
+]
 pyarrow = "^16.0.0"
 pyyaml = "^6.0.1"
 
