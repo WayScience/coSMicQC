@@ -4,6 +4,8 @@ See here for more information:
 https://docs.pytest.org/en/7.1.x/explanation/fixtures.html
 """
 
+import pathlib
+
 import pandas as pd
 import pytest
 
@@ -24,3 +26,42 @@ def fixture_basic_outlier_dataframe():
     Creates basic example data for use in tests
     """
     return pd.DataFrame({"example_feature": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]})
+
+
+@pytest.fixture(name="basic_outlier_csv")
+def fixture_basic_outlier_csv(
+    tmp_path: pathlib.Path, basic_outlier_dataframe: pd.DataFrame
+):
+    """
+    Creates basic example data csv for use in tests
+    """
+
+    basic_outlier_dataframe.to_csv(csv_path := tmp_path / "example.csv")
+
+    return csv_path
+
+
+@pytest.fixture(name="basic_outlier_tsv")
+def fixture_basic_outlier_tsv(
+    tmp_path: pathlib.Path, basic_outlier_dataframe: pd.DataFrame
+):
+    """
+    Creates basic example data tsv for use in tests
+    """
+
+    basic_outlier_dataframe.to_csv(tsv_path := tmp_path / "example.tsv", sep="\t")
+
+    return tsv_path
+
+
+@pytest.fixture(name="basic_outlier_parquet")
+def fixture_basic_outlier_parquet(
+    tmp_path: pathlib.Path, basic_outlier_dataframe: pd.DataFrame
+):
+    """
+    Creates basic example data parquet for use in tests
+    """
+
+    basic_outlier_dataframe.to_parquet(parquet_path := tmp_path / "example.parquet")
+
+    return parquet_path

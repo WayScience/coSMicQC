@@ -7,7 +7,7 @@ import pytest
 from cosmicqc import analyze
 
 
-def test_find_outliers_basic(basic_outlier_dataframe: pd.DataFrame):
+def test_find_outliers_basic_dataframe(basic_outlier_dataframe: pd.DataFrame):
     """
     Testing find_outliers with basic/simulated data.
     """
@@ -24,6 +24,21 @@ def test_find_outliers_basic(basic_outlier_dataframe: pd.DataFrame):
     ).to_dict(orient="dict") == {
         "example_feature": {8: 9, 9: 10},
         "Image_Metadata_Plate": {8: "A", 9: "A"},
+    }
+
+
+def test_find_outliers_basic_csv(basic_outlier_csv: str):
+    """
+    Testing find_outliers with csv data.
+    """
+
+    # assert that we have the output we expect
+    assert analyze.find_outliers(
+        df=basic_outlier_csv,
+        feature_thresholds={"example_feature": 1},
+        metadata_columns=[],
+    ).to_dict(orient="dict") == {
+        "example_feature": {8: 9, 9: 10},
     }
 
 
@@ -315,6 +330,7 @@ def test_find_outliers_dict_and_default_config_cfret(
 
 def test_label_outliers(
     basic_outlier_dataframe: pd.DataFrame,
+    basic_outlier_csv: str,
     cytotable_CFReT_data_df: pd.DataFrame,
 ):
     """
