@@ -2,8 +2,10 @@
 Defines a QCDataFrame class for use in coSMicQC.
 """
 
+from typing import Any, Dict, Self, Union
+
 import pandas as pd
-from typing import Union
+
 
 class QCDataFrame:
     """
@@ -25,7 +27,9 @@ class QCDataFrame:
             Returns the underlying pandas DataFrame.
     """
 
-    def __init__(self, data: Union[pd.DataFrame, str], **kwargs) -> None:
+    def __init__(
+        self: Self, data: Union[pd.DataFrame, str], **kwargs: Dict[str, Any]
+    ) -> None:
         """
         Initializes the QCDataFrame with either a DataFrame or a file path.
 
@@ -52,7 +56,7 @@ class QCDataFrame:
             elif data.endswith(".parquet"):
                 self.data = pd.read_parquet(data, **kwargs)
 
-    def __call__(self) -> pd.DataFrame:
+    def __call__(self: Self) -> pd.DataFrame:
         """
         Returns the underlying pandas DataFrame.
 
@@ -60,4 +64,3 @@ class QCDataFrame:
             pd.DataFrame: The data in a pandas DataFrame.
         """
         return self.data
-
