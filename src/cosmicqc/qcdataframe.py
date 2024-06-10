@@ -41,10 +41,6 @@ class QCDataFrame:
                 Additional keyword arguments to pass to the pandas read functions.
         """
 
-        # print(data)
-        # print(type(data))
-        # print(isinstance(data, QCDataFrame))
-
         if isinstance(data, pd.DataFrame):
             # if data is a pd.DataFrame, remember this within the reference attr
             self.reference = "pd.DataFrame"

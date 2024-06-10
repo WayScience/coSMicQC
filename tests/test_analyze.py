@@ -337,6 +337,21 @@ def test_label_outliers(
     Tests label_outliers
     """
 
+    pd.testing.assert_frame_equal(
+        analyze.label_outliers(
+            df=basic_outlier_dataframe,
+            feature_thresholds={"example_feature": 1},
+            include_threshold_scores=True,
+        ),
+        analyze.label_outliers(
+            df=basic_outlier_csv,
+            feature_thresholds={"example_feature": 1},
+            include_threshold_scores=True,
+        ),
+    )
+
+    
+
     # test basic single-column result with zscores
     assert analyze.label_outliers(
         df=basic_outlier_dataframe,
