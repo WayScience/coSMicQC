@@ -350,8 +350,6 @@ def test_label_outliers(
         ),
     )
 
-    
-
     # test basic single-column result with zscores
     assert analyze.label_outliers(
         df=basic_outlier_dataframe,

@@ -49,7 +49,9 @@ def fixture_basic_outlier_tsv(
     Creates basic example data tsv for use in tests
     """
 
-    basic_outlier_dataframe.to_csv(tsv_path := tmp_path / "example.tsv", sep="\t", index=False)
+    basic_outlier_dataframe.to_csv(
+        tsv_path := tmp_path / "example.tsv", sep="\t", index=False
+    )
 
     return tsv_path
 
@@ -62,6 +64,8 @@ def fixture_basic_outlier_parquet(
     Creates basic example data parquet for use in tests
     """
 
-    basic_outlier_dataframe.to_parquet(parquet_path := tmp_path / "example.parquet", index=False)
+    basic_outlier_dataframe.to_parquet(
+        parquet_path := tmp_path / "example.parquet", index=False
+    )
 
     return parquet_path
