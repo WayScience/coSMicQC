@@ -3,9 +3,13 @@ Defines a SCDataFrame class for use in coSMicQC.
 """
 
 import pathlib
-from typing import Any, Dict, Self, Union
+from typing import Any, Dict, TypeVar, Union
 
 import pandas as pd
+
+# provide backwards compatibility for Self type in earlier Python versions.
+# see: https://peps.python.org/pep-0484/#annotating-instance-and-class-methods
+Self_SCDataFrame = TypeVar("Self_SCDataFrame", bound="SCDataFrame")
 
 
 class SCDataFrame:
@@ -35,7 +39,7 @@ class SCDataFrame:
     """
 
     def __init__(
-        self: Self, data: Union[pd.DataFrame, str], **kwargs: Dict[str, Any]
+        self: Self_SCDataFrame, data: Union[pd.DataFrame, str], **kwargs: Dict[str, Any]
     ) -> None:
         """
         Initializes the SCDataFrame with either a DataFrame or a file path.
@@ -75,7 +79,7 @@ class SCDataFrame:
         else:
             raise ValueError("Unsupported input type for SCDataFrame.")
 
-    def __call__(self: Self) -> pd.DataFrame:
+    def __call__(self: Self_SCDataFrame) -> pd.DataFrame:
         """
         Returns the underlying pandas DataFrame.
 
@@ -84,7 +88,7 @@ class SCDataFrame:
         """
         return self.data
 
-    def __repr__(self: Self) -> pd.DataFrame:
+    def __repr__(self: Self_SCDataFrame) -> pd.DataFrame:
         """
         Returns the representation of underlying pandas DataFrame.
 
@@ -93,7 +97,7 @@ class SCDataFrame:
         """
         return repr(self.data)
 
-    def __getattr__(self: Self, attr: str) -> Any:  # noqa: ANN401
+    def __getattr__(self: Self_SCDataFrame, attr: str) -> Any:  # noqa: ANN401
         """
         Intercept attribute accesses and delegate them to the underlying
         pandas DataFrame.
@@ -106,7 +110,7 @@ class SCDataFrame:
         """
         return getattr(self.data, attr)
 
-    def __getitem__(self: Self, key: Union[int, str]) -> Any:  # noqa: ANN401
+    def __getitem__(self: Self_SCDataFrame, key: Union[int, str]) -> Any:  # noqa: ANN401
         """
         Returns an element or a slice of the underlying pandas DataFrame.
 
