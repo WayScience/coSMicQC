@@ -1,5 +1,5 @@
 """
-Defines a QCDataFrame class for use in coSMicQC.
+Defines a SCDataFrame class for use in coSMicQC.
 """
 
 import pathlib
@@ -8,7 +8,7 @@ from typing import Any, Dict, Self, Union
 import pandas as pd
 
 
-class QCDataFrame:
+class SCDataFrame:
     """
     A class to handle and load different types of data files into a pandas DataFrame.
 
@@ -17,8 +17,8 @@ class QCDataFrame:
     pandas DataFrame.
 
     Attributes:
-        reference (str):
-            A string indicating the type of data source, either 'pd.DataFrame'
+        data_source (str):
+            A string indicating the data source, either 'pd.DataFrame'
             or the file path.
         data (pd.DataFrame):
             The loaded data in a pandas DataFrame.
@@ -26,13 +26,19 @@ class QCDataFrame:
     Methods:
         __call__():
             Returns the underlying pandas DataFrame.
+        __repr__():
+            Returns representation of underlying pandas DataFrame.
+        __getattr__():
+            Returns underlying attributes of pandas DataFrame.
+        __getitem__():
+            Returns slice of data from pandas DataFrame.
     """
 
     def __init__(
         self: Self, data: Union[pd.DataFrame, str], **kwargs: Dict[str, Any]
     ) -> None:
         """
-        Initializes the QCDataFrame with either a DataFrame or a file path.
+        Initializes the SCDataFrame with either a DataFrame or a file path.
 
         Args:
             data (Union[pd.DataFrame, str]):
@@ -42,14 +48,14 @@ class QCDataFrame:
         """
 
         if isinstance(data, pd.DataFrame):
-            # if data is a pd.DataFrame, remember this within the reference attr
-            self.reference = "pd.DataFrame"
+            # if data is a pd.DataFrame, remember this within the data_source attr
+            self.data_source = "pd.DataFrame"
             self.data = data
 
         elif isinstance(data, pathlib.Path | str):
             # if the data is a string, remember the original source
-            # through a reference attr
-            self.reference = data
+            # through a data_source attr
+            self.data_source = data
 
             # interpret the data through pathlib
             data_path = pathlib.Path(data)
@@ -64,9 +70,10 @@ class QCDataFrame:
             elif data_path.suffix == ".parquet":
                 # read as a Parquet file
                 self.data = pd.read_parquet(data, **kwargs)
-
+            else:
+                raise ValueError("Unsupported file format for SCDataFrame.")
         else:
-            raise ValueError("Unsupported file format for QCDataFrame.")
+            raise ValueError("Unsupported input type for SCDataFrame.")
 
     def __call__(self: Self) -> pd.DataFrame:
         """
@@ -79,12 +86,12 @@ class QCDataFrame:
 
     def __repr__(self: Self) -> pd.DataFrame:
         """
-        Returns the underlying pandas DataFrame.
+        Returns the representation of underlying pandas DataFrame.
 
         Returns:
             pd.DataFrame: The data in a pandas DataFrame.
         """
-        return self.data
+        return repr(self.data)
 
     def __getattr__(self: Self, attr: str) -> Any:  # noqa: ANN401
         """

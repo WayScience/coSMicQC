@@ -11,7 +11,7 @@ import pandas as pd
 import yaml
 from scipy.stats import zscore as scipy_zscore
 
-from .qcdataframe import QCDataFrame
+from .scdataframe import SCDataFrame
 
 DEFAULT_QC_THRESHOLD_FILE = (
     f"{pathlib.Path(__file__).parent!s}/data/qc_nuclei_thresholds_default.yml"
@@ -19,7 +19,7 @@ DEFAULT_QC_THRESHOLD_FILE = (
 
 
 def identify_outliers(
-    df: Union[QCDataFrame, pd.DataFrame, str],
+    df: Union[SCDataFrame, pd.DataFrame, str],
     feature_thresholds: Union[Dict[str, float], str],
     feature_thresholds_file: Optional[str] = DEFAULT_QC_THRESHOLD_FILE,
     include_threshold_scores: bool = False,
@@ -32,7 +32,7 @@ def identify_outliers(
     threshold of 0 as that would represent the whole dataset.
 
     Args:
-        df: Union[QCDataFrame, pd.DataFrame, str]
+        df: Union[SCDataFrame, pd.DataFrame, str]
             DataFrame or file with converted output from CytoTable.
         metadata_columns: List[str]
             List of metadata columns that should be outputted with the outlier data.
@@ -54,9 +54,9 @@ def identify_outliers(
             or not for use within other functions.
     """
 
-    # interpret the df as QCDataFrame
-    if not isinstance(df, QCDataFrame):
-        df = QCDataFrame(data=df)
+    # interpret the df as SCDataFrame
+    if not isinstance(df, SCDataFrame):
+        df = SCDataFrame(data=df)
 
     # create a copy of the dataframe to ensure
     # we don't modify the supplied dataframe inplace.
@@ -113,7 +113,7 @@ def identify_outliers(
 
 
 def find_outliers(
-    df: Union[QCDataFrame, pd.DataFrame, str],
+    df: Union[SCDataFrame, pd.DataFrame, str],
     metadata_columns: List[str],
     feature_thresholds: Union[Dict[str, float], str],
     feature_thresholds_file: Optional[str] = DEFAULT_QC_THRESHOLD_FILE,
@@ -123,7 +123,7 @@ def find_outliers(
     with only the outliers and provided metadata columns.
 
     Args:
-        df: Union[QCDataFrame, pd.DataFrame, str]
+        df: Union[SCDataFrame, pd.DataFrame, str]
             DataFrame or file with converted output from CytoTable.
         metadata_columns: List[str]
             List of metadata columns that should be outputted with the outlier data.
@@ -144,9 +144,9 @@ def find_outliers(
             Outlier data frame for the given conditions.
     """
 
-    # interpret the df as QCDataFrame
-    if not isinstance(df, QCDataFrame):
-        df = QCDataFrame(data=df)
+    # interpret the df as SCDataFrame
+    if not isinstance(df, SCDataFrame):
+        df = SCDataFrame(data=df)
 
     if isinstance(feature_thresholds, str):
         feature_thresholds = read_thresholds_set_from_file(
@@ -179,7 +179,7 @@ def find_outliers(
 
 
 def label_outliers(
-    df: Union[QCDataFrame, pd.DataFrame, str],
+    df: Union[SCDataFrame, pd.DataFrame, str],
     feature_thresholds: Optional[Union[Dict[str, float], str]] = None,
     feature_thresholds_file: Optional[str] = DEFAULT_QC_THRESHOLD_FILE,
     include_threshold_scores: bool = False,
@@ -189,7 +189,7 @@ def label_outliers(
     where a cell passed or failed the quality control condition(s).
 
         Args:
-            df: Union[QCDataFrame, pd.DataFrame, str]
+            df: Union[SCDataFrame, pd.DataFrame, str]
                 DataFrame or file with converted output from CytoTable.
             feature_thresholds: Dict[str, float]
                 One of two options:
@@ -211,9 +211,9 @@ def label_outliers(
                 Full dataframe with optional scores and outlier boolean column.
     """
 
-    # interpret the df as QCDataFrame
-    if not isinstance(df, QCDataFrame):
-        df = QCDataFrame(data=df)
+    # interpret the df as SCDataFrame
+    if not isinstance(df, SCDataFrame):
+        df = SCDataFrame(data=df)
 
     # for single outlier processing
     if isinstance(feature_thresholds, (str, dict)):

@@ -337,6 +337,7 @@ def test_label_outliers(
     Tests label_outliers
     """
 
+    # compare the dataframe vs csv output to make sure they are equivalent
     pd.testing.assert_frame_equal(
         analyze.label_outliers(
             df=basic_outlier_dataframe,
@@ -451,11 +452,26 @@ def test_label_outliers(
 
 def test_identify_outliers(
     basic_outlier_dataframe: pd.DataFrame,
+    basic_outlier_csv: str,
     cytotable_CFReT_data_df: pd.DataFrame,
 ):
     """
     Tests identify_outliers
     """
+
+    # show that dataframe and csv output are the same
+    pd.testing.assert_frame_equal(
+        analyze.identify_outliers(
+            df=basic_outlier_dataframe,
+            feature_thresholds={"example_feature": 1},
+            include_threshold_scores=True,
+        ),
+        analyze.identify_outliers(
+            df=basic_outlier_csv,
+            feature_thresholds={"example_feature": 1},
+            include_threshold_scores=True,
+        ),
+    )
 
     assert analyze.identify_outliers(
         df=basic_outlier_dataframe,
