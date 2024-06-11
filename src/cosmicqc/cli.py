@@ -3,9 +3,11 @@ Setup coSMicQC CLI through python-fire
 """
 
 import fire
+
 from . import analyze
 
-def cli_analyze():
+
+def cli_analyze() -> None:
     """
     Run the analyze module functions through python-fire CLI
 
@@ -13,6 +15,7 @@ def cli_analyze():
     within the analyze module.
     """
     fire.Fire(analyze)
+
 
 if __name__ == "__main__":
     """
