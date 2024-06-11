@@ -19,9 +19,13 @@ scipy = [
 ]
 pyarrow = "^16.0.0"
 pyyaml = "^6.0.1"
+fire = "^0.6.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.2.0"
+
+[tool.poetry.scripts]
+cosmicqc = "cosmicqc.cli:cli_analyze"
 
 [tool.isort]
 profile = "black"
