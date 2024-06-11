@@ -6,17 +6,17 @@ import operator
 import pathlib
 from functools import reduce
 from typing import Dict, List, Optional, Union
-
+import sys
 import pandas as pd
 import yaml
 from scipy.stats import zscore as scipy_zscore
 
 from .scdataframe import SCDataFrame
+from .utils import print_if_cli
 
 DEFAULT_QC_THRESHOLD_FILE = (
     f"{pathlib.Path(__file__).parent!s}/data/qc_nuclei_thresholds_default.yml"
 )
-
 
 def identify_outliers(
     df: Union[SCDataFrame, pd.DataFrame, str],
@@ -34,8 +34,6 @@ def identify_outliers(
     Args:
         df: Union[SCDataFrame, pd.DataFrame, str]
             DataFrame or file with converted output from CytoTable.
-        metadata_columns: List[str]
-            List of metadata columns that should be outputted with the outlier data.
         feature_thresholds: Dict[str, float]
             One of two options:
             A dictionary with the feature name(s) as the key(s) and their assigned
@@ -47,12 +45,19 @@ def identify_outliers(
         feature_thresholds_file: Optional[str] = DEFAULT_QC_THRESHOLD_FILE,
             An optional feature thresholds file where thresholds may be
             defined within a file.
+        include_threshold_scores: bool
+            Whether to include the threshold scores in addition to whether
+            the threshold set passes per row.
 
     Returns:
         Union[pd.Series, pd.DataFrame]:
             Outlier series with booleans based on whether outliers were detected
             or not for use within other functions.
     """
+
+    print("THRESHOOLD FILE:",)
+    print(df, feature_thresholds, feature_thresholds_file, include_threshold_scores)
+
 
     # interpret the df as SCDataFrame
     if not isinstance(df, SCDataFrame):
@@ -95,7 +100,7 @@ def identify_outliers(
             condition = outlier_df[zscore_columns[feature]] < threshold
         conditions.append(condition)
 
-    return (
+    return print_if_cli(
         # create a boolean pd.series identifier for dataframe
         # based on all conditions for use within other functions.
         reduce(operator.and_, conditions)
@@ -175,7 +180,7 @@ def find_outliers(
     columns_to_include = list(feature_thresholds.keys()) + metadata_columns
 
     # Return outliers DataFrame with specified columns
-    return outliers_df[columns_to_include]
+    return print_if_cli(outliers_df[columns_to_include])
 
 
 def label_outliers(
@@ -265,7 +270,7 @@ def label_outliers(
             axis=1,
         )
         # return a dataframe with a deduplicated columns by name
-        return labeled_df.loc[:, ~labeled_df.columns.duplicated()]
+        return print_if_cli(labeled_df.loc[:, ~labeled_df.columns.duplicated()])
 
 
 def read_thresholds_set_from_file(
