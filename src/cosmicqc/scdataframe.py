@@ -56,7 +56,7 @@ class SCDataFrame:
             self.data_source = "pd.DataFrame"
             self.data = data
 
-        elif isinstance(data, pathlib.Path) or isinstance(data, str): # noqa: PLR1701, SIM101
+        elif isinstance(data, pathlib.Path) or isinstance(data, str):  # noqa: PLR1701, SIM101
             # if the data is a string, remember the original source
             # through a data_source attr
             self.data_source = data
