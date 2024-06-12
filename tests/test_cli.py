@@ -1,3 +1,7 @@
+"""
+Tests cosmicqc cli module
+"""
+
 from .utils import run_cli_command
 
 
