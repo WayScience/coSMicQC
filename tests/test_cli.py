@@ -24,11 +24,21 @@ def test_cli_identify_outliers(basic_outlier_csv: str):
         )
     )
 
-    print(stderr)
-    print(stdout)
-
     assert returncode == 0
-    assert "outlier_custom" in stdout or "outlier_custom" in stderr
+    assert (
+        stdout.strip()
+        == """0    False
+1    False
+2    False
+3    False
+4    False
+5    False
+6    False
+7    False
+8     True
+9     True
+Name: Z_Score_example_feature, dtype: bool""".strip()
+    )
 
 
 def test_cli_find_outliers(basic_outlier_csv: str):
@@ -38,13 +48,22 @@ def test_cli_find_outliers(basic_outlier_csv: str):
 
     stdout, stderr, returncode = run_cli_command(
         (
-            f"""cosmicqc find_outliers {basic_outlier_csv}"""
-            """ --metadata_columns '[\"col1\"]' --feature_thresholds '{"example_feature": 1.0}'"""
+            f"""cosmicqc find_outliers --df {basic_outlier_csv}"""
+            """ --metadata_columns [] --feature_thresholds {"example_feature":1.0}"""
         )
     )
 
     assert returncode == 0
-    assert "outlier_custom" in stdout or "outlier_custom" in stderr
+    assert (
+        stdout.strip()
+        == """Number of outliers: 2
+Outliers Range:
+example_feature Min: 9
+example_feature Max: 10
+   example_feature
+8                9
+9               10""".strip()
+    )
 
 
 def test_cli_label_outliers(basic_outlier_csv: str):
@@ -54,10 +73,23 @@ def test_cli_label_outliers(basic_outlier_csv: str):
 
     stdout, stderr, returncode = run_cli_command(
         (
-            f"""cosmicqc label_outliers {basic_outlier_csv}"""
-            """ --feature_thresholds '{"example_feature": 1.0}'"""
+            f"""cosmicqc label_outliers --df {basic_outlier_csv}"""
+            """ --feature_thresholds {"example_feature":1.0}"""
         )
     )
 
     assert returncode == 0
-    assert "outlier_custom" in stdout or "outlier_custom" in stderr
+    assert (
+        stdout.strip()
+        == """example_feature  outlier_custom
+0                1           False
+1                2           False
+2                3           False
+3                4           False
+4                5           False
+5                6           False
+6                7           False
+7                8           False
+8                9            True
+9               10            True""".strip()
+    )

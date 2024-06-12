@@ -2,25 +2,92 @@
 Setup coSMicQC CLI through python-fire
 """
 
-import fire
+import inspect
+import sys
+import types
+from typing import Optional
 
-from functools import wraps
+import fire
+from fire import helptext, inspectutils, value_types
+from fire.core import Display, FireError, _DictAsString, _OneLineResult
+from fire.trace import FireTrace
+
 from . import analyze
 
-def cli_df_to_string(func: object) -> object:
+
+# referenced from https://github.com/google/python-fire/pull/446
+# to be removed after python-fire merges changes (uncertain of timeline)
+def HasCustomRepr(component: object) -> bool:
+    """Reproduces above HasCustomStr function to determine if component has a
+    custom __repr__ method.
+
+    ...
+
+    Args:
+      component: The object to check for a custom __repr__ method.
+    Returns:
+      Whether `component` has a custom __repr__ method.
     """
-    See https://github.com/google/python-fire/issues/274
-    for why we need this (for now)
-    """
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-        import sys
-        print(sys.argv)
-        if any("bin/cosmicqc" in path for path in sys.argv):
-            return str(func(*args, **kwargs))
-        else:
-            return func(*args, **kwargs)
-    return wrapper
+    if hasattr(component, "__repr__"):
+        class_attrs = inspectutils.GetClassAttrsDict(type(component)) or {}
+        repr_attr = class_attrs.get("__repr__")
+        if repr_attr and repr_attr.defining_class is not object:
+            return True
+    return False
+
+
+# referenced with modifications from https://github.com/google/python-fire/pull/446
+# to be removed after python-fire merges changes (uncertain of timeline)
+# ruff: noqa: C901
+def _PrintResult(
+    component_trace: FireTrace, verbose: bool = False, serialize: Optional[bool] = None
+) -> None:
+    """Prints the result of the Fire call to stdout in a human readable way."""
+    # TODO(dbieber): Design human readable deserializable serialization method
+    # and move serialization to its own module.
+    result = component_trace.GetResult()
+    # Allow users to modify the return value of the component and provide
+    # custom formatting.
+    if serialize:
+        if not callable(serialize):
+            raise FireError(
+                "The argument `serialize` must be empty or callable:", serialize
+            )
+        result = serialize(result)
+    if value_types.HasCustomStr(result):
+        # If the object has a custom __str__ method, rather than one inherited from
+        # object, then we use that to serialize the object.
+        print(str(result))
+        return
+
+    elif HasCustomRepr(result):
+        # Same as above, but for __repr__.
+        # For pandas.DataFrame, __str__ is inherited from object, but __repr__ has
+        # a custom implementation (see pandas.core.frame.DataFrame.__repr__)
+        print(str(result))
+        return
+
+    if isinstance(result, (list, set, frozenset, types.GeneratorType)):
+        for i in result:
+            print(_OneLineResult(i))
+    elif inspect.isgeneratorfunction(result):
+        raise NotImplementedError
+    elif isinstance(result, dict) and value_types.IsSimpleGroup(result):
+        print(_DictAsString(result, verbose))
+    elif isinstance(result, tuple):
+        print(_OneLineResult(result))
+    elif isinstance(result, value_types.VALUE_TYPES):
+        if result is not None:
+            print(result)
+    else:
+        help_text = helptext.HelpText(result, trace=component_trace, verbose=verbose)
+        output = [help_text]
+        Display(output, out=sys.stdout)
+
+
+# replace the _PrintResult function with a fix for pandas dataframes
+fire.core._PrintResult = _PrintResult
+
 
 def cli_analyze() -> None:
     """
@@ -29,10 +96,6 @@ def cli_analyze() -> None:
     This function serves as the CLI entry point for functions
     within the analyze module.
     """
-
-    for key, value in analyze.__dict__.items( ):
-        if not key.startswith('_') and hasattr(value, '__call__' ):
-            setattr(analyze, key, cli_df_to_string(value))
 
     fire.Fire(analyze)
 

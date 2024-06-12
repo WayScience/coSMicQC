@@ -12,7 +12,6 @@ import yaml
 from scipy.stats import zscore as scipy_zscore
 
 from .scdataframe import SCDataFrame
-from .cli import cli_df_to_string
 
 DEFAULT_QC_THRESHOLD_FILE = (
     f"{pathlib.Path(__file__).parent!s}/data/qc_nuclei_thresholds_default.yml"
@@ -55,11 +54,6 @@ def identify_outliers(
             Outlier series with booleans based on whether outliers were detected
             or not for use within other functions.
     """
-
-    print(
-        "THRESHOOLD FILE:",
-    )
-    print(df, feature_thresholds, feature_thresholds_file, include_threshold_scores)
 
     # interpret the df as SCDataFrame
     if not isinstance(df, SCDataFrame):
