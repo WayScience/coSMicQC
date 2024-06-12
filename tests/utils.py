@@ -3,7 +3,7 @@ Utilities for running pytest tests in coSMicQC
 """
 
 import subprocess
-from typing import List
+
 
 def run_cli_command(command: str):
     """
@@ -16,5 +16,7 @@ def run_cli_command(command: str):
         tuple: (stdout, stderr, returncode)
     """
 
-    result = subprocess.run(command.split(" "), capture_output=True, text=True)
+    result = subprocess.run(
+        command.split(" "), capture_output=True, text=True, check=False
+    )
     return result.stdout, result.stderr, result.returncode

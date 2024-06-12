@@ -4,7 +4,9 @@ Utility functions for coSMicQC
 
 import sys
 from typing import Optional
+
 from .scdataframe import SCDataFrame
+
 
 def print_if_cli(data: SCDataFrame) -> Optional[SCDataFrame]:
     """
@@ -21,5 +23,4 @@ def print_if_cli(data: SCDataFrame) -> Optional[SCDataFrame]:
     """
     if any("bin/cosmicqc" in path for path in sys.argv):
         print(data)
-    return False
-
+    return data

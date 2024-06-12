@@ -6,7 +6,7 @@ import operator
 import pathlib
 from functools import reduce
 from typing import Dict, List, Optional, Union
-import sys
+
 import pandas as pd
 import yaml
 from scipy.stats import zscore as scipy_zscore
@@ -17,6 +17,7 @@ from .utils import print_if_cli
 DEFAULT_QC_THRESHOLD_FILE = (
     f"{pathlib.Path(__file__).parent!s}/data/qc_nuclei_thresholds_default.yml"
 )
+
 
 def identify_outliers(
     df: Union[SCDataFrame, pd.DataFrame, str],
@@ -55,9 +56,10 @@ def identify_outliers(
             or not for use within other functions.
     """
 
-    print("THRESHOOLD FILE:",)
+    print(
+        "THRESHOOLD FILE:",
+    )
     print(df, feature_thresholds, feature_thresholds_file, include_threshold_scores)
-
 
     # interpret the df as SCDataFrame
     if not isinstance(df, SCDataFrame):
