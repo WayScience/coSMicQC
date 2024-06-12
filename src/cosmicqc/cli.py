@@ -4,8 +4,23 @@ Setup coSMicQC CLI through python-fire
 
 import fire
 
+from functools import wraps
 from . import analyze
 
+def cli_df_to_string(func: object) -> object:
+    """
+    See https://github.com/google/python-fire/issues/274
+    for why we need this (for now)
+    """
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        import sys
+        print(sys.argv)
+        if any("bin/cosmicqc" in path for path in sys.argv):
+            return str(func(*args, **kwargs))
+        else:
+            return func(*args, **kwargs)
+    return wrapper
 
 def cli_analyze() -> None:
     """
@@ -14,6 +29,11 @@ def cli_analyze() -> None:
     This function serves as the CLI entry point for functions
     within the analyze module.
     """
+
+    for key, value in analyze.__dict__.items( ):
+        if not key.startswith('_') and hasattr(value, '__call__' ):
+            setattr(analyze, key, cli_df_to_string(value))
+
     fire.Fire(analyze)
 
 

@@ -12,7 +12,7 @@ import yaml
 from scipy.stats import zscore as scipy_zscore
 
 from .scdataframe import SCDataFrame
-from .utils import print_if_cli
+from .cli import cli_df_to_string
 
 DEFAULT_QC_THRESHOLD_FILE = (
     f"{pathlib.Path(__file__).parent!s}/data/qc_nuclei_thresholds_default.yml"
@@ -102,7 +102,7 @@ def identify_outliers(
             condition = outlier_df[zscore_columns[feature]] < threshold
         conditions.append(condition)
 
-    return print_if_cli(
+    return (
         # create a boolean pd.series identifier for dataframe
         # based on all conditions for use within other functions.
         reduce(operator.and_, conditions)
@@ -182,7 +182,7 @@ def find_outliers(
     columns_to_include = list(feature_thresholds.keys()) + metadata_columns
 
     # Return outliers DataFrame with specified columns
-    return print_if_cli(outliers_df[columns_to_include])
+    return outliers_df[columns_to_include]
 
 
 def label_outliers(
@@ -272,7 +272,7 @@ def label_outliers(
             axis=1,
         )
         # return a dataframe with a deduplicated columns by name
-        return print_if_cli(labeled_df.loc[:, ~labeled_df.columns.duplicated()])
+        return labeled_df.loc[:, ~labeled_df.columns.duplicated()]
 
 
 def read_thresholds_set_from_file(
