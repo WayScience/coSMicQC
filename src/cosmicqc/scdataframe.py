@@ -68,6 +68,9 @@ class SCDataFrame:
             if data_path.suffix == ".csv":
                 # read as a CSV
                 self.data = pd.read_csv(data, **kwargs)
+            elif data_path.suffixes == [".csv", ".gz"]:
+                # read as a CSV.GZ file
+                self.data = pd.read_csv(data, compression="gzip", **kwargs)
             elif data_path.suffix in (".tsv", ".txt"):
                 # read as a TSV
                 self.data = pd.read_csv(data, delimiter="\t", **kwargs)

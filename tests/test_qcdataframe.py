@@ -25,6 +25,16 @@ def test_SCDataFrame_init_with_csv(basic_outlier_csv: str):
     assert sc_df.equals(expected_df)
 
 
+def test_SCDataFrame_init_with_csv_gz(basic_outlier_csv_gz: str):
+    """
+    Tests SCDataFrame with CSV input.
+    """
+    sc_df = SCDataFrame(data=basic_outlier_csv_gz)
+    expected_df = pd.read_csv(basic_outlier_csv_gz)
+    assert sc_df.data_source == basic_outlier_csv_gz
+    assert sc_df.equals(expected_df)
+
+
 def test_SCDataFrame_init_with_tsv(basic_outlier_tsv: str):
     """
     Tests SCDataFrame with TSV input.

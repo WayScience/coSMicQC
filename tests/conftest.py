@@ -41,6 +41,21 @@ def fixture_basic_outlier_csv(
     return csv_path
 
 
+@pytest.fixture(name="basic_outlier_csv_gz")
+def fixture_basic_outlier_csv_gz(
+    tmp_path: pathlib.Path, basic_outlier_dataframe: pd.DataFrame
+):
+    """
+    Creates basic example data csv for use in tests
+    """
+
+    basic_outlier_dataframe.to_csv(
+        csv_gz_path := tmp_path / "example.csv.gz", index=False, compression="gzip"
+    )
+
+    return csv_gz_path
+
+
 @pytest.fixture(name="basic_outlier_tsv")
 def fixture_basic_outlier_tsv(
     tmp_path: pathlib.Path, basic_outlier_dataframe: pd.DataFrame
