@@ -81,8 +81,10 @@ class SCDataFrame:
                 raise ValueError("Unsupported file format for SCDataFrame.")
         else:
             raise ValueError("Unsupported input type for SCDataFrame.")
-        
-    def export(self: Self_SCDataFrame, file_path: str, **kwargs: Dict[str, Any]) -> None:
+
+    def export(
+        self: Self_SCDataFrame, file_path: str, **kwargs: Dict[str, Any]
+    ) -> None:
         """
         Exports the underlying pandas DataFrame to a file.
 
@@ -94,17 +96,14 @@ class SCDataFrame:
         data_path = pathlib.Path(file_path)
 
         # export to csv
-        if data_path.suffix == ".csv":
+        if ".csv" in data_path.suffixes:
             self.data.to_csv(file_path, **kwargs)
-
         # export to tsv
-        elif data_path.suffix in (".tsv", ".txt"):
-            self.data.to_csv(file_path, sep='\t', **kwargs)
-
+        elif any(elem in data_path.suffixes for elem in (".tsv", ".txt")):
+            self.data.to_csv(file_path, sep="\t", **kwargs)
         # export to parquet
         elif data_path.suffix == ".parquet":
             self.data.to_parquet(file_path, **kwargs)
-
         else:
             raise ValueError("Unsupported file format for export.")
 
@@ -126,7 +125,7 @@ class SCDataFrame:
         """
         return repr(self.data)
 
-    def __getattr__(self, attr: str) -> Any:  # noqa: ANN401
+    def __getattr__(self: Self_SCDataFrame, attr: str) -> Any:  # noqa: ANN401
         """
         Intercept attribute accesses and delegate them to the underlying
         pandas DataFrame, except for custom methods.
