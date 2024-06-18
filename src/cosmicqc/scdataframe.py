@@ -31,9 +31,9 @@ class SCDataFrame:
         __call__():
             Returns the underlying pandas DataFrame.
         __repr__():
-            Returns representation of underlying pandas DataFrame.
+            Returns a representation of the underlying pandas DataFrame.
         __getattr__():
-            Returns underlying attributes of pandas DataFrame.
+            Returns the underlying attributes of the pandas DataFrame.
         __getitem__():
             Returns slice of data from pandas DataFrame.
     """
@@ -118,7 +118,7 @@ class SCDataFrame:
 
     def __repr__(self: Self_SCDataFrame) -> pd.DataFrame:
         """
-        Returns the representation of underlying pandas DataFrame.
+        Returns the representation of the underlying pandas DataFrame.
 
         Returns:
             pd.DataFrame: The data in a pandas DataFrame.
