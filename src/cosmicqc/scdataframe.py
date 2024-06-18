@@ -31,7 +31,7 @@ class SCDataFrame:
         __call__():
             Returns the underlying pandas DataFrame.
         __repr__():
-            Returns a representation of the underlying pandas DataFrame.
+            Returns a representational string of the underlying pandas DataFrame.
         __getattr__():
             Returns the underlying attributes of the pandas DataFrame.
         __getitem__():
@@ -53,10 +53,10 @@ class SCDataFrame:
 
         if isinstance(data, pd.DataFrame):
             # if data is a pd.DataFrame, remember this within the data_source attr
-            self.data_source = "pd.DataFrame"
+            self.data_source = "pandas.DataFrame"
             self.data = data
 
-        elif isinstance(data, pathlib.Path) or isinstance(data, str):  # noqa: PLR1701, SIM101
+        elif isinstance(data, pathlib.Path | str):
             # if the data is a string, remember the original source
             # through a data_source attr
             self.data_source = data
@@ -65,15 +65,13 @@ class SCDataFrame:
             data_path = pathlib.Path(data)
 
             # Read the data from the file based on its extension
-            if data_path.suffix == ".csv":
-                # read as a CSV
+            if (
+                data_path.suffix == ".csv"
+                or data_path.suffix in (".tsv", ".txt")
+                or data_path.suffixes == [".csv", ".gz"]
+            ):
+                # read as a CSV, CSV.GZ, .TSV, or .TXT file
                 self.data = pd.read_csv(data, **kwargs)
-            elif data_path.suffixes == [".csv", ".gz"]:
-                # read as a CSV.GZ file
-                self.data = pd.read_csv(data, compression="gzip", **kwargs)
-            elif data_path.suffix in (".tsv", ".txt"):
-                # read as a TSV
-                self.data = pd.read_csv(data, delimiter="\t", **kwargs)
             elif data_path.suffix == ".parquet":
                 # read as a Parquet file
                 self.data = pd.read_parquet(data, **kwargs)

@@ -10,7 +10,12 @@ from pyarrow import parquet
 
 
 def test_SCDataFrame_with_dataframe(
-    tmp_path: pathlib.Path, basic_outlier_dataframe: pd.DataFrame
+    tmp_path: pathlib.Path,
+    basic_outlier_dataframe: pd.DataFrame,
+    basic_outlier_csv: str,
+    basic_outlier_csv_gz: str,
+    basic_outlier_tsv: str,
+    basic_outlier_parquet: str,
 ):
     """
     Tests SCDataFrame with pd.DataFrame input.
@@ -30,8 +35,6 @@ def test_SCDataFrame_with_dataframe(
 
     assert parquet.read_table(control_path).equals(parquet.read_table(test_path))
 
-
-def test_SCDataFrame_with_csv(tmp_path: pathlib.Path, basic_outlier_csv: str):
     """
     Tests SCDataFrame with CSV input.
     """
@@ -48,8 +51,6 @@ def test_SCDataFrame_with_csv(tmp_path: pathlib.Path, basic_outlier_csv: str):
 
     pd.testing.assert_frame_equal(expected_df, pd.read_csv(test_path))
 
-
-def test_SCDataFrame_with_csv_gz(tmp_path: pathlib.Path, basic_outlier_csv_gz: str):
     """
     Tests SCDataFrame with CSV input.
     """
@@ -68,8 +69,6 @@ def test_SCDataFrame_with_csv_gz(tmp_path: pathlib.Path, basic_outlier_csv_gz: s
         expected_df, pd.read_csv(test_path, compression="gzip")
     )
 
-
-def test_SCDataFrame_with_tsv(tmp_path: pathlib.Path, basic_outlier_tsv: str):
     """
     Tests SCDataFrame with TSV input.
     """
@@ -86,8 +85,6 @@ def test_SCDataFrame_with_tsv(tmp_path: pathlib.Path, basic_outlier_tsv: str):
 
     pd.testing.assert_frame_equal(expected_df, pd.read_csv(test_path, sep="\t"))
 
-
-def test_SCDataFrame_with_parquet(tmp_path: pathlib.Path, basic_outlier_parquet: str):
     """
     Tests SCDataFrame with TSV input.
     """
