@@ -23,6 +23,7 @@ def identify_outliers(
     feature_thresholds: Union[Dict[str, float], str],
     feature_thresholds_file: Optional[str] = DEFAULT_QC_THRESHOLD_FILE,
     include_threshold_scores: bool = False,
+    export_path: Optional[str] = None,
 ) -> Union[pd.Series, pd.DataFrame]:
     """
     This function uses z-scoring to format the data for detecting outlier
@@ -48,6 +49,9 @@ def identify_outliers(
         include_threshold_scores: bool
             Whether to include the threshold scores in addition to whether
             the threshold set passes per row.
+        export_path: Optional[str] = None
+            An optional path to export the data using SCDataFrame export
+            capabilities. If None no export is performed.
 
     Returns:
         Union[pd.Series, pd.DataFrame]:
@@ -96,7 +100,7 @@ def identify_outliers(
             condition = outlier_df[zscore_columns[feature]] < threshold
         conditions.append(condition)
 
-    return (
+    result = (
         # create a boolean pd.series identifier for dataframe
         # based on all conditions for use within other functions.
         reduce(operator.and_, conditions)
@@ -112,12 +116,18 @@ def identify_outliers(
         )
     )
 
+    if export_path is not None:
+        SCDataFrame(data=result).export(file_path=export_path)
+
+    return result
+
 
 def find_outliers(
     df: Union[SCDataFrame, pd.DataFrame, str],
     metadata_columns: List[str],
     feature_thresholds: Union[Dict[str, float], str],
     feature_thresholds_file: Optional[str] = DEFAULT_QC_THRESHOLD_FILE,
+    export_path: Optional[str] = None,
 ) -> pd.DataFrame:
     """
     This function uses identify_outliers to return a dataframe
@@ -139,6 +149,9 @@ def find_outliers(
         feature_thresholds_file: Optional[str] = DEFAULT_QC_THRESHOLD_FILE,
             An optional feature thresholds file where thresholds may be
             defined within a file.
+        export_path: Optional[str] = None
+            An optional path to export the data using SCDataFrame export
+            capabilities. If None no export is performed.
 
     Returns:
         pd.DataFrame:
@@ -175,8 +188,14 @@ def find_outliers(
     # Include metadata columns in the output DataFrame
     columns_to_include = list(feature_thresholds.keys()) + metadata_columns
 
+    result = outliers_df[columns_to_include]
+
+    # export the file if specified
+    if export_path is not None:
+        SCDataFrame(data=result).export(file_path=export_path)
+
     # Return outliers DataFrame with specified columns
-    return outliers_df[columns_to_include]
+    return result
 
 
 def label_outliers(
@@ -184,6 +203,7 @@ def label_outliers(
     feature_thresholds: Optional[Union[Dict[str, float], str]] = None,
     feature_thresholds_file: Optional[str] = DEFAULT_QC_THRESHOLD_FILE,
     include_threshold_scores: bool = False,
+    export_path: Optional[str] = None,
 ) -> pd.DataFrame:
     """
     Use identify_outliers to label the original dataset for
@@ -206,6 +226,9 @@ def label_outliers(
             include_threshold_scores: bool = False
                 Whether to include the scores in addition to whether an outlier
                 was detected or not.
+            export_path: Optional[str] = None
+                An optional path to export the data using SCDataFrame export
+                capabilities. If None no export is performed.
 
         Returns:
             pd.DataFrame:
@@ -225,7 +248,7 @@ def label_outliers(
             feature_thresholds_file=feature_thresholds_file,
             include_threshold_scores=include_threshold_scores,
         )
-        return pd.concat(
+        result = pd.concat(
             [
                 df,
                 (
@@ -266,7 +289,13 @@ def label_outliers(
             axis=1,
         )
         # return a dataframe with a deduplicated columns by name
-        return labeled_df.loc[:, ~labeled_df.columns.duplicated()]
+        result = labeled_df.loc[:, ~labeled_df.columns.duplicated()]
+
+    # export the file if specified
+    if export_path is not None:
+        SCDataFrame(data=result).export(file_path=export_path)
+
+    return result
 
 
 def read_thresholds_set_from_file(

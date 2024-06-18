@@ -108,4 +108,4 @@ if __name__ == "__main__":
     and label_outliers from the command line interface through analyze
     """
 
-    fire.Fire(analyze)
+    cli_analyze()
