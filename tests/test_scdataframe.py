@@ -17,7 +17,6 @@ def test_SCDataFrame_with_dataframe(
     basic_outlier_tsv: str,
     basic_outlier_parquet: str,
 ):
-    
     # Tests SCDataFrame with pd.DataFrame input.
     sc_df = SCDataFrame(data=basic_outlier_dataframe)
 
