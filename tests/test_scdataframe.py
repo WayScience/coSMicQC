@@ -32,6 +32,13 @@ def test_SCDataFrame_with_dataframe(
 
     assert parquet.read_table(control_path).equals(parquet.read_table(test_path))
 
+    # Tests SCDataFrame with pd.Series input.
+    sc_df = SCDataFrame(data=basic_outlier_dataframe.loc[0])
+
+    # test that we ingested the data properly
+    assert sc_df.data_source == "pandas.Series"
+    assert sc_df.equals(pd.DataFrame(basic_outlier_dataframe.loc[0]))
+
     # Tests SCDataFrame with CSV input.
     sc_df = SCDataFrame(data=basic_outlier_csv)
     expected_df = pd.read_csv(basic_outlier_csv)
