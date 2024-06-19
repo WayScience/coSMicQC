@@ -58,6 +58,12 @@ class SCDataFrame:
             self.data_source = data.data_source
             self.data = data.data
 
+        elif isinstance(data, pd.Series):
+            # if data is a pd.Series, remember this within the data_source attr
+            self.data_source = "pandas.Series"
+            # also cast the series to a dataframe
+            self.data = pd.DataFrame(data)
+
         elif isinstance(data, pd.DataFrame):
             # if data is a pd.DataFrame, remember this within the data_source attr
             self.data_source = "pandas.DataFrame"
