@@ -3,7 +3,8 @@ Tests cosmicqc cli module
 """
 
 from .utils import run_cli_command
-
+import pathlib
+from pyarrow import parquet
 
 def test_cli_util():
     """
@@ -16,7 +17,7 @@ def test_cli_util():
     assert returncode == 0
 
 
-def test_cli_identify_outliers(basic_outlier_csv: str):
+def test_cli_identify_outliers(tmp_path: pathlib.Path, basic_outlier_csv: str):
     """
     Test the `identify_outliers` function of the CLI.
     """
@@ -25,9 +26,12 @@ def test_cli_identify_outliers(basic_outlier_csv: str):
         (
             f"""cosmicqc identify_outliers --df {basic_outlier_csv}"""
             """ --feature_thresholds {"example_feature":1.0}"""
+            f" --export_path {tmp_path}/identify_outliers_output.parquet"
+            
         )
     )
 
+    print(stderr)
     assert returncode == 0
     assert (
         stdout.strip()
@@ -43,6 +47,10 @@ def test_cli_identify_outliers(basic_outlier_csv: str):
 9     True
 Name: Z_Score_example_feature, dtype: bool""".strip()
     )
+
+    
+    print(parquet.read_table(f"{tmp_path}/identify_outliers_output.parquet").to_pydict())
+    assert parquet.read_table(f"{tmp_path}/identify_outliers_output.parquet").to_pydict() == {}
 
 
 def test_cli_find_outliers(basic_outlier_csv: str):

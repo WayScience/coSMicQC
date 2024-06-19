@@ -62,6 +62,11 @@ class SCDataFrame:
             # if data is a pd.DataFrame, remember this within the data_source attr
             self.data_source = "pandas.DataFrame"
             self.data = data
+        
+        elif isinstance(data, pd.Series):
+            # if data is a pd.DataFrame, remember this within the data_source attr
+            self.data_source = "pandas.Series"
+            self.data = pd.DataFrame(data)
 
         elif isinstance(data, (pathlib.Path, str)):
             # if the data is a string, remember the original source
