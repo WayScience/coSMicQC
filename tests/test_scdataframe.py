@@ -24,7 +24,7 @@ def test_SCDataFrame_with_dataframe(
     sc_df = SCDataFrame(data=basic_outlier_dataframe)
 
     # test that we ingested the data properly
-    assert sc_df.data_source == "pd.DataFrame"
+    assert sc_df.data_source == "pandas.DataFrame"
     assert sc_df.equals(basic_outlier_dataframe)
 
     # test export

@@ -30,7 +30,7 @@ profile = "black"
 exclude_dirs = ["tests"]
 
 [tool.ruff]
-target-version = "py311"
+target-version = "py38"
 line-length = 88
 fix = true
 

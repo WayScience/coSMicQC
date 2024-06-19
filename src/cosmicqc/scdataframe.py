@@ -39,7 +39,9 @@ class SCDataFrame:
     """
 
     def __init__(
-        self: Self_SCDataFrame, data: Union[pd.DataFrame, str], **kwargs: Dict[str, Any]
+        self: Self_SCDataFrame,
+        data: Union[pd.DataFrame, str, pathlib.Path],
+        **kwargs: Dict[str, Any],
     ) -> None:
         """
         Initializes the SCDataFrame with either a DataFrame or a file path.
@@ -56,7 +58,7 @@ class SCDataFrame:
             self.data_source = "pandas.DataFrame"
             self.data = data
 
-        elif isinstance(data, pathlib.Path | str):
+        elif isinstance(data, (pathlib.Path, str)):
             # if the data is a string, remember the original source
             # through a data_source attr
             self.data_source = data
