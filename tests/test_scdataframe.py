@@ -17,10 +17,8 @@ def test_SCDataFrame_with_dataframe(
     basic_outlier_tsv: str,
     basic_outlier_parquet: str,
 ):
-    """
-    Tests SCDataFrame with pd.DataFrame input.
-    """
-
+    
+    # Tests SCDataFrame with pd.DataFrame input.
     sc_df = SCDataFrame(data=basic_outlier_dataframe)
 
     # test that we ingested the data properly
@@ -35,10 +33,7 @@ def test_SCDataFrame_with_dataframe(
 
     assert parquet.read_table(control_path).equals(parquet.read_table(test_path))
 
-    """
-    Tests SCDataFrame with CSV input.
-    """
-
+    # Tests SCDataFrame with CSV input.
     sc_df = SCDataFrame(data=basic_outlier_csv)
     expected_df = pd.read_csv(basic_outlier_csv)
 
@@ -51,10 +46,7 @@ def test_SCDataFrame_with_dataframe(
 
     pd.testing.assert_frame_equal(expected_df, pd.read_csv(test_path))
 
-    """
-    Tests SCDataFrame with CSV input.
-    """
-
+    # Tests SCDataFrame with CSV input.
     sc_df = SCDataFrame(data=basic_outlier_csv_gz)
     expected_df = pd.read_csv(basic_outlier_csv_gz)
 
@@ -69,10 +61,7 @@ def test_SCDataFrame_with_dataframe(
         expected_df, pd.read_csv(test_path, compression="gzip")
     )
 
-    """
-    Tests SCDataFrame with TSV input.
-    """
-
+    # Tests SCDataFrame with TSV input.
     sc_df = SCDataFrame(data=basic_outlier_tsv)
     expected_df = pd.read_csv(basic_outlier_tsv, delimiter="\t")
 
@@ -85,10 +74,7 @@ def test_SCDataFrame_with_dataframe(
 
     pd.testing.assert_frame_equal(expected_df, pd.read_csv(test_path, sep="\t"))
 
-    """
-    Tests SCDataFrame with TSV input.
-    """
-
+    # Tests SCDataFrame with parquet input.
     sc_df = SCDataFrame(data=basic_outlier_parquet)
     expected_df = pd.read_parquet(basic_outlier_parquet)
 
@@ -102,3 +88,8 @@ def test_SCDataFrame_with_dataframe(
     assert parquet.read_table(basic_outlier_parquet).equals(
         parquet.read_table(test_path)
     )
+
+    # test SCDataFrame with SCDataFrame input
+    copy_sc_df = SCDataFrame(data=sc_df)
+
+    pd.testing.assert_frame_equal(copy_sc_df.data, sc_df.data)
