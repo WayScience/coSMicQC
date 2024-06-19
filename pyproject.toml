@@ -35,7 +35,7 @@ profile = "black"
 exclude_dirs = ["tests"]
 
 [tool.ruff]
-target-version = "py311"
+target-version = "py38"
 line-length = 88
 fix = true
 
@@ -67,7 +67,7 @@ select = [
 # Ignore `E402` and `F401` (unused imports) in all `__init__.py` files
 "__init__.py" = ["E402", "F401"]
 # ignore typing rules for tests
-"tests/*" = ["ANN201"]
+"tests/*" = ["ANN201", "PLR0913"]
 
 # set dynamic versioning capabilities for project
 [tool.poetry-dynamic-versioning]

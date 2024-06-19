@@ -9,7 +9,7 @@ import pandas as pd
 
 # provide backwards compatibility for Self type in earlier Python versions.
 # see: https://peps.python.org/pep-0484/#annotating-instance-and-class-methods
-Self_SCDataFrame = TypeVar("Self_SCDataFrame", bound="SCDataFrame")
+SCDataFrame_type = TypeVar("SCDataFrame_type", bound="SCDataFrame")
 
 
 class SCDataFrame:
@@ -31,15 +31,17 @@ class SCDataFrame:
         __call__():
             Returns the underlying pandas DataFrame.
         __repr__():
-            Returns representation of underlying pandas DataFrame.
+            Returns a representational string of the underlying pandas DataFrame.
         __getattr__():
-            Returns underlying attributes of pandas DataFrame.
+            Returns the underlying attributes of the pandas DataFrame.
         __getitem__():
             Returns slice of data from pandas DataFrame.
     """
 
     def __init__(
-        self: Self_SCDataFrame, data: Union[pd.DataFrame, str], **kwargs: Dict[str, Any]
+        self: SCDataFrame_type,
+        data: Union[SCDataFrame_type, pd.DataFrame, str, pathlib.Path],
+        **kwargs: Dict[str, Any],
     ) -> None:
         """
         Initializes the SCDataFrame with either a DataFrame or a file path.
@@ -51,12 +53,17 @@ class SCDataFrame:
                 Additional keyword arguments to pass to the pandas read functions.
         """
 
-        if isinstance(data, pd.DataFrame):
+        if isinstance(data, SCDataFrame):
+            # if data is an instance of SCDataFrame, use its data_source and data
+            self.data_source = data.data_source
+            self.data = data.data
+
+        elif isinstance(data, pd.DataFrame):
             # if data is a pd.DataFrame, remember this within the data_source attr
-            self.data_source = "pd.DataFrame"
+            self.data_source = "pandas.DataFrame"
             self.data = data
 
-        elif isinstance(data, pathlib.Path) or isinstance(data, str):  # noqa: PLR1701, SIM101
+        elif isinstance(data, (pathlib.Path, str)):
             # if the data is a string, remember the original source
             # through a data_source attr
             self.data_source = data
@@ -65,25 +72,23 @@ class SCDataFrame:
             data_path = pathlib.Path(data)
 
             # Read the data from the file based on its extension
-            if data_path.suffix == ".csv":
-                # read as a CSV
+            if (
+                data_path.suffix == ".csv"
+                or data_path.suffix in (".tsv", ".txt")
+                or data_path.suffixes == [".csv", ".gz"]
+            ):
+                # read as a CSV, CSV.GZ, .TSV, or .TXT file
                 self.data = pd.read_csv(data, **kwargs)
-            elif data_path.suffixes == [".csv", ".gz"]:
-                # read as a CSV.GZ file
-                self.data = pd.read_csv(data, compression="gzip", **kwargs)
-            elif data_path.suffix in (".tsv", ".txt"):
-                # read as a TSV
-                self.data = pd.read_csv(data, delimiter="\t", **kwargs)
             elif data_path.suffix == ".parquet":
                 # read as a Parquet file
                 self.data = pd.read_parquet(data, **kwargs)
             else:
                 raise ValueError("Unsupported file format for SCDataFrame.")
         else:
-            raise ValueError("Unsupported input type for SCDataFrame.")
+            raise ValueError("Unsupported data type for SCDataFrame.")
 
     def export(
-        self: Self_SCDataFrame, file_path: str, **kwargs: Dict[str, Any]
+        self: SCDataFrame_type, file_path: str, **kwargs: Dict[str, Any]
     ) -> None:
         """
         Exports the underlying pandas DataFrame to a file.
@@ -107,7 +112,7 @@ class SCDataFrame:
         else:
             raise ValueError("Unsupported file format for export.")
 
-    def __call__(self: Self_SCDataFrame) -> pd.DataFrame:
+    def __call__(self: SCDataFrame_type) -> pd.DataFrame:
         """
         Returns the underlying pandas DataFrame.
 
@@ -116,16 +121,16 @@ class SCDataFrame:
         """
         return self.data
 
-    def __repr__(self: Self_SCDataFrame) -> pd.DataFrame:
+    def __repr__(self: SCDataFrame_type) -> pd.DataFrame:
         """
-        Returns the representation of underlying pandas DataFrame.
+        Returns the representation of the underlying pandas DataFrame.
 
         Returns:
             pd.DataFrame: The data in a pandas DataFrame.
         """
         return repr(self.data)
 
-    def __getattr__(self: Self_SCDataFrame, attr: str) -> Any:  # noqa: ANN401
+    def __getattr__(self: SCDataFrame_type, attr: str) -> Any:  # noqa: ANN401
         """
         Intercept attribute accesses and delegate them to the underlying
         pandas DataFrame, except for custom methods.
@@ -140,7 +145,7 @@ class SCDataFrame:
             return self.__dict__[attr]
         return getattr(self.data, attr)
 
-    def __getitem__(self: Self_SCDataFrame, key: Union[int, str]) -> Any:  # noqa: ANN401
+    def __getitem__(self: SCDataFrame_type, key: Union[int, str]) -> Any:  # noqa: ANN401
         """
         Returns an element or a slice of the underlying pandas DataFrame.
 

@@ -36,7 +36,9 @@ def fixture_basic_outlier_csv(
     Creates basic example data csv for use in tests
     """
 
-    basic_outlier_dataframe.to_csv(csv_path := tmp_path / "example.csv", index=False)
+    basic_outlier_dataframe.to_csv(
+        csv_path := tmp_path / "basic_example.csv", index=False
+    )
 
     return csv_path
 

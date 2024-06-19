@@ -60,8 +60,7 @@ def identify_outliers(
     """
 
     # interpret the df as SCDataFrame
-    if not isinstance(df, SCDataFrame):
-        df = SCDataFrame(data=df)
+    df = SCDataFrame(data=df)
 
     # create a copy of the dataframe to ensure
     # we don't modify the supplied dataframe inplace.
@@ -159,8 +158,7 @@ def find_outliers(
     """
 
     # interpret the df as SCDataFrame
-    if not isinstance(df, SCDataFrame):
-        df = SCDataFrame(data=df)
+    df = SCDataFrame(data=df)
 
     if isinstance(feature_thresholds, str):
         feature_thresholds = read_thresholds_set_from_file(
@@ -236,8 +234,7 @@ def label_outliers(
     """
 
     # interpret the df as SCDataFrame
-    if not isinstance(df, SCDataFrame):
-        df = SCDataFrame(data=df)
+    df = SCDataFrame(data=df)
 
     # for single outlier processing
     if isinstance(feature_thresholds, (str, dict)):
