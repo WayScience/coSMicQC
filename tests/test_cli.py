@@ -2,9 +2,12 @@
 Tests cosmicqc cli module
 """
 
-from .utils import run_cli_command
 import pathlib
+
 from pyarrow import parquet
+
+from .utils import run_cli_command
+
 
 def test_cli_util():
     """
@@ -27,7 +30,6 @@ def test_cli_identify_outliers(tmp_path: pathlib.Path, basic_outlier_csv: str):
             f"""cosmicqc identify_outliers --df {basic_outlier_csv}"""
             """ --feature_thresholds {"example_feature":1.0}"""
             f" --export_path {tmp_path}/identify_outliers_output.parquet"
-            
         )
     )
 
@@ -48,12 +50,25 @@ def test_cli_identify_outliers(tmp_path: pathlib.Path, basic_outlier_csv: str):
 Name: Z_Score_example_feature, dtype: bool""".strip()
     )
 
-    
-    print(parquet.read_table(f"{tmp_path}/identify_outliers_output.parquet").to_pydict())
-    assert parquet.read_table(f"{tmp_path}/identify_outliers_output.parquet").to_pydict() == {}
+    assert parquet.read_table(
+        f"{tmp_path}/identify_outliers_output.parquet"
+    ).to_pydict() == {
+        "Z_Score_example_feature": [
+            False,
+            False,
+            False,
+            False,
+            False,
+            False,
+            False,
+            False,
+            True,
+            True,
+        ]
+    }
 
 
-def test_cli_find_outliers(basic_outlier_csv: str):
+def test_cli_find_outliers(tmp_path: pathlib.Path, basic_outlier_csv: str):
     """
     Test the `find_outliers` function of the CLI.
     """
@@ -62,6 +77,7 @@ def test_cli_find_outliers(basic_outlier_csv: str):
         (
             f"""cosmicqc find_outliers --df {basic_outlier_csv}"""
             """ --metadata_columns [] --feature_thresholds {"example_feature":1.0}"""
+            f" --export_path {tmp_path}/find_outliers_output.parquet"
         )
     )
 
@@ -77,8 +93,12 @@ example_feature Max: 10
 9               10""".strip()
     )
 
+    assert parquet.read_table(
+        f"{tmp_path}/find_outliers_output.parquet"
+    ).to_pydict() == {"example_feature": [9, 10], "__index_level_0__": [8, 9]}
 
-def test_cli_label_outliers(basic_outlier_csv: str):
+
+def test_cli_label_outliers(tmp_path: pathlib.Path, basic_outlier_csv: str):
     """
     Test the `label_outliers` function of the CLI.
     """
@@ -87,6 +107,7 @@ def test_cli_label_outliers(basic_outlier_csv: str):
         (
             f"""cosmicqc label_outliers --df {basic_outlier_csv}"""
             """ --feature_thresholds {"example_feature":1.0}"""
+            f" --export_path {tmp_path}/label_outliers_output.parquet"
         )
     )
 
@@ -105,3 +126,21 @@ def test_cli_label_outliers(basic_outlier_csv: str):
 8                9            True
 9               10            True""".strip()
     )
+
+    assert parquet.read_table(
+        f"{tmp_path}/label_outliers_output.parquet"
+    ).to_pydict() == {
+        "example_feature": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+        "outlier_custom": [
+            False,
+            False,
+            False,
+            False,
+            False,
+            False,
+            False,
+            False,
+            True,
+            True,
+        ],
+    }

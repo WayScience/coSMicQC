@@ -68,7 +68,7 @@ class SCDataFrame:
             # if data is a pd.DataFrame, remember this within the data_source attr
             self.data_source = "pandas.DataFrame"
             self.data = data
-        
+
         elif isinstance(data, pd.Series):
             # if data is a pd.DataFrame, remember this within the data_source attr
             self.data_source = "pandas.Series"
