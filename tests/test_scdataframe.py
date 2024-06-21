@@ -105,7 +105,7 @@ def test_SCDataFrame_with_dataframe(
 
 def test_show_report(cytotable_CFReT_data_df: pd.DataFrame):
     """
-    Used for generating report output for use with other tests.
+    Used for testing show report capabilities
     """
 
     df = cosmicqc.analyze.label_outliers(
