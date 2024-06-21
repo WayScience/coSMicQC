@@ -117,7 +117,10 @@ def test_show_report(cytotable_CFReT_data_df: pd.DataFrame):
 
     expected_number_figures = 3
     assert len(figures) == expected_number_figures
-    assert next(iter({type(figure) for figure in figures})) == plotly.graph_objs._figure.Figure
+    assert (
+        next(iter({type(figure) for figure in figures}))
+        == plotly.graph_objs._figure.Figure
+    )
 
     df.show_report(
         report_path=(
