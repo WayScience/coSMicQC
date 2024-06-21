@@ -221,7 +221,7 @@ class SCDataFrame:
                 threshold_set_name=set_name,
                 col_outlier=col_outlier,
                 cols_threshold_scores=cols_threshold_scores,
-                color_palette=color_palette
+                color_palette=color_palette,
             )
             for set_name, col_outlier, cols_threshold_scores in organized_columns
         ]
