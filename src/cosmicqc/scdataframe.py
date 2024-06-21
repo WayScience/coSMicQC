@@ -165,6 +165,7 @@ class SCDataFrame:
         self: SCDataFrame_type,
         report_path: Optional[str] = None,
         auto_open: bool = True,
+        color_palette: Optional[List[str]] = None,
     ) -> None:
         """
         Generates and displays a report based on the current DataFrame's data
@@ -182,6 +183,8 @@ class SCDataFrame:
                 or lab environment.
             auto_open: bool:
                 Whether to automatically open the report.
+            color_palette Optional(List[str]):
+                Optional list for color palette to use.
 
         Raises:
             ValueError: If the DataFrame does not contain any DQC columns.
@@ -207,7 +210,7 @@ class SCDataFrame:
                 # columns which show the data associated with thresholds
                 [col for col in cqc_cols if f"cqc.{threshold_set}.Z_Score." in col],
             ]
-            for threshold_set in {col.split(".")[1] for col in cqc_cols}
+            for threshold_set in sorted({col.split(".")[1] for col in cqc_cols})
         ]
 
         # create figures for visualization based on the name, outlier status,
@@ -218,6 +221,7 @@ class SCDataFrame:
                 threshold_set_name=set_name,
                 col_outlier=col_outlier,
                 cols_threshold_scores=cols_threshold_scores,
+                color_palette=color_palette
             )
             for set_name, col_outlier, cols_threshold_scores in organized_columns
         ]
@@ -297,12 +301,13 @@ class SCDataFrame:
         # return the path of the file
         return report_path
 
-    def create_threshold_set_outlier_visualization(
+    def create_threshold_set_outlier_visualization(  # noqa: PLR0913
         self: SCDataFrame_type,
         df: pd.DataFrame,
         threshold_set_name: str,
         col_outlier: str,
         cols_threshold_scores: List[str],
+        color_palette: Optional[List[str]] = None,
     ) -> plotly.graph_objs._figure.Figure:
         """
         Creates a Plotly figure visualizing the Z-score distributions and outliers
@@ -320,14 +325,17 @@ class SCDataFrame:
                 The column name indicating outlier status.
             cols_threshold_scores (List[str]):
                 A list of column names representing the Z-scores to be visualized.
+            color_palette Optional(List[str]):
+                Optional list for color palette to use.
 
         Returns:
             plotly.graph_objs._figure.Figure:
                 A Plotly figure object containing the visualization.
         """
 
-        # Create a list of colors from a Plotly color palette
-        color_palette = pc.qualitative.Dark24
+        if color_palette is None:
+            # Create a list of colors from a Plotly color palette
+            color_palette = pc.qualitative.Dark24
 
         # Create histograms using plotly.express with pattern_shape and random color
         figures = []
