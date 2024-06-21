@@ -124,11 +124,7 @@ def test_show_report(cytotable_CFReT_data_df: pd.DataFrame):
 
     df.show_report(
         report_path=(
-            report_path := pathlib.Path(__file__).parent
-            / "data"
-            / "coSMicQC"
-            / "show_report"
-            / "cosmicqc_example_report.html"
+            report_path := pathlib.Path("cosmicqc_example_report.html")
         ),
         auto_open=False,
     )
