@@ -6,6 +6,7 @@ https://docs.pytest.org/en/7.1.x/explanation/fixtures.html
 
 import pathlib
 
+import cosmicqc
 import pandas as pd
 import pytest
 
@@ -86,3 +87,22 @@ def fixture_basic_outlier_parquet(
     )
 
     return parquet_path
+
+
+def test_generate_show_report_html_output(cytotable_CFReT_data_df: pd.DataFrame):
+    """
+    Used for generating report output for use with other tests.
+    """
+
+    df = cosmicqc.analyze.label_outliers(
+        df=cytotable_CFReT_data_df,
+        include_threshold_scores=True,
+    )
+
+    df.show_report(
+        report_path=pathlib.Path(__file__).parent
+        / "data"
+        / "coSMicQC"
+        / "show_report"
+        / "cosmicqc_example_report.html"
+    )

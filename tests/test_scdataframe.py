@@ -4,7 +4,9 @@ Tests cosmicqc SCDataFrame module
 
 import pathlib
 
+import cosmicqc
 import pandas as pd
+import plotly
 from cosmicqc.scdataframe import SCDataFrame
 from pyarrow import parquet
 
@@ -99,3 +101,33 @@ def test_SCDataFrame_with_dataframe(
     copy_sc_df = SCDataFrame(data=sc_df)
 
     pd.testing.assert_frame_equal(copy_sc_df.data, sc_df.data)
+
+
+def test_show_report(cytotable_CFReT_data_df: pd.DataFrame):
+    """
+    Used for generating report output for use with other tests.
+    """
+
+    df = cosmicqc.analyze.label_outliers(
+        df=cytotable_CFReT_data_df,
+        include_threshold_scores=True,
+    )
+
+    figures = df.show_report(auto_open=False)
+
+    expected_number_figures = 3
+    assert len(figures) == expected_number_figures
+    assert next(iter({type(figure) for figure in figures})) == plotly.graph_objs._figure.Figure
+
+    df.show_report(
+        report_path=(
+            report_path := pathlib.Path(__file__).parent
+            / "data"
+            / "coSMicQC"
+            / "show_report"
+            / "cosmicqc_example_report.html"
+        ),
+        auto_open=False,
+    )
+
+    assert report_path.is_file()
