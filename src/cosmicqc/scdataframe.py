@@ -82,6 +82,7 @@ class SCDataFrame:
                 data_path.suffix == ".csv"
                 or data_path.suffix in (".tsv", ".txt")
                 or data_path.suffixes == [".csv", ".gz"]
+                or data_path.suffixes == [".tsv", ".gz"]
             ):
                 # read as a CSV, CSV.GZ, .TSV, or .TXT file
                 self.data = pd.read_csv(data, **kwargs)
