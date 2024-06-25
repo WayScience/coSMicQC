@@ -23,6 +23,7 @@ def test_SCDataFrame_with_dataframe(
     # test that we ingested the data properly
     assert sc_df.data_source == "pandas.DataFrame"
     assert sc_df.equals(basic_outlier_dataframe)
+    assert str(sc_df) == str(basic_outlier_dataframe)
 
     # test export
     basic_outlier_dataframe.to_parquet(
@@ -38,6 +39,7 @@ def test_SCDataFrame_with_dataframe(
     # test that we ingested the data properly
     assert sc_df.data_source == "pandas.Series"
     assert sc_df.equals(pd.DataFrame(basic_outlier_dataframe.loc[0]))
+    assert str(sc_df) == str(pd.DataFrame(basic_outlier_dataframe.loc[0]))
 
     # Tests SCDataFrame with CSV input.
     sc_df = SCDataFrame(data=basic_outlier_csv)
@@ -46,6 +48,7 @@ def test_SCDataFrame_with_dataframe(
     # test that we ingested the data properly
     assert sc_df.data_source == basic_outlier_csv
     assert sc_df.equals(expected_df)
+    assert str(sc_df) == str(expected_df)
 
     # test export
     sc_df.export(test_path := f"{tmp_path}/df_input_example.csv", index=False)
@@ -59,6 +62,7 @@ def test_SCDataFrame_with_dataframe(
     # test that we ingested the data properly
     assert sc_df.data_source == basic_outlier_csv_gz
     assert sc_df.equals(expected_df)
+    assert str(sc_df) == str(expected_df)
 
     # test export
     sc_df.export(test_path := f"{tmp_path}/df_input_example.csv.gz", index=False)
@@ -74,6 +78,7 @@ def test_SCDataFrame_with_dataframe(
     # test that we ingested the data properly
     assert sc_df.data_source == basic_outlier_tsv
     assert sc_df.equals(expected_df)
+    assert str(sc_df) == str(expected_df)
 
     # test export
     sc_df.export(test_path := f"{tmp_path}/df_input_example.tsv", index=False)
@@ -87,6 +92,7 @@ def test_SCDataFrame_with_dataframe(
     # test that we ingested the data properly
     assert sc_df.data_source == basic_outlier_parquet
     assert sc_df.equals(expected_df)
+    assert str(sc_df) == str(expected_df)
 
     # test export
     sc_df.export(test_path := f"{tmp_path}/df_input_example2.parquet")
