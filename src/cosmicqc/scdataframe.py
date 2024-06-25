@@ -14,11 +14,13 @@ SCDataFrame_type = TypeVar("SCDataFrame_type", bound="SCDataFrame")
 
 class SCDataFrame:
     """
-    A class to handle and load different types of data files into a pandas DataFrame.
+    A class designed to enhance single-cell data handling by wrapping
+    pandas DataFrame capabilities, providing advanced methods for quality control,
+    comprehensive analysis, and image-based data processing.
 
     This class can initialize with either a pandas DataFrame or a file path (CSV, TSV,
     TXT, or Parquet). When initialized with a file path, it reads the data into a
-    pandas DataFrame.
+    pandas DataFrame. It also includes capabilities to export data.
 
     Attributes:
         data_source (str):
