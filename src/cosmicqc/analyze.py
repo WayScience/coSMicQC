@@ -33,7 +33,8 @@ def identify_outliers(
 
     Args:
         df: Union[SCDataFrame, pd.DataFrame, str]
-            DataFrame or file with converted output from CytoTable.
+            DataFrame or file string-based filepath of a
+            Parquet, CSV, or TSV file with CytoTable output or similar data.
         metadata_columns: List[str]
             List of metadata columns that should be outputted with the outlier data.
         feature_thresholds: Dict[str, float]
@@ -123,7 +124,8 @@ def find_outliers(
 
     Args:
         df: Union[SCDataFrame, pd.DataFrame, str]
-            DataFrame or file with converted output from CytoTable.
+            DataFrame or file string-based filepath of a
+            Parquet, CSV, or TSV file with CytoTable output or similar data.
         metadata_columns: List[str]
             List of metadata columns that should be outputted with the outlier data.
         feature_thresholds: Dict[str, float]
@@ -188,7 +190,8 @@ def label_outliers(
 
         Args:
             df: Union[SCDataFrame, pd.DataFrame, str]
-                DataFrame or file with converted output from CytoTable.
+                DataFrame or file string-based filepath of a
+                Parquet, CSV, or TSV file with CytoTable output or similar data.
             feature_thresholds: Dict[str, float]
                 One of two options:
                 A dictionary with the feature name(s) as the key(s) and their assigned
