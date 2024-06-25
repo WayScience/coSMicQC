@@ -50,7 +50,7 @@ class SCDataFrame:
             data (Union[pd.DataFrame, str]):
                 The data source, either a pandas DataFrame or a file path.
             **kwargs:
-                Additional keyword arguments to pass to the pandas read functions.
+                Additional keyword arguments to pass to the pandas read_* methods.
         """
 
         if isinstance(data, SCDataFrame):
@@ -101,8 +101,10 @@ class SCDataFrame:
         Exports the underlying pandas DataFrame to a file.
 
         Args:
-            file_path (str): The path where the DataFrame should be saved.
-            **kwargs: Additional keyword arguments to pass to the pandas to_* methods.
+            file_path (str):
+                The path where the DataFrame should be saved.
+            **kwargs:
+                Additional keyword arguments to pass to the pandas to_* methods.
         """
 
         data_path = pathlib.Path(file_path)
@@ -143,10 +145,12 @@ class SCDataFrame:
         pandas DataFrame, except for custom methods.
 
         Args:
-            attr (str): The name of the attribute being accessed.
+            attr (str):
+                The name of the attribute being accessed.
 
         Returns:
-            Any: The value of the attribute from the pandas DataFrame.
+            Any:
+                The value of the attribute from the pandas DataFrame.
         """
         if attr in self.__dict__:
             return self.__dict__[attr]
@@ -157,9 +161,11 @@ class SCDataFrame:
         Returns an element or a slice of the underlying pandas DataFrame.
 
         Args:
-            key: The key or slice to access the data.
+            key:
+                The key or slice to access the data.
 
         Returns:
-            pd.DataFrame or any: The selected element or slice of data.
+            pd.DataFrame or any:
+                The selected element or slice of data.
         """
         return self.data[key]
