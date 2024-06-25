@@ -11,13 +11,15 @@ import pandas as pd
 import yaml
 from scipy.stats import zscore as scipy_zscore
 
+from .scdataframe import SCDataFrame
+
 DEFAULT_QC_THRESHOLD_FILE = (
     f"{pathlib.Path(__file__).parent!s}/data/qc_nuclei_thresholds_default.yml"
 )
 
 
 def identify_outliers(
-    df: pd.DataFrame,
+    df: Union[SCDataFrame, pd.DataFrame, str],
     feature_thresholds: Union[Dict[str, float], str],
     feature_thresholds_file: Optional[str] = DEFAULT_QC_THRESHOLD_FILE,
     include_threshold_scores: bool = False,
@@ -30,8 +32,9 @@ def identify_outliers(
     threshold of 0 as that would represent the whole dataset.
 
     Args:
-        df: pd.DataFrame
-            Data frame with converted output from CytoTable.
+        df: Union[SCDataFrame, pd.DataFrame, str]
+            DataFrame or file string-based filepath of a
+            Parquet, CSV, or TSV file with CytoTable output or similar data.
         metadata_columns: List[str]
             List of metadata columns that should be outputted with the outlier data.
         feature_thresholds: Dict[str, float]
@@ -51,6 +54,9 @@ def identify_outliers(
             Outlier series with booleans based on whether outliers were detected
             or not for use within other functions.
     """
+
+    # interpret the df as SCDataFrame
+    df = SCDataFrame(data=df)
 
     # create a copy of the dataframe to ensure
     # we don't modify the supplied dataframe inplace.
@@ -107,7 +113,7 @@ def identify_outliers(
 
 
 def find_outliers(
-    df: pd.DataFrame,
+    df: Union[SCDataFrame, pd.DataFrame, str],
     metadata_columns: List[str],
     feature_thresholds: Union[Dict[str, float], str],
     feature_thresholds_file: Optional[str] = DEFAULT_QC_THRESHOLD_FILE,
@@ -117,8 +123,9 @@ def find_outliers(
     with only the outliers and provided metadata columns.
 
     Args:
-        df: pd.DataFrame
-            Data frame with converted output from CytoTable.
+        df: Union[SCDataFrame, pd.DataFrame, str]
+            DataFrame or file string-based filepath of a
+            Parquet, CSV, or TSV file with CytoTable output or similar data.
         metadata_columns: List[str]
             List of metadata columns that should be outputted with the outlier data.
         feature_thresholds: Dict[str, float]
@@ -137,6 +144,9 @@ def find_outliers(
         pd.DataFrame:
             Outlier data frame for the given conditions.
     """
+
+    # interpret the df as SCDataFrame
+    df = SCDataFrame(data=df)
 
     if isinstance(feature_thresholds, str):
         feature_thresholds = read_thresholds_set_from_file(
@@ -169,7 +179,7 @@ def find_outliers(
 
 
 def label_outliers(
-    df: pd.DataFrame,
+    df: Union[SCDataFrame, pd.DataFrame, str],
     feature_thresholds: Optional[Union[Dict[str, float], str]] = None,
     feature_thresholds_file: Optional[str] = DEFAULT_QC_THRESHOLD_FILE,
     include_threshold_scores: bool = False,
@@ -179,8 +189,9 @@ def label_outliers(
     where a cell passed or failed the quality control condition(s).
 
         Args:
-            df: pd.DataFrame
-                Data frame with converted output from CytoTable.
+            df: Union[SCDataFrame, pd.DataFrame, str]
+                DataFrame or file string-based filepath of a
+                Parquet, CSV, or TSV file with CytoTable output or similar data.
             feature_thresholds: Dict[str, float]
                 One of two options:
                 A dictionary with the feature name(s) as the key(s) and their assigned
@@ -200,6 +211,9 @@ def label_outliers(
             pd.DataFrame:
                 Full dataframe with optional scores and outlier boolean column.
     """
+
+    # interpret the df as SCDataFrame
+    df = SCDataFrame(data=df)
 
     # for single outlier processing
     if isinstance(feature_thresholds, (str, dict)):
