@@ -142,7 +142,7 @@ class SCDataFrame:
         Returns the representation of the underlying pandas DataFrame.
 
         Returns:
-            pd.DataFrame: The data in a pandas DataFrame.
+            str: The string-based representation of a pandas DataFrame.
         """
         return repr(self.data)
 
