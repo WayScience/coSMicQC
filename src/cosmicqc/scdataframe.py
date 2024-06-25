@@ -72,7 +72,7 @@ class SCDataFrame:
             self.data = data
 
         elif isinstance(data, (pathlib.Path, str)):
-            # if the data is a string, remember the original source
+            # if the data is a string or a pathlib path, remember the original source
             # through a data_source attr
             self.data_source = data
 
