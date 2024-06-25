@@ -14,11 +14,13 @@ SCDataFrame_type = TypeVar("SCDataFrame_type", bound="SCDataFrame")
 
 class SCDataFrame:
     """
-    A class to handle and load different types of data files into a pandas DataFrame.
+    A class designed to enhance single-cell data handling by wrapping
+    pandas DataFrame capabilities, providing advanced methods for quality control,
+    comprehensive analysis, and image-based data processing.
 
     This class can initialize with either a pandas DataFrame or a file path (CSV, TSV,
     TXT, or Parquet). When initialized with a file path, it reads the data into a
-    pandas DataFrame.
+    pandas DataFrame. It also includes capabilities to export data.
 
     Attributes:
         data_source (str):
@@ -50,7 +52,7 @@ class SCDataFrame:
             data (Union[pd.DataFrame, str]):
                 The data source, either a pandas DataFrame or a file path.
             **kwargs:
-                Additional keyword arguments to pass to the pandas read functions.
+                Additional keyword arguments to pass to the pandas read_* methods.
         """
 
         if isinstance(data, SCDataFrame):
@@ -87,6 +89,7 @@ class SCDataFrame:
                 data_path.suffix == ".csv"
                 or data_path.suffix in (".tsv", ".txt")
                 or data_path.suffixes == [".csv", ".gz"]
+                or data_path.suffixes == [".tsv", ".gz"]
             ):
                 # read as a CSV, CSV.GZ, .TSV, or .TXT file
                 self.data = pd.read_csv(data, **kwargs)
@@ -105,8 +108,10 @@ class SCDataFrame:
         Exports the underlying pandas DataFrame to a file.
 
         Args:
-            file_path (str): The path where the DataFrame should be saved.
-            **kwargs: Additional keyword arguments to pass to the pandas to_* methods.
+            file_path (str):
+                The path where the DataFrame should be saved.
+            **kwargs:
+                Additional keyword arguments to pass to the pandas to_* methods.
         """
 
         data_path = pathlib.Path(file_path)
@@ -132,7 +137,7 @@ class SCDataFrame:
         """
         return self.data
 
-    def __repr__(self: SCDataFrame_type) -> pd.DataFrame:
+    def __repr__(self: SCDataFrame_type) -> str:
         """
         Returns the representation of the underlying pandas DataFrame.
 
@@ -147,10 +152,12 @@ class SCDataFrame:
         pandas DataFrame, except for custom methods.
 
         Args:
-            attr (str): The name of the attribute being accessed.
+            attr (str):
+                The name of the attribute being accessed.
 
         Returns:
-            Any: The value of the attribute from the pandas DataFrame.
+            Any:
+                The value of the attribute from the pandas DataFrame.
         """
         if attr in self.__dict__:
             return self.__dict__[attr]
@@ -161,9 +168,11 @@ class SCDataFrame:
         Returns an element or a slice of the underlying pandas DataFrame.
 
         Args:
-            key: The key or slice to access the data.
+            key:
+                The key or slice to access the data.
 
         Returns:
-            pd.DataFrame or any: The selected element or slice of data.
+            pd.DataFrame or any:
+                The selected element or slice of data.
         """
         return self.data[key]
