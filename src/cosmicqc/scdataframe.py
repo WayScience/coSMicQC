@@ -132,7 +132,7 @@ class SCDataFrame:
         """
         return self.data
 
-    def __repr__(self: SCDataFrame_type) -> pd.DataFrame:
+    def __repr__(self: SCDataFrame_type) -> str:
         """
         Returns the representation of the underlying pandas DataFrame.
 
