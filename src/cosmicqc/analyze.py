@@ -53,6 +53,7 @@ def identify_outliers(
         export_path: Optional[str] = None
             An optional path to export the data using SCDataFrame export
             capabilities. If None no export is performed.
+            Note: compatible exports are CSV's, TSV's, and parquet.
 
     Returns:
         Union[pd.Series, pd.DataFrame]:
@@ -153,6 +154,7 @@ def find_outliers(
         export_path: Optional[str] = None
             An optional path to export the data using SCDataFrame export
             capabilities. If None no export is performed.
+            Note: compatible exports are CSV's, TSV's, and parquet.
 
     Returns:
         pd.DataFrame:
@@ -230,6 +232,7 @@ def label_outliers(
             export_path: Optional[str] = None
                 An optional path to export the data using SCDataFrame export
                 capabilities. If None no export is performed.
+                Note: compatible exports are CSV's, TSV's, and parquet.
 
         Returns:
             pd.DataFrame:
