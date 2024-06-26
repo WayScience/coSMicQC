@@ -71,6 +71,11 @@ class SCDataFrame:
             self.data_source = "pandas.DataFrame"
             self.data = data
 
+        elif isinstance(data, pd.Series):
+            # if data is a pd.DataFrame, remember this within the data_source attr
+            self.data_source = "pandas.Series"
+            self.data = pd.DataFrame(data)
+
         elif isinstance(data, (pathlib.Path, str)):
             # if the data is a string or a pathlib path, remember the original source
             # through a data_source attr
@@ -137,7 +142,7 @@ class SCDataFrame:
         Returns the representation of the underlying pandas DataFrame.
 
         Returns:
-            pd.DataFrame: The data in a pandas DataFrame.
+            str: The string-based representation of a pandas DataFrame.
         """
         return repr(self.data)
 
