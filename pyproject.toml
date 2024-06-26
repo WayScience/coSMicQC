@@ -74,6 +74,7 @@ select = [
 # ignore typing rules for tests
 "tests/*" = ["ANN201", "PLR0913"]
 
+[tool.pytest.ini_options]
 markers = [
     "large_data_tests: tests which involve the use of large data.",
 ]
