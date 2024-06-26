@@ -11,7 +11,7 @@ from .utils import run_cli_command
 
 def test_cli_util():
     """
-    Test the `identify_outliers` function of the CLI.
+    Test the run_cli_command for successful output
     """
 
     command = """echo 'hello world'"""
