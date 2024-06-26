@@ -36,10 +36,12 @@ def HasCustomRepr(component: object) -> bool:
             return True
     return False
 
+
 # used to avoid bugs with python-fire and pandas string-based repr compatibility.
 # referenced with modifications from https://github.com/google/python-fire/pull/446
 # to be removed after python-fire merges changes (uncertain of timeline)
-def _PrintResult( # noqa: C901
+# ignore rule below added to help avoid triggering ruff linting checks on temporary fix.
+def _PrintResult(  # noqa: C901
     component_trace: FireTrace, verbose: bool = False, serialize: Optional[bool] = None
 ) -> None:
     """Prints the result of the Fire call to stdout in a human readable way."""
