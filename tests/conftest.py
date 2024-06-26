@@ -9,7 +9,10 @@ import pathlib
 import cosmicqc
 import cytotable
 import pandas as pd
+import parsl
 import pytest
+from parsl.config import Config
+from parsl.executors import ThreadPoolExecutor
 from pyarrow import parquet
 
 
@@ -129,7 +132,7 @@ def fixture_jump_cytotable_data(
         source_datatype="sqlite",
         # set chunk size to amount which operates within
         # github actions runner images and related resource constraints.
-        chunk_size=20000,
+        chunk_size=30000,
         preset="cellprofiler_sqlite_cpg0016_jump",
         sort_output=False,
         no_sign_request=True,
@@ -137,6 +140,9 @@ def fixture_jump_cytotable_data(
         # sequential s3 SQLite files. See below for more information
         # https://cloudpathlib.drivendata.org/stable/caching/#automatically
         local_cache_dir=f"{tmp_path}/sqlite_s3_cache/2",
+        parsl_config=parsl.load(
+            Config(executors=[ThreadPoolExecutor(label="tpe_for_cosmicqc_testing")])
+        ),
     )
 
     # read only the metadata from parquet file
