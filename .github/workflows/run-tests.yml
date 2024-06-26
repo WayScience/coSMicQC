@@ -4,7 +4,7 @@ name: tests
 
 on:
   push:
-    branches: [main]
+    branches: [main, jump-data-test]
   pull_request:
     branches: [main]
 
@@ -32,7 +32,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Python setup
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python_version }}
       - name: Setup for poetry
@@ -41,4 +41,24 @@ jobs:
       - name: Install environment
         run: poetry install --no-interaction --no-ansi
       - name: Run pytest
-        run: poetry run pytest
+        run: poetry run pytest -m "not large_data_tests"
+  # run large data tests as a separate job to help
+  # conserve resources by detecting failure with
+  # smaller tests first.
+  run_large_data_tests:
+    runs-on: ubuntu-22.04
+    needs: run_tests
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Python setup
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Setup for poetry
+        run: |
+          python -m pip install poetry
+      - name: Install environment
+        run: poetry install --no-interaction --no-ansi
+      - name: Run pytest for large data tests
+        run: poetry run pytest -m "large_data_tests"

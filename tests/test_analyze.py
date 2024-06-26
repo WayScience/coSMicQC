@@ -452,6 +452,23 @@ def test_label_outliers(
     )
 
 
+def test_label_outliers_jump(
+    jump_cytotable_data: str,
+):
+    """
+    Test label_outliers with JUMP data
+    """
+
+    # test single-column result
+    test_df = analyze.label_outliers(
+        df=jump_cytotable_data,
+        feature_thresholds="large_nuclei",
+        include_threshold_scores=True,
+    )
+
+    print(test_df.info())
+
+
 def test_identify_outliers(
     basic_outlier_dataframe: pd.DataFrame,
     basic_outlier_csv: str,

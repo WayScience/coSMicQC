@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "coSMicQC"
-version = "0.0.1"
+version = "0.0.5.post45.dev0+9a2bfc2"
 description = "coSMicQC is a software tool for single-cell quality control of morphology datasets."
 authors = ["Way Science Community"]
 license = "BSD-3-Clause"
@@ -27,6 +27,7 @@ ipython = "^8.12.3"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.2.0"
+cytotable = { git = "https://github.com/d33bs/cytotable.git", branch = "move-to-real-s3-tests" }
 
 [tool.poetry.scripts]
 cosmicqc = "cosmicqc.cli:cli_analyze"
@@ -74,7 +75,7 @@ select = [
 
 # set dynamic versioning capabilities for project
 [tool.poetry-dynamic-versioning]
-enable = true
+enable = false
 style = "pep440"
 vcs = "git"
 
