@@ -460,14 +460,14 @@ def test_label_outliers_jump(
     Test label_outliers with JUMP data
     """
 
-    # test single-column result
-    # test_df = analyze.label_outliers(
-    #     df=jump_cytotable_data,
-    #     feature_thresholds="large_nuclei",
-    #     include_threshold_scores=True,
-    # )
+    test single-column result
+    test_df = analyze.label_outliers(
+        df=jump_cytotable_data,
+        feature_thresholds="large_nuclei",
+        include_threshold_scores=True,
+    )
 
-    # print(test_df.info())
+    print(test_df.info())
 
     print(jump_cytotable_data)
 

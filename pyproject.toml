@@ -74,6 +74,10 @@ select = [
 # ignore typing rules for tests
 "tests/*" = ["ANN201", "PLR0913"]
 
+markers = [
+    "large_data_tests: tests which involve the use of large data.",
+]
+
 # set dynamic versioning capabilities for project
 [tool.poetry-dynamic-versioning]
 enable = false
