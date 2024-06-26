@@ -109,6 +109,7 @@ def test_generate_show_report_html_output(cytotable_CFReT_data_df: pd.DataFrame)
         / "cosmicqc_example_report.html"
     )
 
+
 @pytest.fixture(name="jump_cytotable_data")
 def fixture_jump_cytotable_data(
     tmp_path: pathlib.Path,
@@ -128,7 +129,7 @@ def fixture_jump_cytotable_data(
         source_datatype="sqlite",
         # set chunk size to amount which operates within
         # github actions runner images and related resource constraints.
-        chunk_size=30000,
+        chunk_size=20000,
         preset="cellprofiler_sqlite_cpg0016_jump",
         sort_output=False,
         no_sign_request=True,
