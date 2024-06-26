@@ -2,18 +2,23 @@
 Defines a SCDataFrame class for use in coSMicQC.
 """
 
+import base64
 import pathlib
 import random
+import re
 import webbrowser
+from io import BytesIO
 from typing import Any, Dict, List, Optional, TypeVar, Union
-
+from functools import partial
 import pandas as pd
 import plotly
 import plotly.colors as pc
 import plotly.express as px
 import plotly.graph_objects as go
+import skimage
 from IPython import get_ipython
 from jinja2 import Environment, FileSystemLoader
+from PIL import Image
 
 # provide backwards compatibility for Self type in earlier Python versions.
 # see: https://peps.python.org/pep-0484/#annotating-instance-and-class-methods
@@ -49,6 +54,7 @@ class SCDataFrame:
     def __init__(
         self: SCDataFrame_type,
         data: Union[SCDataFrame_type, pd.DataFrame, str, pathlib.Path],
+        data_context_dir: Optional[str] = None,
         **kwargs: Dict[str, Any],
     ) -> None:
         """
@@ -60,6 +66,10 @@ class SCDataFrame:
             **kwargs:
                 Additional keyword arguments to pass to the pandas read functions.
         """
+
+        # set the data context dir if provided
+        if data_context_dir is not None:
+            self.data_context_dir = data_context_dir
 
         if isinstance(data, SCDataFrame):
             # if data is an instance of SCDataFrame, use its data_source and data
@@ -77,11 +87,6 @@ class SCDataFrame:
             self.data_source = "pandas.DataFrame"
             self.data = data
 
-        elif isinstance(data, pd.Series):
-            # if data is a pd.DataFrame, remember this within the data_source attr
-            self.data_source = "pandas.Series"
-            self.data = pd.DataFrame(data)
-
         elif isinstance(data, (pathlib.Path, str)):
             # if the data is a string, remember the original source
             # through a data_source attr
@@ -89,6 +94,10 @@ class SCDataFrame:
 
             # interpret the data through pathlib
             data_path = pathlib.Path(data)
+
+            # if we don't have a data context dir, infer one
+            if data_context_dir is not None:
+                self.data_context_dir = str(data_path.parent)
 
             # Read the data from the file based on its extension
             if (
@@ -397,6 +406,40 @@ class SCDataFrame:
 
         return fig
 
+    def find_image_columns(self: SCDataFrame_type) -> bool:
+        pattern = r".*\.(tif|tiff)$"
+        self.image_columns = [
+            column
+            for column in self.data.columns
+            if self.data[column]
+            .apply(
+                lambda value: isinstance(value, str)
+                and re.match(pattern, value, flags=re.IGNORECASE)
+            )
+            .any()
+        ]
+        return self.image_columns
+
+    @staticmethod
+    def process_image_data_as_html_display(data_value: Any, data_context: str) -> str:
+        def tiff_to_png_bytes(data_value):
+            # Read the TIFF image from the byte array
+            tiff_image = skimage.io.imread(data_value)
+
+            # Convert the image array to a PIL Image
+            pil_image = Image.fromarray(tiff_image)
+
+            # Save the PIL Image as PNG to a BytesIO object
+            png_bytes_io = BytesIO()
+            pil_image.save(png_bytes_io, format="PNG")
+
+            # Get the PNG byte data
+            png_bytes = png_bytes_io.getvalue()
+
+            return png_bytes
+
+        return f'<img src="data:image/png;base64,{base64.b64encode(tiff_to_png_bytes(data_value)).decode("utf-8")}" style="width:300px;"/>'
+
     def __call__(self: SCDataFrame_type) -> pd.DataFrame:
         """
         Returns the underlying pandas DataFrame.
@@ -415,6 +458,25 @@ class SCDataFrame:
         """
         return repr(self.data)
 
+    def _repr_html_(self: SCDataFrame_type) -> str:
+        """
+        Returns HTML representation of the underlying pandas DataFrame
+        for use within Juypyter notebook environments and similar.
+
+        Returns:
+            str: The data in a pandas DataFrame.
+        """
+
+        if image_cols := self.find_image_columns():
+            return self.data.to_html(
+                escape=False,
+                formatters={
+                    col: partial(self.process_image_data_as_html_display) for col in image_cols
+                },
+            )
+
+        return str(image_cols)
+
     def __getattr__(self: SCDataFrame_type, attr: str) -> Any:  # noqa: ANN401
         """
         Intercept attribute accesses and delegate them to the underlying
@@ -426,6 +488,7 @@ class SCDataFrame:
         Returns:
             Any: The value of the attribute from the pandas DataFrame.
         """
+
         if attr in self.__dict__:
             return self.__dict__[attr]
         return getattr(self.data, attr)
@@ -440,4 +503,8 @@ class SCDataFrame:
         Returns:
             pd.DataFrame or any: The selected element or slice of data.
         """
+
+        if self.is_notebook_or_lab():
+            return self._repr_html_()
+
         return self.data[key]
