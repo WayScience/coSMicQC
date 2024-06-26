@@ -45,8 +45,6 @@ def _PrintResult(  # noqa: C901
     component_trace: FireTrace, verbose: bool = False, serialize: Optional[bool] = None
 ) -> None:
     """Prints the result of the Fire call to stdout in a human readable way."""
-    # TODO(dbieber): Design human readable deserializable serialization method
-    # and move serialization to its own module.
     result = component_trace.GetResult()
     # Allow users to modify the return value of the component and provide
     # custom formatting.
