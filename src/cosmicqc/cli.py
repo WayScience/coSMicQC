@@ -82,6 +82,7 @@ def _PrintResult(  # noqa: C901
     else:
         help_text = helptext.HelpText(result, trace=component_trace, verbose=verbose)
         output = [help_text]
+        # used for displaying output through python-fire
         Display(output, out=sys.stdout)
 
 
