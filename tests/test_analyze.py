@@ -466,6 +466,10 @@ def test_label_outliers_jump(
         include_threshold_scores=True,
     )
 
+    test_df.to_parquet("example.parquet")
+
+    test_df = pd.read_parquet("example.parquet")
+
     # check the shape
     assert test_df.shape == (74226, 5936)
 
