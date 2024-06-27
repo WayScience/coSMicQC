@@ -421,24 +421,28 @@ class SCDataFrame:
         return self.image_columns
 
     @staticmethod
-    def process_image_data_as_html_display(data_value: Any, data_context: str) -> str:
-        def tiff_to_png_bytes(data_value):
-            # Read the TIFF image from the byte array
-            tiff_image = skimage.io.imread(data_value)
+    def process_image_data_as_html_display(data_value: Any, data_context_dir: str) -> str:
 
-            # Convert the image array to a PIL Image
-            pil_image = Image.fromarray(tiff_image)
+        if not pathlib.Path(data_value).is_file():
+            if not pathlib.Path(candidate_path := (data_context_dir + "/" + data_value)).is_file():
+                return data_value
+            else:
+                data_value = candidate_path
 
-            # Save the PIL Image as PNG to a BytesIO object
-            png_bytes_io = BytesIO()
-            pil_image.save(png_bytes_io, format="PNG")
+        # Read the TIFF image from the byte array
+        tiff_image = skimage.io.imread(data_value)
 
-            # Get the PNG byte data
-            png_bytes = png_bytes_io.getvalue()
+        # Convert the image array to a PIL Image
+        pil_image = Image.fromarray(tiff_image)
 
-            return png_bytes
+        # Save the PIL Image as PNG to a BytesIO object
+        png_bytes_io = BytesIO()
+        pil_image.save(png_bytes_io, format="PNG")
 
-        return f'<img src="data:image/png;base64,{base64.b64encode(tiff_to_png_bytes(data_value)).decode("utf-8")}" style="width:300px;"/>'
+        # Get the PNG byte data
+        png_bytes = png_bytes_io.getvalue()
+
+        return f'<img src="data:image/png;base64,{base64.b64encode(png_bytes).decode("utf-8")}" style="width:300px;"/>'
 
     def __call__(self: SCDataFrame_type) -> pd.DataFrame:
         """
@@ -471,7 +475,7 @@ class SCDataFrame:
             return self.data.to_html(
                 escape=False,
                 formatters={
-                    col: partial(self.process_image_data_as_html_display) for col in image_cols
+                    col: partial(self.process_image_data_as_html_display, data_context_dir=self.data_context_dir) for col in image_cols
                 },
             )
 
