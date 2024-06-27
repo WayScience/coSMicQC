@@ -8,10 +8,11 @@ import random
 import re
 import webbrowser
 from io import BytesIO
-from typing import Any, Dict, List, Optional, TypeVar, Union
+from typing import Any, Dict, List, Optional, TypeVar, Union, Tuple
 from functools import partial
 import pandas as pd
 import plotly
+from IPython.display import HTML, display
 import plotly.colors as pc
 import plotly.express as px
 import plotly.graph_objects as go
@@ -55,6 +56,7 @@ class SCDataFrame:
         self: SCDataFrame_type,
         data: Union[SCDataFrame_type, pd.DataFrame, str, pathlib.Path],
         data_context_dir: Optional[str] = None,
+        data_bounding_box: Optional[pd.DataFrame] = None,
         **kwargs: Dict[str, Any],
     ) -> None:
         """
@@ -96,7 +98,7 @@ class SCDataFrame:
             data_path = pathlib.Path(data)
 
             # if we don't have a data context dir, infer one
-            if data_context_dir is not None:
+            if data_context_dir is None:
                 self.data_context_dir = str(data_path.parent)
 
             # Read the data from the file based on its extension
@@ -114,6 +116,45 @@ class SCDataFrame:
                 raise ValueError("Unsupported file format for SCDataFrame.")
         else:
             raise ValueError("Unsupported data type for SCDataFrame.")
+        
+        if data_bounding_box is None:
+            self.data_bounding_box = self.get_bounding_box_from_data()
+        else:
+            self.data_bounding_box = data_bounding_box
+
+    def get_bounding_box_from_data(self: SCDataFrame_type):
+        # Define column groups and their corresponding conditions
+        column_groups = {
+            "cyto": [
+                "Cytoplasm_AreaShape_BoundingBoxMaximum_X",
+                "Cytoplasm_AreaShape_BoundingBoxMaximum_Y",
+                "Cytoplasm_AreaShape_BoundingBoxMinimum_X",
+                "Cytoplasm_AreaShape_BoundingBoxMinimum_Y",
+            ],
+            "nuclei": [
+                "Nuclei_AreaShape_BoundingBoxMaximum_X",
+                "Nuclei_AreaShape_BoundingBoxMaximum_Y",
+                "Nuclei_AreaShape_BoundingBoxMinimum_X",
+                "Nuclei_AreaShape_BoundingBoxMinimum_Y",
+            ],
+            "cells": [
+                "Cells_AreaShape_BoundingBoxMaximum_X",
+                "Cells_AreaShape_BoundingBoxMaximum_Y",
+                "Cells_AreaShape_BoundingBoxMinimum_X",
+                "Cells_AreaShape_BoundingBoxMinimum_Y",
+            ],
+        }
+
+        # Determine which group of columns to select based on availability in self.data
+        selected_group = None
+        for group, cols in column_groups.items():
+            if all(col in self.data.columns.tolist() for col in cols):
+                selected_group = group
+                break
+
+        # Assign the selected columns to self.bounding_box_df
+        if selected_group:
+            return self.data[column_groups[selected_group]]
 
     def export(
         self: SCDataFrame_type, file_path: str, **kwargs: Dict[str, Any]
@@ -421,10 +462,14 @@ class SCDataFrame:
         return self.image_columns
 
     @staticmethod
-    def process_image_data_as_html_display(data_value: Any, data_context_dir: str) -> str:
+    def process_image_data_as_html_display(
+        data_value: Any, data_context_dir: str, bounding_box=Tuple[int, int, int, int]
+    ) -> str:
 
         if not pathlib.Path(data_value).is_file():
-            if not pathlib.Path(candidate_path := (data_context_dir + "/" + data_value)).is_file():
+            if not pathlib.Path(
+                candidate_path := (f"{data_context_dir}/{data_value}")
+            ).is_file():
                 return data_value
             else:
                 data_value = candidate_path
@@ -435,9 +480,11 @@ class SCDataFrame:
         # Convert the image array to a PIL Image
         pil_image = Image.fromarray(tiff_image)
 
+        cropped_img = pil_image.crop(bounding_box)
+
         # Save the PIL Image as PNG to a BytesIO object
         png_bytes_io = BytesIO()
-        pil_image.save(png_bytes_io, format="PNG")
+        cropped_img.save(png_bytes_io, format="PNG")
 
         # Get the PNG byte data
         png_bytes = png_bytes_io.getvalue()
@@ -462,7 +509,9 @@ class SCDataFrame:
         """
         return repr(self.data)
 
-    def _repr_html_(self: SCDataFrame_type) -> str:
+    def _repr_html_(
+        self: SCDataFrame_type, key: Optional[Union[int, str]] = None
+    ) -> str:
         """
         Returns HTML representation of the underlying pandas DataFrame
         for use within Juypyter notebook environments and similar.
@@ -471,13 +520,36 @@ class SCDataFrame:
             str: The data in a pandas DataFrame.
         """
 
+        # readd bounding box cols if they are no longer available as in cases
+        # of masking or accessing various pandas attr's
+        bounding_box_externally_joined = False
+        if not all(col in self.data.columns.tolist() for col in self.data_bounding_box.columns.tolist()):
+            data = self.data.join(other=self.data_bounding_box)
+            bounding_box_externally_joined = True
+        else:
+            data = self.data
+
         if image_cols := self.find_image_columns():
-            return self.data.to_html(
-                escape=False,
-                formatters={
-                    col: partial(self.process_image_data_as_html_display, data_context_dir=self.data_context_dir) for col in image_cols
-                },
-            )
+            for image_col in image_cols:
+
+                data[image_col] = data.apply(
+                    lambda row: self.process_image_data_as_html_display(
+                        data_value=row[image_col],
+                        data_context_dir=self.data_context_dir,
+                        bounding_box=(
+                            row["Cytoplasm_AreaShape_BoundingBoxMinimum_X"],
+                            row["Cytoplasm_AreaShape_BoundingBoxMinimum_Y"],
+                            row["Cytoplasm_AreaShape_BoundingBoxMaximum_X"],
+                            row["Cytoplasm_AreaShape_BoundingBoxMaximum_Y"],
+                        ),
+                    ),
+                    axis=1,
+                )
+
+            if bounding_box_externally_joined:
+                data = data.drop(self.data_bounding_box.columns.tolist(), axis=1)
+
+            display(HTML(data.to_html(escape=False)))
 
         return str(image_cols)
 
@@ -495,9 +567,29 @@ class SCDataFrame:
 
         if attr in self.__dict__:
             return self.__dict__[attr]
-        return getattr(self.data, attr)
 
-    def __getitem__(self: SCDataFrame_type, key: Union[int, str]) -> Any:  # noqa: ANN401
+        # Check if the attribute is a method of pandas DataFrame
+        if hasattr(pd.DataFrame, attr) and callable(getattr(pd.DataFrame, attr)):
+            # Define a wrapper function that applies the method on self.data
+            def method_wrapper(*args, **kwargs):
+                result = getattr(self.data, attr)(*args, **kwargs)
+
+                # Check if the result is a DataFrame or Series
+                if isinstance(result, (pd.DataFrame, pd.Series)):
+                    # Return SCDataFrame instance for DataFrame or Series results
+                    return SCDataFrame(result, data_context_dir=self.data_context_dir, data_bounding_box=self.data_bounding_box)
+                else:
+                    # Return the result directly for other types
+                    return result
+
+            return method_wrapper
+
+        # If not a method of pandas DataFrame, raise AttributeError
+        raise AttributeError(f"'SCDataFrame' object has no attribute '{attr}'")
+
+    def __getitem__(
+        self: SCDataFrame_type, key: Union[int, str]
+    ) -> Any:  # noqa: ANN401
         """
         Returns an element or a slice of the underlying pandas DataFrame.
 
@@ -508,7 +600,8 @@ class SCDataFrame:
             pd.DataFrame or any: The selected element or slice of data.
         """
 
-        if self.is_notebook_or_lab():
-            return self._repr_html_()
+        result = self.data[key]
+        if isinstance(result, pd.DataFrame):
+            return SCDataFrame(result, data_context_dir=self.data_context_dir, data_bounding_box=self.data_bounding_box)
 
-        return self.data[key]
+        return result
