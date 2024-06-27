@@ -72,7 +72,7 @@ select = [
 # Ignore `E402` and `F401` (unused imports) in all `__init__.py` files
 "__init__.py" = ["E402", "F401"]
 # ignore typing rules for tests
-"tests/*" = ["ANN201", "PLR0913"]
+"tests/*" = ["ANN201", "PLR0913", "PLR2004"]
 
 [tool.pytest.ini_options]
 markers = [

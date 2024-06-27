@@ -466,15 +466,13 @@ def test_label_outliers_jump(
         include_threshold_scores=True,
     )
 
-    print(test_df.shape)
+    # check the shape
+    assert test_df.shape == (74226, 5936)
 
-    print(test_df.info())
-
-    print(test_df["cqc.small_and_low_formfactor_nuclei.is_outlier"].sum())
-    print(test_df["cqc.elongated_nuclei.is_outlier"].sum())
-    print(test_df["cqc.large_nuclei.is_outlier"].sum())
-
-    print(jump_cytotable_data)
+    # check the detected outlier count
+    assert test_df["cqc.small_and_low_formfactor_nuclei.is_outlier"].sum() == 1680
+    assert test_df["cqc.elongated_nuclei.is_outlier"].sum() == 3
+    assert test_df["cqc.large_nuclei.is_outlier"].sum() == 583
 
 
 def test_identify_outliers(
