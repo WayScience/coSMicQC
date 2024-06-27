@@ -24,6 +24,7 @@ jinja2 = "^3.1.4"
 plotly = "^5.22.0"
 kaleido = "0.2.1"
 ipython = "^8.12.3"
+html2image = "^2.0.4.3"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.2.0"
@@ -71,6 +72,11 @@ select = [
 "__init__.py" = ["E402", "F401"]
 # ignore typing rules for tests
 "tests/*" = ["ANN201", "PLR0913"]
+
+[tool.pytest.ini_options]
+markers = [
+    "generate_report_image: tests which involve the creation of report images.",
+]
 
 # set dynamic versioning capabilities for project
 [tool.poetry-dynamic-versioning]

@@ -332,20 +332,16 @@ class SCDataFrame:
                 A list of column names representing the Z-scores to be visualized.
             color_palette Optional(List[str]):
                 Optional list for color palette to use.
+                Defaults to use Dark24 color palette from Plotly.
 
         Returns:
             plotly.graph_objs._figure.Figure:
                 A Plotly figure object containing the visualization.
         """
 
-        if color_palette is None:
-            # Create a list of colors from a Plotly color palette
-            color_palette = pc.qualitative.Dark24
-
         # Create histograms using plotly.express with pattern_shape and random color
-        figures = []
-        for col in cols_threshold_scores:
-            fig = px.histogram(
+        figures = [
+            px.histogram(
                 df,
                 x=col,
                 color=col_outlier,
@@ -353,14 +349,26 @@ class SCDataFrame:
                 pattern_shape=col_outlier,
                 opacity=0.7,
             )
-            figures.append(fig)
+            for col in cols_threshold_scores
+        ]
 
         # Create a combined figure
         fig = go.Figure()
 
+        # check that we have enough colors for figures if provided
+        if color_palette is not None and len(color_palette) < len(figures):
+            raise ReferenceError(
+                f"Color palette length must match figure length of {len(figures)}."
+            )
+
         # Add traces from each histogram and modify colors, names, and pattern shapes
         for idx, fig_hist in enumerate(figures):
-            fig_color = random.choice(color_palette)
+            if color_palette is None:
+                # Create a default list of colors from a Plotly color palette
+                fig_color = random.choice(pc.qualitative.Dark24)
+            else:
+                # otherwise, use static color palette based on the number of figures
+                fig_color = color_palette[idx]
 
             for trace in fig_hist.data:
                 trace.marker.color = fig_color
