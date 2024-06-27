@@ -61,4 +61,4 @@ jobs:
       - name: Install environment
         run: poetry install --no-interaction --no-ansi
       - name: Run pytest for large data tests
-        run: poetry run pytest -m "large_data_tests"
+        run: poetry run pytest -m "large_data_tests" -s

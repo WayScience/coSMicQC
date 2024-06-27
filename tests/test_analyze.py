@@ -463,11 +463,16 @@ def test_label_outliers_jump(
     # test single-column result
     test_df = analyze.label_outliers(
         df=jump_cytotable_data,
-        feature_thresholds="large_nuclei",
         include_threshold_scores=True,
     )
 
+    print(test_df.shape)
+
     print(test_df.info())
+
+    print(test_df["cqc.small_and_low_formfactor_nuclei.is_outlier"].sum())
+    print(test_df["cqc.elongated_nuclei.is_outlier"].sum())
+    print(test_df["cqc.large_nuclei.is_outlier"].sum())
 
     print(jump_cytotable_data)
 
