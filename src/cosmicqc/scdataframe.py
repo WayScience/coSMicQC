@@ -26,7 +26,7 @@ from PIL import Image
 SCDataFrame_type = TypeVar("SCDataFrame_type", bound="SCDataFrame")
 
 
-class SCDataFrame:
+class SCDataFrame(pd.DataFrame):
     """
     A class to handle and load different types of data files into a pandas DataFrame.
 
@@ -52,9 +52,11 @@ class SCDataFrame:
             Returns slice of data from pandas DataFrame.
     """
 
+    _metadata = ["_custom_attrs"]
+
     def __init__(
-        self: SCDataFrame_type,
-        data: Union[SCDataFrame_type, pd.DataFrame, str, pathlib.Path],
+        self,
+        data: Union[pd.DataFrame, str, pathlib.Path],
         data_context_dir: Optional[str] = None,
         data_bounding_box: Optional[pd.DataFrame] = None,
         **kwargs: Dict[str, Any],
@@ -63,64 +65,78 @@ class SCDataFrame:
         Initializes the SCDataFrame with either a DataFrame or a file path.
 
         Args:
-            data (Union[pd.DataFrame, str]):
+            data (Union[pd.DataFrame, str, pathlib.Path]):
                 The data source, either a pandas DataFrame or a file path.
-            **kwargs:
-                Additional keyword arguments to pass to the pandas read functions.
+            data_context_dir (Optional[str]): Directory context for the data.
+            data_bounding_box (Optional[pd.DataFrame]): Bounding box data for the DataFrame.
+            **kwargs: Additional keyword arguments to pass to the pandas read functions.
         """
 
-        # set the data context dir if provided
+        self._custom_attrs = {
+            "data_source": None,
+            "data_context_dir": None,
+            "data_bounding_box": None,
+        }
+
         if data_context_dir is not None:
-            self.data_context_dir = data_context_dir
+            self._custom_attrs["data_context_dir"] = data_context_dir
 
-        if isinstance(data, SCDataFrame):
-            # if data is an instance of SCDataFrame, use its data_source and data
-            self.data_source = data.data_source
-            self.data = data.data
-
+        if isinstance(data, pd.DataFrame):
+            self._custom_attrs["data_source"] = "pandas.DataFrame"
+            super().__init__(data)
         elif isinstance(data, pd.Series):
-            # if data is a pd.Series, remember this within the data_source attr
-            self.data_source = "pandas.Series"
-            # also cast the series to a dataframe
-            self.data = pd.DataFrame(data)
-
-        elif isinstance(data, pd.DataFrame):
-            # if data is a pd.DataFrame, remember this within the data_source attr
-            self.data_source = "pandas.DataFrame"
-            self.data = data
-
-        elif isinstance(data, (pathlib.Path, str)):
-            # if the data is a string, remember the original source
-            # through a data_source attr
-            self.data_source = data
-
-            # interpret the data through pathlib
+            self._custom_attrs["data_source"] = "pandas.Series"
+            super().__init__(pd.DataFrame(data))
+        elif isinstance(data, (str, pathlib.Path)):
             data_path = pathlib.Path(data)
+            self._custom_attrs["data_source"] = str(data_path)
 
-            # if we don't have a data context dir, infer one
             if data_context_dir is None:
-                self.data_context_dir = str(data_path.parent)
+                self._custom_attrs["data_context_dir"] = str(data_path.parent)
+            else:
+                self._custom_attrs["data_context_dir"] = data_context_dir
 
-            # Read the data from the file based on its extension
-            if (
-                data_path.suffix == ".csv"
-                or data_path.suffix in (".tsv", ".txt")
-                or data_path.suffixes == [".csv", ".gz"]
-            ):
-                # read as a CSV, CSV.GZ, .TSV, or .TXT file
-                self.data = pd.read_csv(data, **kwargs)
+            if data_path.suffix in {".csv", ".tsv", ".txt"} or data_path.suffixes == [
+                ".csv",
+                ".gz",
+            ]:
+                data = pd.read_csv(data_path, **kwargs)
             elif data_path.suffix == ".parquet":
-                # read as a Parquet file
-                self.data = pd.read_parquet(data, **kwargs)
+                data = pd.read_parquet(data_path, **kwargs)
             else:
                 raise ValueError("Unsupported file format for SCDataFrame.")
+
+            super().__init__(data)
+
         else:
-            raise ValueError("Unsupported data type for SCDataFrame.")
-        
+            super().__init__(data)
+
         if data_bounding_box is None:
-            self.data_bounding_box = self.get_bounding_box_from_data()
+            self._custom_attrs["data_bounding_box"] = self.get_bounding_box_from_data()
+
         else:
-            self.data_bounding_box = data_bounding_box
+            self._custom_attrs["data_bounding_box"] = data_bounding_box
+
+    def __getitem__(
+        self: SCDataFrame_type, key: Union[int, str]
+    ) -> Any:  # noqa: ANN401
+        """
+        Returns an element or a slice of the underlying pandas DataFrame.
+
+        Args:
+            key:
+                The key or slice to access the data.
+
+        Returns:
+            pd.DataFrame or any:
+                The selected element or slice of data.
+        """
+
+        return SCDataFrame(
+            super().__getitem__(key),
+            data_context_dir=self._custom_attrs["data_context_dir"],
+            data_bounding_box=self._custom_attrs["data_bounding_box"],
+        )
 
     def get_bounding_box_from_data(self: SCDataFrame_type):
         # Define column groups and their corresponding conditions
@@ -148,13 +164,15 @@ class SCDataFrame:
         # Determine which group of columns to select based on availability in self.data
         selected_group = None
         for group, cols in column_groups.items():
-            if all(col in self.data.columns.tolist() for col in cols):
+            if all(col in self.columns.tolist() for col in cols):
                 selected_group = group
                 break
 
         # Assign the selected columns to self.bounding_box_df
         if selected_group:
-            return self.data[column_groups[selected_group]]
+            return self.filter(items=column_groups[selected_group])
+
+        return None
 
     def export(
         self: SCDataFrame_type, file_path: str, **kwargs: Dict[str, Any]
@@ -171,13 +189,13 @@ class SCDataFrame:
 
         # export to csv
         if ".csv" in data_path.suffixes:
-            self.data.to_csv(file_path, **kwargs)
+            self.to_csv(file_path, **kwargs)
         # export to tsv
         elif any(elem in data_path.suffixes for elem in (".tsv", ".txt")):
-            self.data.to_csv(file_path, sep="\t", **kwargs)
+            self.to_csv(file_path, sep="\t", **kwargs)
         # export to parquet
         elif data_path.suffix == ".parquet":
-            self.data.to_parquet(file_path, **kwargs)
+            self.to_parquet(file_path, **kwargs)
         else:
             raise ValueError("Unsupported file format for export.")
 
@@ -241,7 +259,7 @@ class SCDataFrame:
         """
 
         # find all cosmicqc columns in the data using the prefix `cqc.`
-        cqc_cols = [col for col in self.data.columns.tolist() if "cqc." in col]
+        cqc_cols = [col for col in self.columns.tolist() if "cqc." in col]
         # organize column data into the threshold set name, threshold is_outlier col,
         # and the threshold score columns as list
         organized_columns = [
@@ -267,7 +285,7 @@ class SCDataFrame:
         # and threshold scores
         figures = [
             self.create_threshold_set_outlier_visualization(
-                df=self.data,
+                df=self,
                 threshold_set_name=set_name,
                 col_outlier=col_outlier,
                 cols_threshold_scores=cols_threshold_scores,
@@ -447,23 +465,25 @@ class SCDataFrame:
 
         return fig
 
-    def find_image_columns(self: SCDataFrame_type) -> bool:
+    @staticmethod
+    def find_image_columns(data: SCDataFrame_type) -> bool:
         pattern = r".*\.(tif|tiff)$"
-        self.image_columns = [
+        return [
             column
-            for column in self.data.columns
-            if self.data[column]
+            for column in data.columns
+            if data[column]
             .apply(
                 lambda value: isinstance(value, str)
                 and re.match(pattern, value, flags=re.IGNORECASE)
             )
             .any()
         ]
-        return self.image_columns
 
     @staticmethod
     def process_image_data_as_html_display(
-        data_value: Any, data_context_dir: str, bounding_box=Tuple[int, int, int, int]
+        data_value: Any,
+        data_context_dir: str = None,
+        bounding_box=Tuple[int, int, int, int],
     ) -> str:
 
         if not pathlib.Path(data_value).is_file():
@@ -491,24 +511,6 @@ class SCDataFrame:
 
         return f'<img src="data:image/png;base64,{base64.b64encode(png_bytes).decode("utf-8")}" style="width:300px;"/>'
 
-    def __call__(self: SCDataFrame_type) -> pd.DataFrame:
-        """
-        Returns the underlying pandas DataFrame.
-
-        Returns:
-            pd.DataFrame: The data in a pandas DataFrame.
-        """
-        return self.data
-
-    def __repr__(self: SCDataFrame_type) -> pd.DataFrame:
-        """
-        Returns the representation of the underlying pandas DataFrame.
-
-        Returns:
-            pd.DataFrame: The data in a pandas DataFrame.
-        """
-        return repr(self.data)
-
     def _repr_html_(
         self: SCDataFrame_type, key: Optional[Union[int, str]] = None
     ) -> str:
@@ -523,19 +525,26 @@ class SCDataFrame:
         # readd bounding box cols if they are no longer available as in cases
         # of masking or accessing various pandas attr's
         bounding_box_externally_joined = False
-        if not all(col in self.data.columns.tolist() for col in self.data_bounding_box.columns.tolist()):
-            data = self.data.join(other=self.data_bounding_box)
+
+        if self._custom_attrs["data_bounding_box"] is not None and not all(
+            col in self.columns.tolist()
+            for col in self._custom_attrs["data_bounding_box"].columns.tolist()
+        ):
+
+            data = self.join(other=self._custom_attrs["data_bounding_box"])
             bounding_box_externally_joined = True
         else:
-            data = self.data
 
-        if image_cols := self.find_image_columns():
+            data = self
+
+        if image_cols := self.find_image_columns(data=data):
+
             for image_col in image_cols:
 
                 data[image_col] = data.apply(
                     lambda row: self.process_image_data_as_html_display(
                         data_value=row[image_col],
-                        data_context_dir=self.data_context_dir,
+                        data_context_dir=self._custom_attrs["data_context_dir"],
                         bounding_box=(
                             row["Cytoplasm_AreaShape_BoundingBoxMinimum_X"],
                             row["Cytoplasm_AreaShape_BoundingBoxMinimum_Y"],
@@ -547,61 +556,10 @@ class SCDataFrame:
                 )
 
             if bounding_box_externally_joined:
-                data = data.drop(self.data_bounding_box.columns.tolist(), axis=1)
+                data = data.drop(
+                    self._custom_attrs["data_bounding_box"].columns.tolist(), axis=1
+                )
 
-            display(HTML(data.to_html(escape=False)))
+            return data.to_html(escape=False)
 
-        return str(image_cols)
-
-    def __getattr__(self: SCDataFrame_type, attr: str) -> Any:  # noqa: ANN401
-        """
-        Intercept attribute accesses and delegate them to the underlying
-        pandas DataFrame, except for custom methods.
-
-        Args:
-            attr (str): The name of the attribute being accessed.
-
-        Returns:
-            Any: The value of the attribute from the pandas DataFrame.
-        """
-
-        if attr in self.__dict__:
-            return self.__dict__[attr]
-
-        # Check if the attribute is a method of pandas DataFrame
-        if hasattr(pd.DataFrame, attr) and callable(getattr(pd.DataFrame, attr)):
-            # Define a wrapper function that applies the method on self.data
-            def method_wrapper(*args, **kwargs):
-                result = getattr(self.data, attr)(*args, **kwargs)
-
-                # Check if the result is a DataFrame or Series
-                if isinstance(result, (pd.DataFrame, pd.Series)):
-                    # Return SCDataFrame instance for DataFrame or Series results
-                    return SCDataFrame(result, data_context_dir=self.data_context_dir, data_bounding_box=self.data_bounding_box)
-                else:
-                    # Return the result directly for other types
-                    return result
-
-            return method_wrapper
-
-        # If not a method of pandas DataFrame, raise AttributeError
-        raise AttributeError(f"'SCDataFrame' object has no attribute '{attr}'")
-
-    def __getitem__(
-        self: SCDataFrame_type, key: Union[int, str]
-    ) -> Any:  # noqa: ANN401
-        """
-        Returns an element or a slice of the underlying pandas DataFrame.
-
-        Args:
-            key: The key or slice to access the data.
-
-        Returns:
-            pd.DataFrame or any: The selected element or slice of data.
-        """
-
-        result = self.data[key]
-        if isinstance(result, pd.DataFrame):
-            return SCDataFrame(result, data_context_dir=self.data_context_dir, data_bounding_box=self.data_bounding_box)
-
-        return result
+        return pd.DataFrame(self)._repr_html_()
