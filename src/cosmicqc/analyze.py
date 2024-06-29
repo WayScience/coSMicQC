@@ -5,7 +5,7 @@ Module for detecting various quality control aspects from source data.
 import operator
 import pathlib
 from functools import reduce
-from typing import Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional, Union
 
 import pandas as pd
 import yaml
@@ -69,9 +69,9 @@ def identify_outliers(
     outlier_df = df.copy()
 
     thresholds_name = (
-        f"outlier_{feature_thresholds}"
+        f"cqc.{feature_thresholds}"
         if isinstance(feature_thresholds, str)
-        else "outlier_custom"
+        else "cqc.custom"
     )
 
     if isinstance(feature_thresholds, str):
@@ -85,8 +85,10 @@ def identify_outliers(
     for feature in feature_thresholds:
         if feature not in df.columns:
             raise ValueError(f"Feature '{feature}' does not exist in the DataFrame.")
-        outlier_df[f"Z_Score_{feature}"] = scipy_zscore(df[feature])
-        zscore_columns[feature] = f"Z_Score_{feature}"
+        outlier_df[(colname := f"{thresholds_name}.Z_Score.{feature}")] = scipy_zscore(
+            df[feature]
+        )
+        zscore_columns[feature] = colname
 
     # Create outlier detection conditions for each feature
     conditions = []
@@ -111,7 +113,9 @@ def identify_outliers(
             [
                 # grab only the outlier zscore columns from the outlier_df
                 outlier_df[zscore_columns.values()],
-                pd.DataFrame({thresholds_name: reduce(operator.and_, conditions)}),
+                pd.DataFrame(
+                    {f"{thresholds_name}.is_outlier": reduce(operator.and_, conditions)}
+                ),
             ],
             axis=1,
         )
@@ -200,12 +204,14 @@ def find_outliers(
     return result
 
 
-def label_outliers(
+def label_outliers(  # noqa: PLR0913
     df: Union[SCDataFrame, pd.DataFrame, str],
     feature_thresholds: Optional[Union[Dict[str, float], str]] = None,
     feature_thresholds_file: Optional[str] = DEFAULT_QC_THRESHOLD_FILE,
     include_threshold_scores: bool = False,
     export_path: Optional[str] = None,
+    report_path: Optional[str] = None,
+    **kwargs: Dict[str, Any],
 ) -> pd.DataFrame:
     """
     Use identify_outliers to label the original dataset for
@@ -260,9 +266,9 @@ def label_outliers(
                     else pd.DataFrame(
                         {
                             (
-                                f"outlier_{feature_thresholds}"
+                                f"cqc.{feature_thresholds}.is_outlier"
                                 if isinstance(feature_thresholds, str)
-                                else "outlier_custom"
+                                else "cqc.custom.is_outlier"
                             ): identified_outliers
                         }
                     )
@@ -294,9 +300,16 @@ def label_outliers(
         # return a dataframe with a deduplicated columns by name
         result = labeled_df.loc[:, ~labeled_df.columns.duplicated()]
 
+    # reconvert back to scdataframe
+    result = SCDataFrame(data=result)
+
     # export the file if specified
     if export_path is not None:
-        SCDataFrame(data=result).export(file_path=export_path)
+        result.export(file_path=export_path)
+
+    # if we have a report path, generate the report and use kwargs
+    if report_path is not None:
+        result.show_report(report_path=report_path, **kwargs)
 
     return result
 

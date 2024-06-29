@@ -343,12 +343,12 @@ def test_label_outliers(
             df=basic_outlier_dataframe,
             feature_thresholds={"example_feature": 1},
             include_threshold_scores=True,
-        ),
+        ).data,
         analyze.label_outliers(
             df=basic_outlier_csv,
             feature_thresholds={"example_feature": 1},
             include_threshold_scores=True,
-        ),
+        ).data,
     )
 
     # test basic single-column result with zscores
@@ -369,7 +369,7 @@ def test_label_outliers(
             8: 9,
             9: 10,
         },
-        "Z_Score_example_feature": {
+        "cqc.custom.Z_Score.example_feature": {
             0: -1.5666989036012806,
             1: -1.2185435916898848,
             2: -0.8703882797784892,
@@ -381,7 +381,7 @@ def test_label_outliers(
             8: 1.2185435916898848,
             9: 1.5666989036012806,
         },
-        "outlier_custom": {
+        "cqc.custom.is_outlier": {
             0: False,
             1: False,
             2: False,
@@ -413,7 +413,7 @@ def test_label_outliers(
             8: 9,
             9: 10,
         },
-        "outlier_custom": {
+        "cqc.custom.is_outlier": {
             0: False,
             1: False,
             2: False,
@@ -434,9 +434,9 @@ def test_label_outliers(
         include_threshold_scores=True,
     )
     pd.testing.assert_frame_equal(
-        test_df,
+        test_df.data,
         pd.read_parquet(
-            path="tests/data/coSMicQC/test_label_outliers_output.parquet",
+            path="tests/data/coSMicQC/output_data/test_label_outliers_output.parquet",
             columns=test_df.columns.tolist(),
         ),
     )
@@ -445,8 +445,10 @@ def test_label_outliers(
     pd.testing.assert_frame_equal(
         analyze.label_outliers(
             df=cytotable_CFReT_data_df, include_threshold_scores=True
+        ).data,
+        pd.read_parquet(
+            path="tests/data/coSMicQC/output_data/test_label_outliers_output.parquet"
         ),
-        pd.read_parquet(path="tests/data/coSMicQC/test_label_outliers_output.parquet"),
     )
 
 
@@ -478,7 +480,7 @@ def test_identify_outliers(
         feature_thresholds={"example_feature": 1},
         include_threshold_scores=True,
     ).to_dict(orient="dict") == {
-        "Z_Score_example_feature": {
+        "cqc.custom.Z_Score.example_feature": {
             0: -1.5666989036012806,
             1: -1.2185435916898848,
             2: -0.8703882797784892,
@@ -490,7 +492,7 @@ def test_identify_outliers(
             8: 1.2185435916898848,
             9: 1.5666989036012806,
         },
-        "outlier_custom": {
+        "cqc.custom.is_outlier": {
             0: False,
             1: False,
             2: False,
@@ -510,7 +512,9 @@ def test_identify_outliers(
             feature_thresholds="large_nuclei",
             include_threshold_scores=True,
         ),
-        pd.read_parquet("tests/data/coSMicQC/test_identifier_outliers_output.parquet"),
+        pd.read_parquet(
+            "tests/data/coSMicQC/output_data/test_identifier_outliers_output.parquet"
+        ),
     )
 
     identified_df = analyze.identify_outliers(
@@ -520,8 +524,8 @@ def test_identify_outliers(
     pd.testing.assert_series_equal(
         identified_df,
         pd.read_parquet(
-            "tests/data/coSMicQC/test_identifier_outliers_output.parquet",
-            columns=["outlier_large_nuclei"],
-        )["outlier_large_nuclei"],
+            "tests/data/coSMicQC/output_data/test_identifier_outliers_output.parquet",
+            columns=["cqc.large_nuclei.is_outlier"],
+        )["cqc.large_nuclei.is_outlier"],
         check_names=False,
     )
