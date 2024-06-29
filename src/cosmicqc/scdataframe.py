@@ -139,17 +139,17 @@ class SCDataFrame:
     @staticmethod
     def is_notebook_or_lab() -> bool:
         """
-        Determines if the code is being executed in a Jupyter notebook or
-        JupyterLab environment.
+        Determines if the code is being executed in a Jupyter notebook (.ipynb)
+        returning false if it is not.
 
         This method attempts to detect the interactive shell environment
         using IPython's `get_ipython` function. It checks the class name of the current
-          IPython shell to distinguish between different execution environments.
+        IPython shell to distinguish between different execution environments.
 
         Returns:
             bool:
                 - `True`
-                    if the code is being executed in a Jupyter notebook or JupyterLab.
+                    if the code is being executed in a Jupyter notebook (.ipynb).
                 - `False`
                     otherwise (e.g., standard Python shell, terminal IPython shell,
                     or scripts).
