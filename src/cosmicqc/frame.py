@@ -52,21 +52,11 @@ class SCDataFrame(pd.DataFrame):
     pandas DataFrame. It also includes capabilities to export data.
 
     Attributes:
-        data_source (str):
-            A string indicating the data source, either 'pd.DataFrame'
-            or the file path.
-        data (pd.DataFrame):
-            The loaded data in a pandas DataFrame.
-
-    Methods:
-        __call__():
-            Returns the underlying pandas DataFrame.
-        __repr__():
-            Returns a representational string of the underlying pandas DataFrame.
-        __getattr__():
-            Returns the underlying attributes of the pandas DataFrame.
-        __getitem__():
-            Returns slice of data from pandas DataFrame.
+        _metadata (ClassVar[list[str]]):
+            A class-level attribute that includes custom attributes.
+        _custom_attrs (dict):
+            A dictionary to store custom attributes, such as data source,
+            context directory, and bounding box information.
     """
 
     _metadata: ClassVar = ["_custom_attrs"]
@@ -85,9 +75,9 @@ class SCDataFrame(pd.DataFrame):
             data (Union[SCDataFrame_type, pd.DataFrame, str, pathlib.Path]):
                 The data source, either a pandas DataFrame or a file path.
             data_context_dir (Optional[str]):
-                Directory context for the data.
+                Directory context for the image data within the DataFrame.
             data_bounding_box (Optional[pd.DataFrame]):
-                Bounding box data for the DataFrame.
+                Bounding box data for the DataFrame images.
             **kwargs:
                 Additional keyword arguments to pass to the pandas read functions.
         """
@@ -175,6 +165,25 @@ class SCDataFrame(pd.DataFrame):
         *args: List[Any],
         **kwargs: Dict[str, Any],
     ) -> Any:  # noqa: ANN401
+        """
+        Wraps a given method to ensure that the returned result
+        is an SCDataFrame if applicable.
+
+        Args:
+            method (Callable):
+                The method to be called and wrapped.
+            *args (List[Any]):
+                Positional arguments to be passed to the method.
+            **kwargs (Dict[str, Any]):
+                Keyword arguments to be passed to the method.
+
+        Returns:
+            Any:
+                The result of the method call. If the result is a pandas DataFrame,
+                it is wrapped in an SCDataFrame instance with additional context
+                information (data context directory and data bounding box).
+
+        """
         result = method(*args, **kwargs)
         if isinstance(result, pd.DataFrame):
             result = SCDataFrame(
@@ -187,11 +196,50 @@ class SCDataFrame(pd.DataFrame):
     def sort_values(
         self: SCDataFrame_type, *args: List[Any], **kwargs: Dict[str, Any]
     ) -> SCDataFrame_type:
+        """
+        Sorts the DataFrame by the specified column(s) and returns a
+        new SCDataFrame instance.
+
+        Note: we wrap this method within SCDataFrame to help ensure the consistent
+        return of SCDataFrames in the context of pd.Series (which are
+        treated separately but have specialized processing within the
+        context of sort_values).
+
+        Args:
+            *args (List[Any]):
+                Positional arguments to be passed to the pandas
+                DataFrame's `sort_values` method.
+            **kwargs (Dict[str, Any]):
+                Keyword arguments to be passed to the pandas
+                DataFrame's `sort_values` method.
+
+        Returns:
+            SCDataFrame_type:
+                A new instance of SCDataFrame sorted by the specified column(s).
+
+        """
+
         return self._wrap_method(super().sort_values, *args, **kwargs)
 
     def get_bounding_box_from_data(
         self: SCDataFrame_type,
     ) -> Optional[SCDataFrame_type]:
+        """
+        Retrieves bounding box data from the DataFrame based
+        on predefined column groups.
+
+        This method identifies specific groups of columns representing bounding box
+        coordinates for different cellular components (cytoplasm, nuclei, cells) and
+        checks for their presence in the DataFrame. If all required columns are present,
+        it filters and returns a new SCDataFrame instance containing only these columns.
+
+        Returns:
+            Optional[SCDataFrame_type]:
+                A new instance of SCDataFrame containing the bounding box columns if
+                they exist in the DataFrame. Returns None if the required columns
+                are not found.
+
+        """
         # Define column groups and their corresponding conditions
         column_groups = {
             "cyto": [
@@ -600,7 +648,8 @@ class SCDataFrame(pd.DataFrame):
         Referenced with modifications from:
         https://github.com/pandas-dev/pandas/blob/v2.2.2/pandas/core/frame.py#L1216
 
-        Return a html representation for a particular DataFrame.
+        Modifications added to help achieve image-based output for single-cell data
+        within the context of SCDataFrame and coSMicQC.
 
         Mainly for Jupyter notebooks.
 
