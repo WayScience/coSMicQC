@@ -21,6 +21,17 @@ def fixture_cytotable_CFReT_df():
     )
 
 
+@pytest.fixture(name="cytotable_NF1_data_parquet_shrunken")
+def fixture_cytotable_NF1_data_parquet_shrunken():
+    """
+    Return df to test CytoTable NF1 data through shrunken parquet file
+    """
+    return (
+        "tests/data/cytotable/NF1_cellpainting_data_shrunken/"
+        "Plate_2_with_image_data_shrunken.parquet"
+    )
+
+
 @pytest.fixture(name="basic_outlier_dataframe")
 def fixture_basic_outlier_dataframe():
     """

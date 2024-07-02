@@ -7,25 +7,33 @@ import pathlib
 import random
 import re
 import webbrowser
-from io import BytesIO
-from pandas._config import (
-    get_option,
+from io import BytesIO, StringIO
+from typing import (
+    Any,
+    Callable,
+    ClassVar,
+    Dict,
+    List,
+    Optional,
+    Tuple,
+    TypeVar,
+    Union,
 )
-from pandas.io.formats import (
-    format as fmt,
-)
-from io import StringIO
-from typing import Any, Dict, List, Optional, TypeVar, Union, Tuple
-from functools import partial
+
 import pandas as pd
 import plotly
-from IPython.display import HTML, display
 import plotly.colors as pc
 import plotly.express as px
 import plotly.graph_objects as go
 import skimage
 from IPython import get_ipython
 from jinja2 import Environment, FileSystemLoader
+from pandas._config import (
+    get_option,
+)
+from pandas.io.formats import (
+    format as fmt,
+)
 from PIL import Image
 
 # provide backwards compatibility for Self type in earlier Python versions.
@@ -59,10 +67,10 @@ class SCDataFrame(pd.DataFrame):
             Returns slice of data from pandas DataFrame.
     """
 
-    _metadata = ["_custom_attrs"]
+    _metadata: ClassVar = ["_custom_attrs"]
 
     def __init__(
-        self,
+        self: SCDataFrame_type,
         data: Union[pd.DataFrame, str, pathlib.Path],
         data_context_dir: Optional[str] = None,
         data_bounding_box: Optional[pd.DataFrame] = None,
@@ -74,8 +82,10 @@ class SCDataFrame(pd.DataFrame):
         Args:
             data (Union[pd.DataFrame, str, pathlib.Path]):
                 The data source, either a pandas DataFrame or a file path.
-            data_context_dir (Optional[str]): Directory context for the data.
-            data_bounding_box (Optional[pd.DataFrame]): Bounding box data for the DataFrame.
+            data_context_dir (Optional[str]):
+                Directory context for the data.
+            data_bounding_box (Optional[pd.DataFrame]):
+                Bounding box data for the DataFrame.
             **kwargs: Additional keyword arguments to pass to the pandas read functions.
         """
 
@@ -90,14 +100,17 @@ class SCDataFrame(pd.DataFrame):
 
         if isinstance(data, SCDataFrame):
             self._custom_attrs["data_source"] = data._custom_attrs["data_source"]
-            self._custom_attrs["data_context_dir"] = data._custom_attrs["data_context_dir"]
+            self._custom_attrs["data_context_dir"] = data._custom_attrs[
+                "data_context_dir"
+            ]
             super().__init__(data)
-        elif isinstance(data, pd.DataFrame):
-            self._custom_attrs["data_source"] = "pandas.DataFrame"
+        elif isinstance(data, (pd.DataFrame, pd.Series)):
+            self._custom_attrs["data_source"] = (
+                "pandas.DataFrame"
+                if isinstance(data, pd.DataFrame)
+                else "pandas.Series"
+            )
             super().__init__(data)
-        elif isinstance(data, pd.Series):
-            self._custom_attrs["data_source"] = "pandas.Series"
-            super().__init__(pd.DataFrame(data))
         elif isinstance(data, (str, pathlib.Path)):
             data_path = pathlib.Path(data)
             self._custom_attrs["data_source"] = str(data_path)
@@ -128,9 +141,7 @@ class SCDataFrame(pd.DataFrame):
         else:
             self._custom_attrs["data_bounding_box"] = data_bounding_box
 
-    def __getitem__(
-        self: SCDataFrame_type, key: Union[int, str]
-    ) -> Any:  # noqa: ANN401
+    def __getitem__(self: SCDataFrame_type, key: Union[int, str]) -> Any:  # noqa: ANN401
         """
         Returns an element or a slice of the underlying pandas DataFrame.
 
@@ -154,8 +165,13 @@ class SCDataFrame(pd.DataFrame):
                 data_context_dir=self._custom_attrs["data_context_dir"],
                 data_bounding_box=self._custom_attrs["data_bounding_box"],
             )
-    
-    def _wrap_method(self, method, *args, **kwargs):
+
+    def _wrap_method(
+        self: SCDataFrame_type,
+        method: Callable,
+        *args: List[Any],
+        **kwargs: Dict[str, Any],
+    ) -> Any:  # noqa: ANN401
         result = method(*args, **kwargs)
         if isinstance(result, pd.DataFrame):
             result = SCDataFrame(
@@ -164,11 +180,15 @@ class SCDataFrame(pd.DataFrame):
                 data_bounding_box=self._custom_attrs["data_bounding_box"],
             )
         return result
-    
-    def sort_values(self, *args, **kwargs):
+
+    def sort_values(
+        self: SCDataFrame_type, *args: List[Any], **kwargs: Dict[str, Any]
+    ) -> SCDataFrame_type:
         return self._wrap_method(super().sort_values, *args, **kwargs)
 
-    def get_bounding_box_from_data(self: SCDataFrame_type):
+    def get_bounding_box_from_data(
+        self: SCDataFrame_type,
+    ) -> Optional[SCDataFrame_type]:
         # Define column groups and their corresponding conditions
         column_groups = {
             "cyto": [
@@ -510,11 +530,10 @@ class SCDataFrame(pd.DataFrame):
 
     @staticmethod
     def process_image_data_as_html_display(
-        data_value: Any,
-        data_context_dir: str = None,
-        bounding_box=Tuple[int, int, int, int],
+        data_value: Any,  # noqa: ANN401
+        bounding_box: Tuple[int, int, int, int],
+        data_context_dir: Optional[str] = None,
     ) -> str:
-
         if not pathlib.Path(data_value).is_file():
             if not pathlib.Path(
                 candidate_path := (f"{data_context_dir}/{data_value}")
@@ -538,7 +557,10 @@ class SCDataFrame(pd.DataFrame):
         # Get the PNG byte data
         png_bytes = png_bytes_io.getvalue()
 
-        return f'<img src="data:image/png;base64,{base64.b64encode(png_bytes).decode("utf-8")}" style="width:300px;"/>'
+        return (
+            '<img src="data:image/png;base64,'
+            f'{base64.b64encode(png_bytes).decode("utf-8")}" style="width:300px;"/>'
+        )
 
     def get_displayed_rows(self: SCDataFrame_type) -> List[int]:
         # Get the current display settings
@@ -589,8 +611,7 @@ class SCDataFrame(pd.DataFrame):
 
             # determine if we have image_cols to display
         if image_cols := self.find_image_columns():
-
-            # readd bounding box cols if they are no longer available as in cases
+            # re-add bounding box cols if they are no longer available as in cases
             # of masking or accessing various pandas attr's
             bounding_box_externally_joined = False
 
@@ -598,11 +619,9 @@ class SCDataFrame(pd.DataFrame):
                 col in self.columns.tolist()
                 for col in self._custom_attrs["data_bounding_box"].columns.tolist()
             ):
-
                 data = self.join(other=self._custom_attrs["data_bounding_box"])
                 bounding_box_externally_joined = True
             else:
-
                 data = self.copy()
 
             # gather indices which will be displayed based on pandas configuration

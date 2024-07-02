@@ -128,3 +128,25 @@ def test_show_report(cytotable_CFReT_data_df: pd.DataFrame):
     )
 
     assert report_path.is_file()
+
+
+def test_repr_html(cytotable_NF1_data_parquet_shrunken: str):
+    """
+    Tests how images are rendered through customized repr_html in SCdataFrame
+    """
+
+    scdf = SCDataFrame(
+        data=cytotable_NF1_data_parquet_shrunken,
+        data_context_dir=f"{pathlib.Path(cytotable_NF1_data_parquet_shrunken).parent}/Plate_2_images",
+    )
+
+    # collect html output from repr_html
+    # note: we filter here to avoid the dataframerenderer excluding the image results
+    # (exclusions automatically occur based on large data output via '...' ellipsis).
+    html_output = scdf[
+        ["Image_FileName_DAPI", "Image_FileName_GFP", "Image_FileName_RFP"]
+    ]._repr_html_()
+
+    # assert the presence of specific image-focused string within HTML used
+    # for rendering the images when they appear in a Jupyter notebook.
+    assert 'src="data:image/png;base64' in html_output

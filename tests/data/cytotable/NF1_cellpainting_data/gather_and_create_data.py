@@ -65,11 +65,11 @@ df_full = pd.merge(
     right_on="ImageNumber",
 )
 
+
 # modify the filename to match what was gathered from figshare
-def modify_filename(file_path):
-    return file_path.replace(
-        "_illumcorrect.tiff", ".tif"
-    )
+def modify_filename(file_path: str):
+    return file_path.replace("_illumcorrect.tiff", ".tif")
+
 
 # apply the filename rename to several columns
 df_full["Image_URL_DAPI"] = df_full["Image_URL_DAPI"].apply(modify_filename)

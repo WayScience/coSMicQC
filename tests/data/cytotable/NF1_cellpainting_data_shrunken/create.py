@@ -9,6 +9,7 @@ of the project repository:
 
 import pathlib
 import shutil
+
 import pandas as pd
 
 source_data_path = "tests/data/cytotable/NF1_cellpainting_data/"
@@ -33,7 +34,7 @@ sampled_df.to_parquet(target_parquet_path)
 
 def check_and_copy_file(filename: str):
     """
-    Checks for files in target dir and copies them if they dont' already exist
+    Checks for files in target dir and copies them if they don't already exist
     """
     source_path = f"{source_image_data_path}/{filename}"
     target_path = f"{target_image_data_path}/{filename}"

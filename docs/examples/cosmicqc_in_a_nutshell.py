@@ -39,18 +39,20 @@ scdf
 # +
 # create a labeled dataset which includes z-scores and whether those scores
 # are interpreted as outliers or inliers. We use pre-defined threshold sets
-# loaded from a default configuration file (cosmicqc can accept user-defined files too!).
+# loaded from defaults (cosmicqc can accept user-defined thresholds too!).
 labeled_scdf = cosmicqc.analyze.label_outliers(
     df=scdf,
     include_threshold_scores=True,
 )
 
-# show the dataframe rows with only the last 8 columns (added from the label_outliers function)
+# show the dataframe rows with only the last 8 columns
+# (added from the label_outliers function)
 labeled_scdf.iloc[:, -8:]
 # -
 
-# show histogram reports on the outliers and inliers for each threshold set in the new columns
-labeled_scdf.show_report();
+# show histogram reports on the outliers and inliers
+# for each threshold set in the new columns
+labeled_scdf.show_report()
 
 # show cropped images through SCDataFrame from the dataset to help analyze outliers
 labeled_scdf.sort_values(by="cqc.large_nuclei.is_outlier", ascending=False)[
