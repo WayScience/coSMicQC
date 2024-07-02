@@ -25,6 +25,10 @@ plotly = "^5.22.0" # used for report generation capabilities
 kaleido = "0.2.1" # used for plotly dependencies
 ipython = "^8.12.3" # used for environment detection
 scikit-image = "0.19.3" # used for image processing
+pywavelets = [
+  {version = "^1.4.1", python = "<3.9"},
+  {version = ">1.4.1", python = ">=3.9"}
+] # dependency of scikit-image
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.2.0" # provides testing capabilities for project
