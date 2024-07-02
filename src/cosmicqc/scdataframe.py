@@ -8,6 +8,13 @@ import random
 import re
 import webbrowser
 from io import BytesIO
+from pandas._config import (
+    get_option,
+)
+from pandas.io.formats import (
+    format as fmt,
+)
+from io import StringIO
 from typing import Any, Dict, List, Optional, TypeVar, Union, Tuple
 from functools import partial
 import pandas as pd
@@ -81,7 +88,11 @@ class SCDataFrame(pd.DataFrame):
         if data_context_dir is not None:
             self._custom_attrs["data_context_dir"] = data_context_dir
 
-        if isinstance(data, pd.DataFrame):
+        if isinstance(data, SCDataFrame):
+            self._custom_attrs["data_source"] = data._custom_attrs["data_source"]
+            self._custom_attrs["data_context_dir"] = data._custom_attrs["data_context_dir"]
+            super().__init__(data)
+        elif isinstance(data, pd.DataFrame):
             self._custom_attrs["data_source"] = "pandas.DataFrame"
             super().__init__(data)
         elif isinstance(data, pd.Series):
@@ -132,11 +143,30 @@ class SCDataFrame(pd.DataFrame):
                 The selected element or slice of data.
         """
 
-        return SCDataFrame(
-            super().__getitem__(key),
-            data_context_dir=self._custom_attrs["data_context_dir"],
-            data_bounding_box=self._custom_attrs["data_bounding_box"],
-        )
+        result = super().__getitem__(key)
+
+        if isinstance(result, pd.Series):
+            return result
+
+        elif isinstance(result, pd.DataFrame):
+            return SCDataFrame(
+                super().__getitem__(key),
+                data_context_dir=self._custom_attrs["data_context_dir"],
+                data_bounding_box=self._custom_attrs["data_bounding_box"],
+            )
+    
+    def _wrap_method(self, method, *args, **kwargs):
+        result = method(*args, **kwargs)
+        if isinstance(result, pd.DataFrame):
+            result = SCDataFrame(
+                result,
+                data_context_dir=self._custom_attrs["data_context_dir"],
+                data_bounding_box=self._custom_attrs["data_bounding_box"],
+            )
+        return result
+    
+    def sort_values(self, *args, **kwargs):
+        return self._wrap_method(super().sort_values, *args, **kwargs)
 
     def get_bounding_box_from_data(self: SCDataFrame_type):
         # Define column groups and their corresponding conditions
@@ -465,13 +495,12 @@ class SCDataFrame(pd.DataFrame):
 
         return fig
 
-    @staticmethod
-    def find_image_columns(data: SCDataFrame_type) -> bool:
+    def find_image_columns(self: SCDataFrame_type) -> bool:
         pattern = r".*\.(tif|tiff)$"
         return [
             column
-            for column in data.columns
-            if data[column]
+            for column in self.columns
+            if self[column]
             .apply(
                 lambda value: isinstance(value, str)
                 and re.match(pattern, value, flags=re.IGNORECASE)
@@ -511,6 +540,21 @@ class SCDataFrame(pd.DataFrame):
 
         return f'<img src="data:image/png;base64,{base64.b64encode(png_bytes).decode("utf-8")}" style="width:300px;"/>'
 
+    def get_displayed_rows(self: SCDataFrame_type) -> List[int]:
+        # Get the current display settings
+        max_rows = pd.get_option("display.max_rows")
+        min_rows = pd.get_option("display.min_rows")
+
+        if len(self) <= max_rows:
+            # If the DataFrame has fewer rows than max_rows, all rows will be displayed
+            return self.index.tolist()
+        else:
+            # Calculate how many rows will be displayed at the beginning and end
+            half_min_rows = min_rows // 2
+            start_display = self.index[:half_min_rows].tolist()
+            end_display = self.index[-half_min_rows:].tolist()
+            return start_display + end_display
+
     def _repr_html_(
         self: SCDataFrame_type, key: Optional[Union[int, str]] = None
     ) -> str:
@@ -518,30 +562,54 @@ class SCDataFrame(pd.DataFrame):
         Returns HTML representation of the underlying pandas DataFrame
         for use within Juypyter notebook environments and similar.
 
+        Referenced with modifications from:
+        https://github.com/pandas-dev/pandas/blob/v2.2.2/pandas/core/frame.py#L1216
+
+        Return a html representation for a particular DataFrame.
+
+        Mainly for Jupyter notebooks.
+
         Returns:
             str: The data in a pandas DataFrame.
         """
 
-        # readd bounding box cols if they are no longer available as in cases
-        # of masking or accessing various pandas attr's
-        bounding_box_externally_joined = False
+        if self._info_repr():
+            buf = StringIO()
+            self.info(buf=buf)
+            # need to escape the <class>, should be the first line.
+            val = buf.getvalue().replace("<", r"&lt;", 1)
+            val = val.replace(">", r"&gt;", 1)
+            return f"<pre>{val}</pre>"
 
-        if self._custom_attrs["data_bounding_box"] is not None and not all(
-            col in self.columns.tolist()
-            for col in self._custom_attrs["data_bounding_box"].columns.tolist()
-        ):
+        if get_option("display.notebook_repr_html"):
+            max_rows = get_option("display.max_rows")
+            min_rows = get_option("display.min_rows")
+            max_cols = get_option("display.max_columns")
+            show_dimensions = get_option("display.show_dimensions")
 
-            data = self.join(other=self._custom_attrs["data_bounding_box"])
-            bounding_box_externally_joined = True
-        else:
+            # determine if we have image_cols to display
+        if image_cols := self.find_image_columns():
 
-            data = self
+            # readd bounding box cols if they are no longer available as in cases
+            # of masking or accessing various pandas attr's
+            bounding_box_externally_joined = False
 
-        if image_cols := self.find_image_columns(data=data):
+            if self._custom_attrs["data_bounding_box"] is not None and not all(
+                col in self.columns.tolist()
+                for col in self._custom_attrs["data_bounding_box"].columns.tolist()
+            ):
+
+                data = self.join(other=self._custom_attrs["data_bounding_box"])
+                bounding_box_externally_joined = True
+            else:
+
+                data = self.copy()
+
+            # gather indices which will be displayed based on pandas configuration
+            display_indices = self.get_displayed_rows()
 
             for image_col in image_cols:
-
-                data[image_col] = data.apply(
+                data.loc[display_indices, image_col] = data.loc[display_indices].apply(
                     lambda row: self.process_image_data_as_html_display(
                         data_value=row[image_col],
                         data_context_dir=self._custom_attrs["data_context_dir"],
@@ -560,6 +628,29 @@ class SCDataFrame(pd.DataFrame):
                     self._custom_attrs["data_bounding_box"].columns.tolist(), axis=1
                 )
 
-            return data.to_html(escape=False)
+            formatter = fmt.DataFrameFormatter(
+                data,
+                columns=None,
+                col_space=None,
+                na_rep="NaN",
+                formatters=None,
+                float_format=None,
+                sparsify=None,
+                justify=None,
+                index_names=True,
+                header=True,
+                index=True,
+                bold_rows=True,
+                # note: we avoid escapes to allow HTML rendering for images
+                escape=False,
+                max_rows=max_rows,
+                min_rows=min_rows,
+                max_cols=max_cols,
+                show_dimensions=show_dimensions,
+                decimal=".",
+            )
 
-        return pd.DataFrame(self)._repr_html_()
+            return fmt.DataFrameRenderer(formatter).to_html()
+
+        else:
+            return None

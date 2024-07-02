@@ -107,20 +107,30 @@ def identify_outliers(
         reduce(operator.and_, conditions)
         if not include_threshold_scores
         # otherwise, provide the threshold zscore col and the above column
-        else SCDataFrame(pd.concat(
-            [
-                # grab only the outlier zscore columns from the outlier_df
-                outlier_df[zscore_columns.values()],
-                SCDataFrame(
-                    {f"{thresholds_name}.is_outlier": reduce(operator.and_, conditions)}
-                ),
-            ],
-            axis=1,
-        ))
+        else SCDataFrame(
+            data=pd.concat(
+                [
+                    # grab only the outlier zscore columns from the outlier_df
+                    outlier_df[zscore_columns.values()],
+                    SCDataFrame(
+                        {
+                            f"{thresholds_name}.is_outlier": reduce(
+                                operator.and_, conditions
+                            )
+                        }
+                    ),
+                ],
+                axis=1,
+            ),
+            data_context_dir=df._custom_attrs["data_context_dir"],
+        )
     )
 
     if export_path is not None:
-        result.export(file_path=export_path)
+        if isinstance(result, pd.Series):
+            SCDataFrame(result).export(file_path=export_path)
+        else:
+            result.export(file_path=export_path)
 
     return result
 
@@ -254,30 +264,33 @@ def label_outliers(  # noqa: PLR0913
             include_threshold_scores=include_threshold_scores,
         )
 
-        result = SCDataFrame(pd.concat(
-            [
-                df,
-                (
-                    identified_outliers
-                    if isinstance(identified_outliers, pd.DataFrame)
-                    else SCDataFrame(
-                        {
-                            (
-                                f"cqc.{feature_thresholds}.is_outlier"
-                                if isinstance(feature_thresholds, str)
-                                else "cqc.custom.is_outlier"
-                            ): identified_outliers
-                        }
-                    )
-                ),
-            ],
-            axis=1,
-        ))
+        result = SCDataFrame(
+            data=pd.concat(
+                [
+                    df,
+                    (
+                        identified_outliers
+                        if isinstance(identified_outliers, pd.DataFrame)
+                        else SCDataFrame(
+                            {
+                                (
+                                    f"cqc.{feature_thresholds}.is_outlier"
+                                    if isinstance(feature_thresholds, str)
+                                    else "cqc.custom.is_outlier"
+                                ): identified_outliers
+                            }
+                        )
+                    ),
+                ],
+                axis=1,
+            ),
+            data_context_dir=df._custom_attrs["data_context_dir"],
+        )
 
     # for multiple outlier processing
     elif feature_thresholds is None:
         # return the outlier dataframe for all threshold rules
-        labeled_df = SCDataFrame(pd.concat(
+        labeled_df = pd.concat(
             [df]
             + [
                 # identify outliers for each threshold rule
@@ -293,9 +306,12 @@ def label_outliers(  # noqa: PLR0913
                 )
             ],
             axis=1,
-        ))
+        )
         # return a dataframe with a deduplicated columns by name
-        result = labeled_df.loc[:, ~labeled_df.columns.duplicated()]
+        result = SCDataFrame(
+            labeled_df.loc[:, ~labeled_df.columns.duplicated()],
+            data_context_dir=df._custom_attrs["data_context_dir"],
+        )
 
     # export the file if specified
     if export_path is not None:

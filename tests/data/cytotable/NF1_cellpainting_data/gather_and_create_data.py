@@ -1,6 +1,10 @@
 """
 Used for downloading and preparing data for use
 with coSMicQC tests.
+
+This file may be processed using the following command from the root
+of the project repository:
+`poetry run python tests/data/cytotable/NF1_cellpainting_data/gather_and_create_data.py`
 """
 
 import pathlib
@@ -20,6 +24,7 @@ image_zip_file_path = test_data_path + "Plate_2_images.zip"
 image_extract_dir = test_data_path + "Plate_2_images"
 joined_data_path = test_data_path + "Plate_2_with_image_data.parquet"
 
+# for url and filepath, download the url as the filepath on local system
 for url, file_path in zip(
     [sqlite_url, parquet_url, image_zip_url],
     [sqlite_file_path, parquet_file_path, image_zip_file_path],
@@ -46,10 +51,12 @@ else:
 # form parquet table which includes image paths
 df_cytotable = pd.read_parquet(parquet_file_path)
 
+# read image data from the CellProfiler SQlite database
 df_image = pd.read_sql(
     sql="SELECT * FROM per_image;", con=f"sqlite:///{sqlite_file_path}"
 )
 
+# merge the image data from the CellProfiler SQLite database
 df_full = pd.merge(
     left=df_cytotable,
     right=df_image,
@@ -58,12 +65,13 @@ df_full = pd.merge(
     right_on="ImageNumber",
 )
 
-
+# modify the filename to match what was gathered from figshare
 def modify_filename(file_path):
     return file_path.replace(
         "_illumcorrect.tiff", ".tif"
     )
 
+# apply the filename rename to several columns
 df_full["Image_URL_DAPI"] = df_full["Image_URL_DAPI"].apply(modify_filename)
 df_full["Image_URL_GFP"] = df_full["Image_URL_GFP"].apply(modify_filename)
 df_full["Image_URL_RFP"] = df_full["Image_URL_RFP"].apply(modify_filename)
@@ -71,4 +79,5 @@ df_full["Image_FileName_DAPI"] = df_full["Image_FileName_DAPI"].apply(modify_fil
 df_full["Image_FileName_GFP"] = df_full["Image_FileName_GFP"].apply(modify_filename)
 df_full["Image_FileName_RFP"] = df_full["Image_FileName_RFP"].apply(modify_filename)
 
+# export the result to parquet file
 df_full.to_parquet(joined_data_path)

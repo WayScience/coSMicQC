@@ -23,7 +23,7 @@ def test_SCDataFrame_with_dataframe(
     sc_df = SCDataFrame(data=basic_outlier_dataframe)
 
     # test that we ingested the data properly
-    assert sc_df.data_source == "pandas.DataFrame"
+    assert sc_df._custom_attrs["data_source"] == "pandas.DataFrame"
     assert sc_df.equals(basic_outlier_dataframe)
 
     # test export
@@ -38,7 +38,7 @@ def test_SCDataFrame_with_dataframe(
     sc_df = SCDataFrame(data=basic_outlier_dataframe.loc[0])
 
     # test that we ingested the data properly
-    assert sc_df.data_source == "pandas.Series"
+    assert sc_df._custom_attrs["data_source"] == "pandas.Series"
     assert sc_df.equals(pd.DataFrame(basic_outlier_dataframe.loc[0]))
 
     # Tests SCDataFrame with CSV input.
@@ -46,7 +46,7 @@ def test_SCDataFrame_with_dataframe(
     expected_df = pd.read_csv(basic_outlier_csv)
 
     # test that we ingested the data properly
-    assert sc_df.data_source == basic_outlier_csv
+    assert sc_df._custom_attrs["data_source"] == str(basic_outlier_csv)
     assert sc_df.equals(expected_df)
 
     # test export
@@ -59,7 +59,7 @@ def test_SCDataFrame_with_dataframe(
     expected_df = pd.read_csv(basic_outlier_csv_gz)
 
     # test that we ingested the data properly
-    assert sc_df.data_source == basic_outlier_csv_gz
+    assert sc_df._custom_attrs["data_source"] == str(basic_outlier_csv_gz)
     assert sc_df.equals(expected_df)
 
     # test export
@@ -74,7 +74,7 @@ def test_SCDataFrame_with_dataframe(
     expected_df = pd.read_csv(basic_outlier_tsv, delimiter="\t")
 
     # test that we ingested the data properly
-    assert sc_df.data_source == basic_outlier_tsv
+    assert sc_df._custom_attrs["data_source"] == str(basic_outlier_tsv)
     assert sc_df.equals(expected_df)
 
     # test export
@@ -87,7 +87,7 @@ def test_SCDataFrame_with_dataframe(
     expected_df = pd.read_parquet(basic_outlier_parquet)
 
     # test that we ingested the data properly
-    assert sc_df.data_source == basic_outlier_parquet
+    assert sc_df._custom_attrs["data_source"] == str(basic_outlier_parquet)
     assert sc_df.equals(expected_df)
 
     # test export
@@ -100,7 +100,7 @@ def test_SCDataFrame_with_dataframe(
     # test SCDataFrame with SCDataFrame input
     copy_sc_df = SCDataFrame(data=sc_df)
 
-    pd.testing.assert_frame_equal(copy_sc_df.data, sc_df.data)
+    pd.testing.assert_frame_equal(copy_sc_df, sc_df)
 
 
 def test_show_report(cytotable_CFReT_data_df: pd.DataFrame):
