@@ -15,6 +15,7 @@ from fire.trace import FireTrace
 from . import analyze
 
 
+# used to avoid bugs with python-fire and pandas string-based repr compatibility.
 # referenced from https://github.com/google/python-fire/pull/446
 # to be removed after python-fire merges changes (uncertain of timeline)
 def HasCustomRepr(component: object) -> bool:
@@ -36,15 +37,14 @@ def HasCustomRepr(component: object) -> bool:
     return False
 
 
+# used to avoid bugs with python-fire and pandas string-based repr compatibility.
 # referenced with modifications from https://github.com/google/python-fire/pull/446
 # to be removed after python-fire merges changes (uncertain of timeline)
-# ruff: noqa: C901
-def _PrintResult(
+# ignore rule below added to help avoid triggering ruff linting checks on temporary fix.
+def _PrintResult(  # noqa: C901
     component_trace: FireTrace, verbose: bool = False, serialize: Optional[bool] = None
 ) -> None:
     """Prints the result of the Fire call to stdout in a human readable way."""
-    # TODO(dbieber): Design human readable deserializable serialization method
-    # and move serialization to its own module.
     result = component_trace.GetResult()
     # Allow users to modify the return value of the component and provide
     # custom formatting.
@@ -82,6 +82,7 @@ def _PrintResult(
     else:
         help_text = helptext.HelpText(result, trace=component_trace, verbose=verbose)
         output = [help_text]
+        # used for displaying output through python-fire
         Display(output, out=sys.stdout)
 
 

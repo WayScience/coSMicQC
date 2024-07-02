@@ -34,7 +34,8 @@ def identify_outliers(
 
     Args:
         df: Union[SCDataFrame, pd.DataFrame, str]
-            DataFrame or file with converted output from CytoTable.
+            DataFrame or file string-based filepath of a
+            Parquet, CSV, or TSV file with CytoTable output or similar data.
         feature_thresholds: Dict[str, float]
             One of two options:
             A dictionary with the feature name(s) as the key(s) and their assigned
@@ -52,6 +53,7 @@ def identify_outliers(
         export_path: Optional[str] = None
             An optional path to export the data using SCDataFrame export
             capabilities. If None no export is performed.
+            Note: compatible exports are CSV's, TSV's, and parquet.
 
     Returns:
         Union[pd.Series, SCDataFrame]:
@@ -148,7 +150,8 @@ def find_outliers(
 
     Args:
         df: Union[SCDataFrame, pd.DataFrame, str]
-            DataFrame or file with converted output from CytoTable.
+            DataFrame or file string-based filepath of a
+            Parquet, CSV, or TSV file with CytoTable output or similar data.
         metadata_columns: List[str]
             List of metadata columns that should be outputted with the outlier data.
         feature_thresholds: Dict[str, float]
@@ -165,6 +168,7 @@ def find_outliers(
         export_path: Optional[str] = None
             An optional path to export the data using SCDataFrame export
             capabilities. If None no export is performed.
+            Note: compatible exports are CSV's, TSV's, and parquet.
 
     Returns:
         pd.DataFrame:
@@ -225,7 +229,8 @@ def label_outliers(  # noqa: PLR0913
 
         Args:
             df: Union[SCDataFrame, pd.DataFrame, str]
-                DataFrame or file with converted output from CytoTable.
+                DataFrame or file string-based filepath of a
+                Parquet, CSV, or TSV file with CytoTable output or similar data.
             feature_thresholds: Dict[str, float]
                 One of two options:
                 A dictionary with the feature name(s) as the key(s) and their assigned
@@ -243,8 +248,7 @@ def label_outliers(  # noqa: PLR0913
             export_path: Optional[str] = None
                 An optional path to export the data using SCDataFrame export
                 capabilities. If None no export is performed.
-            report_path: Optional[str] = None
-                An optional str for where to generate a report.
+                Note: compatible exports are CSV's, TSV's, and parquet.
 
         Returns:
             SCDataFrame:
