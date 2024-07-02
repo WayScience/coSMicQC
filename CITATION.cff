@@ -46,8 +46,8 @@ references:
         value: "https://github.com/WayScience/CFReT_data/graphs/contributors"
   - authors:
       - name: "Way Lab NF1_cellpainting_data Team"
-    date-accessed: "2024-05-13"
-    title: Way Lab CFReT_data CytoTable Data
+    date-accessed: "2024-06-28"
+    title: Way Lab NF1_cellpainting_data CytoTable Data
     type: data
     repository-code: "https://github.com/WayScience/nf1_cellpainting_data"
     notes: >-
