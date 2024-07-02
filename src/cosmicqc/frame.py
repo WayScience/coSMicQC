@@ -43,11 +43,13 @@ SCDataFrame_type = TypeVar("SCDataFrame_type", bound="SCDataFrame")
 
 class SCDataFrame(pd.DataFrame):
     """
-    A class to handle and load different types of data files into a pandas DataFrame.
+    A class designed to enhance single-cell data handling by wrapping
+    pandas DataFrame capabilities, providing advanced methods for quality control,
+    comprehensive analysis, and image-based data processing.
 
     This class can initialize with either a pandas DataFrame or a file path (CSV, TSV,
     TXT, or Parquet). When initialized with a file path, it reads the data into a
-    pandas DataFrame.
+    pandas DataFrame. It also includes capabilities to export data.
 
     Attributes:
         data_source (str):
@@ -71,7 +73,7 @@ class SCDataFrame(pd.DataFrame):
 
     def __init__(
         self: SCDataFrame_type,
-        data: Union[pd.DataFrame, str, pathlib.Path],
+        data: Union[SCDataFrame_type, pd.DataFrame, str, pathlib.Path],
         data_context_dir: Optional[str] = None,
         data_bounding_box: Optional[pd.DataFrame] = None,
         **kwargs: Dict[str, Any],
@@ -80,13 +82,14 @@ class SCDataFrame(pd.DataFrame):
         Initializes the SCDataFrame with either a DataFrame or a file path.
 
         Args:
-            data (Union[pd.DataFrame, str, pathlib.Path]):
+            data (Union[SCDataFrame_type, pd.DataFrame, str, pathlib.Path]):
                 The data source, either a pandas DataFrame or a file path.
             data_context_dir (Optional[str]):
                 Directory context for the data.
             data_bounding_box (Optional[pd.DataFrame]):
                 Bounding box data for the DataFrame.
-            **kwargs: Additional keyword arguments to pass to the pandas read functions.
+            **kwargs:
+                Additional keyword arguments to pass to the pandas read functions.
         """
 
         self._custom_attrs = {
@@ -231,8 +234,10 @@ class SCDataFrame(pd.DataFrame):
         Exports the underlying pandas DataFrame to a file.
 
         Args:
-            file_path (str): The path where the DataFrame should be saved.
-            **kwargs: Additional keyword arguments to pass to the pandas to_* methods.
+            file_path (str):
+                The path where the DataFrame should be saved.
+            **kwargs:
+                Additional keyword arguments to pass to the pandas to_* methods.
         """
 
         data_path = pathlib.Path(file_path)
@@ -252,17 +257,17 @@ class SCDataFrame(pd.DataFrame):
     @staticmethod
     def is_notebook_or_lab() -> bool:
         """
-        Determines if the code is being executed in a Jupyter notebook or
-        JupyterLab environment.
+        Determines if the code is being executed in a Jupyter notebook (.ipynb)
+        returning false if it is not.
 
         This method attempts to detect the interactive shell environment
         using IPython's `get_ipython` function. It checks the class name of the current
-          IPython shell to distinguish between different execution environments.
+        IPython shell to distinguish between different execution environments.
 
         Returns:
             bool:
                 - `True`
-                    if the code is being executed in a Jupyter notebook or JupyterLab.
+                    if the code is being executed in a Jupyter notebook (.ipynb).
                 - `False`
                     otherwise (e.g., standard Python shell, terminal IPython shell,
                     or scripts).
@@ -445,20 +450,16 @@ class SCDataFrame(pd.DataFrame):
                 A list of column names representing the Z-scores to be visualized.
             color_palette Optional(List[str]):
                 Optional list for color palette to use.
+                Defaults to use Dark24 color palette from Plotly.
 
         Returns:
             plotly.graph_objs._figure.Figure:
                 A Plotly figure object containing the visualization.
         """
 
-        if color_palette is None:
-            # Create a list of colors from a Plotly color palette
-            color_palette = pc.qualitative.Dark24
-
         # Create histograms using plotly.express with pattern_shape and random color
-        figures = []
-        for col in cols_threshold_scores:
-            fig = px.histogram(
+        figures = [
+            px.histogram(
                 df,
                 x=col,
                 color=col_outlier,
@@ -466,14 +467,26 @@ class SCDataFrame(pd.DataFrame):
                 pattern_shape=col_outlier,
                 opacity=0.7,
             )
-            figures.append(fig)
+            for col in cols_threshold_scores
+        ]
 
         # Create a combined figure
         fig = go.Figure()
 
+        # check that we have enough colors for figures if provided
+        if color_palette is not None and len(color_palette) < len(figures):
+            raise ReferenceError(
+                f"Color palette length must match figure length of {len(figures)}."
+            )
+
         # Add traces from each histogram and modify colors, names, and pattern shapes
         for idx, fig_hist in enumerate(figures):
-            fig_color = random.choice(color_palette)
+            if color_palette is None:
+                # Create a default list of colors from a Plotly color palette
+                fig_color = random.choice(pc.qualitative.Dark24)
+            else:
+                # otherwise, use static color palette based on the number of figures
+                fig_color = color_palette[idx]
 
             for trace in fig_hist.data:
                 trace.marker.color = fig_color

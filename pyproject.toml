@@ -17,7 +17,6 @@ scipy = [
   {version = "<1.13.0", python = "<3.9"},
   {version = "^1.13.0", python = ">=3.9"}
 ]
-pyarrow = "^16.0.0"
 pyarrow = "^16.0.0" # used for data ingest and export
 pyyaml = "^6.0.1" # used for reading yaml configuration files
 fire = "^0.6.0" # used for CLI generation
