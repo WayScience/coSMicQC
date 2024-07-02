@@ -24,7 +24,10 @@ jinja2 = "^3.1.4" # used for template capabilities
 plotly = "^5.22.0" # used for report generation capabilities
 kaleido = "0.2.1" # used for plotly dependencies
 ipython = "^8.12.3" # used for environment detection
-scikit-image = "0.19.3" # used for image processing
+scikit-image = [
+  {version = "^0.19.3", python = "<3.9"},
+  {version = ">0.19.3", python = ">=3.9"}
+] # used for image processing
 pywavelets = [
   {version = "^1.4.1", python = "<3.9"},
   {version = ">1.4.1", python = ">=3.9"}
