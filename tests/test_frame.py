@@ -7,7 +7,7 @@ import pathlib
 import cosmicqc
 import pandas as pd
 import plotly
-from cosmicqc.scdataframe import SCDataFrame
+from cosmicqc.frame import SCDataFrame
 from pyarrow import parquet
 
 

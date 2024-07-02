@@ -11,7 +11,7 @@ import pandas as pd
 import yaml
 from scipy.stats import zscore as scipy_zscore
 
-from .scdataframe import SCDataFrame
+from .frame import SCDataFrame
 
 DEFAULT_QC_THRESHOLD_FILE = (
     f"{pathlib.Path(__file__).parent!s}/data/qc_nuclei_thresholds_default.yml"
