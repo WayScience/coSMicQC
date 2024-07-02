@@ -20,6 +20,7 @@
 import pathlib
 
 import cosmicqc
+import pandas as pd
 
 # set a path for the parquet-based dataset
 # (in this case, CellProfiler data processed by CytoTable)
@@ -35,6 +36,23 @@ scdf = cosmicqc.SCDataFrame(data=data_path, data_context_dir=image_context_dir)
 
 # display the dataframe
 scdf
+# -
+
+# Identify which rows include outliers for a given threshold definition
+# which references a column name and a z-score number which is considered
+# the limit.
+cosmicqc.analyze.identify_outliers(
+    df=scdf,
+    feature_thresholds={"Nuclei_AreaShape_Area": -1},
+).sort_values()
+
+# Show the number of outliers given a column name and a specified threshold
+# via the `feature_thresholds` parameter and the `find_outliers` function.
+cosmicqc.analyze.find_outliers(
+    df=scdf,
+    metadata_columns=["Metadata_ImageNumber", "Image_Metadata_Plate_x"],
+    feature_thresholds={"Nuclei_AreaShape_Area": -1},
+)
 
 # +
 # create a labeled dataset which includes z-scores and whether those scores
@@ -65,3 +83,9 @@ labeled_scdf.sort_values(by="cqc.large_nuclei.is_outlier", ascending=False)[
         "Image_FileName_DAPI",
     ]
 ]
+
+# One can convert from cosmicqc.SCDataFrame to pd.DataFrame's
+# (when or if needed!)
+df = pd.DataFrame(scdf)
+print(type(df))
+df
