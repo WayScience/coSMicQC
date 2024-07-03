@@ -23,7 +23,7 @@ import cosmicqc
 import pandas as pd
 
 # set a path for the parquet-based dataset
-# (in this case, CellProfiler data processed by CytoTable)
+# (in this case, CellProfiler SQLite data processed by CytoTable)
 data_path = (
     "../../tests/data/cytotable/NF1_cellpainting_data/Plate_2_with_image_data.parquet"
 )
