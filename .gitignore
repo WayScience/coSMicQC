@@ -132,3 +132,10 @@ dmypy.json
 
 # Cython debug symbols
 cython_debug/
+
+# test data ignores
+*.tif
+*.sqlite
+*.parquet
+*.zip
+*.csv

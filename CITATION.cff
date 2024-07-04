@@ -44,3 +44,38 @@ references:
       - description: "Github Link with Contributors"
         type: url
         value: "https://github.com/WayScience/CFReT_data/graphs/contributors"
+  - authors:
+      - name: "Way Lab NF1_cellpainting_data Team"
+    date-accessed: "2024-06-28"
+    title: Way Lab NF1_cellpainting_data CytoTable Data
+    type: data
+    repository-code: "https://github.com/WayScience/nf1_cellpainting_data"
+    notes: >-
+      Data from NF1_cellpainting_data project is used to help validate
+      expected results. Data is generated from CellProfiler
+      and CytoTable. We use the following files from the repository:
+      - "Plate_2_nf1_analysis.sqlite"
+      - "Plate_2.parquet"
+    identifiers:
+      - description: "Github Link with Contributors"
+        type: url
+        value: "https://github.com/WayScience/nf1_cellpainting_data/graphs/contributors"
+  - title: >-
+      Plate 2 (Cell Painting images from Plate 2 for NF1_cellpainting_data project)
+    type: data
+    url: https://figshare.com/articles/dataset/Plate_2/22233700
+    notes: >-
+      Image data for related NF1_cellpainting_data parquet sqlite.
+    authors:
+    - family-names: Tomkinson
+      given-names: Jenna
+    - family-names: Mattson-Hoss
+      given-names: Michelle
+    - family-names: Sarnoff
+      given-names: Herb
+    - family-names: Way
+      given-names: Gregory
+    date-published: "2023-04-12"
+    identifiers:
+    - type: doi
+      value: 10.6084/m9.figshare.22233700.v4

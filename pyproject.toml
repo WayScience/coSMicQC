@@ -24,10 +24,24 @@ jinja2 = "^3.1.4" # used for template capabilities
 plotly = "^5.22.0" # used for report generation capabilities
 kaleido = "0.2.1" # used for plotly dependencies
 ipython = "^8.12.3" # used for environment detection
+scikit-image = [
+  {version = "^0.19.3", python = "<3.9"},
+  {version = ">0.19.3", python = ">=3.9"}
+] # used for image processing
+pywavelets = [
+  {version = "^1.4.1", python = "<3.9"},
+  {version = ">1.4.1", python = ">=3.9"}
+] # dependency of scikit-image
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.2.0" # provides testing capabilities for project
 html2image = "^2.0.4.3" # used for report html export to image for tests
+sqlalchemy = "^2.0.31" # used for test data generation
+jupyterlab = "^4.2.3" # used for example notebook work
+jupytext = "^1.16.2" # used for example notebook formatting
+jupyterlab-code-formatter = "^2.2.1" # used for example notebook formatting
+black = "^24.4.2" # used for example notebook formatting
+isort = "^5.13.2" # used for example notebook formatting
 
 [tool.poetry.scripts]
 cosmicqc = "cosmicqc.cli:cli_analyze"
@@ -72,6 +86,9 @@ select = [
 "__init__.py" = ["E402", "F401"]
 # ignore typing rules for tests
 "tests/*" = ["ANN201", "PLR0913"]
+
+[tool.jupytext]
+formats = "ipynb,py:light"
 
 [tool.pytest.ini_options]
 markers = [
