@@ -434,7 +434,7 @@ def test_label_outliers(
         include_threshold_scores=True,
     )
     pd.testing.assert_frame_equal(
-        test_df.data,
+        test_df,
         pd.read_parquet(
             path="tests/data/coSMicQC/output_data/test_label_outliers_output.parquet",
             columns=test_df.columns.tolist(),
