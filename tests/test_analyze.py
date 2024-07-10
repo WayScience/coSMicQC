@@ -448,7 +448,7 @@ def test_label_outliers(
         ),
         pd.read_parquet(
             path="tests/data/coSMicQC/output_data/test_label_outliers_output.parquet"
-        )
+        ),
     )
 
 

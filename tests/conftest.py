@@ -10,7 +10,6 @@ import cosmicqc
 import cytotable
 import pandas as pd
 import parsl
-import pandas as pd
 import plotly.colors as pc
 import pytest
 from parsl.config import Config
@@ -118,7 +117,7 @@ def fixture_generate_show_report_html_output(cytotable_CFReT_data_df: pd.DataFra
         df=cytotable_CFReT_data_df,
         include_threshold_scores=True,
     )
-    
+
     # show a report
     df.show_report(
         report_path=(
@@ -180,14 +179,22 @@ def fixture_jump_cytotable_data(
                 cells.* EXCLUDE (Metadata_ImageNumber),
                 nuclei.* EXCLUDE (Metadata_ImageNumber)
             FROM
-                (SELECT * FROM read_parquet('cytoplasm.parquet') LIMIT 5000) AS cytoplasm
-            LEFT JOIN (SELECT * FROM read_parquet('cells.parquet') LIMIT 5000) AS cells ON
+                (SELECT *
+                    FROM read_parquet('cytoplasm.parquet')
+                LIMIT 5000) AS cytoplasm
+            LEFT JOIN (SELECT *
+                FROM read_parquet('cells.parquet')
+                LIMIT 5000) AS cells ON
                 cells.Metadata_ImageNumber = cytoplasm.Metadata_ImageNumber
                 AND cells.Metadata_ObjectNumber = cytoplasm.Cytoplasm_Parent_Cells
-            LEFT JOIN (SELECT * FROM read_parquet('nuclei.parquet') LIMIT 5000) AS nuclei ON
+            LEFT JOIN (SELECT *
+                FROM read_parquet('nuclei.parquet')
+                LIMIT 5000) AS nuclei ON
                 nuclei.Metadata_ImageNumber = cytoplasm.Metadata_ImageNumber
                 AND nuclei.Metadata_ObjectNumber = cytoplasm.Cytoplasm_Parent_Nuclei
-            LEFT JOIN (SELECT * FROM read_parquet('image.parquet') LIMIT 5000) AS image ON
+            LEFT JOIN (SELECT *
+                FROM read_parquet('image.parquet')
+                LIMIT 5000) AS image ON
                 image.Metadata_ImageNumber = cytoplasm.Metadata_ImageNumber
         """,
     )
