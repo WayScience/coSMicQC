@@ -11,7 +11,7 @@ import pandas as pd
 import yaml
 from scipy.stats import zscore as scipy_zscore
 
-from .scdataframe import SCDataFrame
+from .frame import SCDataFrame
 
 DEFAULT_QC_THRESHOLD_FILE = (
     f"{pathlib.Path(__file__).parent!s}/data/qc_nuclei_thresholds_default.yml"
@@ -24,7 +24,7 @@ def identify_outliers(
     feature_thresholds_file: Optional[str] = DEFAULT_QC_THRESHOLD_FILE,
     include_threshold_scores: bool = False,
     export_path: Optional[str] = None,
-) -> Union[pd.Series, pd.DataFrame]:
+) -> Union[pd.Series, SCDataFrame]:
     """
     This function uses z-scoring to format the data for detecting outlier
     nuclei or cells using specific CellProfiler features. Thresholds are
@@ -34,7 +34,8 @@ def identify_outliers(
 
     Args:
         df: Union[SCDataFrame, pd.DataFrame, str]
-            DataFrame or file with converted output from CytoTable.
+            DataFrame or file string-based filepath of a
+            Parquet, CSV, or TSV file with CytoTable output or similar data.
         feature_thresholds: Dict[str, float]
             One of two options:
             A dictionary with the feature name(s) as the key(s) and their assigned
@@ -52,9 +53,10 @@ def identify_outliers(
         export_path: Optional[str] = None
             An optional path to export the data using SCDataFrame export
             capabilities. If None no export is performed.
+            Note: compatible exports are CSV's, TSV's, and parquet.
 
     Returns:
-        Union[pd.Series, pd.DataFrame]:
+        Union[pd.Series, SCDataFrame]:
             Outlier series with booleans based on whether outliers were detected
             or not for use within other functions.
     """
@@ -107,20 +109,30 @@ def identify_outliers(
         reduce(operator.and_, conditions)
         if not include_threshold_scores
         # otherwise, provide the threshold zscore col and the above column
-        else pd.concat(
-            [
-                # grab only the outlier zscore columns from the outlier_df
-                outlier_df[zscore_columns.values()],
-                pd.DataFrame(
-                    {f"{thresholds_name}.is_outlier": reduce(operator.and_, conditions)}
-                ),
-            ],
-            axis=1,
+        else SCDataFrame(
+            data=pd.concat(
+                [
+                    # grab only the outlier zscore columns from the outlier_df
+                    outlier_df[zscore_columns.values()],
+                    SCDataFrame(
+                        {
+                            f"{thresholds_name}.is_outlier": reduce(
+                                operator.and_, conditions
+                            )
+                        }
+                    ),
+                ],
+                axis=1,
+            ),
+            data_context_dir=df._custom_attrs["data_context_dir"],
         )
     )
 
     if export_path is not None:
-        SCDataFrame(data=result).export(file_path=export_path)
+        if isinstance(result, pd.Series):
+            SCDataFrame(result).export(file_path=export_path)
+        else:
+            result.export(file_path=export_path)
 
     return result
 
@@ -138,7 +150,8 @@ def find_outliers(
 
     Args:
         df: Union[SCDataFrame, pd.DataFrame, str]
-            DataFrame or file with converted output from CytoTable.
+            DataFrame or file string-based filepath of a
+            Parquet, CSV, or TSV file with CytoTable output or similar data.
         metadata_columns: List[str]
             List of metadata columns that should be outputted with the outlier data.
         feature_thresholds: Dict[str, float]
@@ -155,6 +168,7 @@ def find_outliers(
         export_path: Optional[str] = None
             An optional path to export the data using SCDataFrame export
             capabilities. If None no export is performed.
+            Note: compatible exports are CSV's, TSV's, and parquet.
 
     Returns:
         pd.DataFrame:
@@ -194,7 +208,7 @@ def find_outliers(
 
     # export the file if specified
     if export_path is not None:
-        SCDataFrame(data=result).export(file_path=export_path)
+        result.export(file_path=export_path)
 
     # Return outliers DataFrame with specified columns
     return result
@@ -208,14 +222,15 @@ def label_outliers(  # noqa: PLR0913
     export_path: Optional[str] = None,
     report_path: Optional[str] = None,
     **kwargs: Dict[str, Any],
-) -> pd.DataFrame:
+) -> SCDataFrame:
     """
     Use identify_outliers to label the original dataset for
     where a cell passed or failed the quality control condition(s).
 
         Args:
             df: Union[SCDataFrame, pd.DataFrame, str]
-                DataFrame or file with converted output from CytoTable.
+                DataFrame or file string-based filepath of a
+                Parquet, CSV, or TSV file with CytoTable output or similar data.
             feature_thresholds: Dict[str, float]
                 One of two options:
                 A dictionary with the feature name(s) as the key(s) and their assigned
@@ -233,11 +248,10 @@ def label_outliers(  # noqa: PLR0913
             export_path: Optional[str] = None
                 An optional path to export the data using SCDataFrame export
                 capabilities. If None no export is performed.
-            report_path: Optional[str] = None
-                An optional str for where to generate a report.
+                Note: compatible exports are CSV's, TSV's, and parquet.
 
         Returns:
-            pd.DataFrame:
+            SCDataFrame:
                 Full dataframe with optional scores and outlier boolean column.
     """
 
@@ -253,24 +267,28 @@ def label_outliers(  # noqa: PLR0913
             feature_thresholds_file=feature_thresholds_file,
             include_threshold_scores=include_threshold_scores,
         )
-        result = pd.concat(
-            [
-                df,
-                (
-                    identified_outliers
-                    if isinstance(identified_outliers, pd.DataFrame)
-                    else pd.DataFrame(
-                        {
-                            (
-                                f"cqc.{feature_thresholds}.is_outlier"
-                                if isinstance(feature_thresholds, str)
-                                else "cqc.custom.is_outlier"
-                            ): identified_outliers
-                        }
-                    )
-                ),
-            ],
-            axis=1,
+
+        result = SCDataFrame(
+            data=pd.concat(
+                [
+                    df,
+                    (
+                        identified_outliers
+                        if isinstance(identified_outliers, pd.DataFrame)
+                        else SCDataFrame(
+                            {
+                                (
+                                    f"cqc.{feature_thresholds}.is_outlier"
+                                    if isinstance(feature_thresholds, str)
+                                    else "cqc.custom.is_outlier"
+                                ): identified_outliers
+                            }
+                        )
+                    ),
+                ],
+                axis=1,
+            ),
+            data_context_dir=df._custom_attrs["data_context_dir"],
         )
 
     # for multiple outlier processing
@@ -294,10 +312,10 @@ def label_outliers(  # noqa: PLR0913
             axis=1,
         )
         # return a dataframe with a deduplicated columns by name
-        result = labeled_df.loc[:, ~labeled_df.columns.duplicated()]
-
-    # reconvert back to scdataframe
-    result = SCDataFrame(data=result)
+        result = SCDataFrame(
+            labeled_df.loc[:, ~labeled_df.columns.duplicated()],
+            data_context_dir=df._custom_attrs["data_context_dir"],
+        )
 
     # export the file if specified
     if export_path is not None:

@@ -41,7 +41,7 @@ jobs:
       - name: Install environment
         run: poetry install --no-interaction --no-ansi
       - name: Run pytest
-        run: poetry run pytest -m "not large_data_tests"
+        run: poetry run pytest -m "not (generate_report_image or large_data_tests)"
   # run large data tests as a separate job to help
   # conserve resources by detecting failure with
   # smaller tests first.

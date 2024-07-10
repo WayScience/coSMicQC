@@ -3,9 +3,10 @@ Utilities for running pytest tests in coSMicQC
 """
 
 import subprocess
+from typing import Tuple
 
 
-def run_cli_command(command: str):
+def run_cli_command(command: str) -> Tuple[str, str, int]:
     """
     Run a CLI command using subprocess and capture the output and return code.
 
@@ -13,7 +14,7 @@ def run_cli_command(command: str):
         command (list): The command to run as a list of strings.
 
     Returns:
-        tuple: (stdout, stderr, returncode)
+        tuple: (str: stdout, str: stderr, int: returncode)
     """
 
     result = subprocess.run(

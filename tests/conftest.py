@@ -10,6 +10,8 @@ import cosmicqc
 import cytotable
 import pandas as pd
 import parsl
+import pandas as pd
+import plotly.colors as pc
 import pytest
 from parsl.config import Config
 from parsl.executors import ThreadPoolExecutor
@@ -23,6 +25,17 @@ def fixture_cytotable_CFReT_df():
     """
     return pd.read_parquet(
         "tests/data/cytotable/CFRet_data/test_localhost231120090001_converted.parquet"
+    )
+
+
+@pytest.fixture(name="cytotable_NF1_data_parquet_shrunken")
+def fixture_cytotable_NF1_data_parquet_shrunken():
+    """
+    Return df to test CytoTable NF1 data through shrunken parquet file
+    """
+    return (
+        "tests/data/cytotable/NF1_cellpainting_data_shrunken/"
+        "Plate_2_with_image_data_shrunken.parquet"
     )
 
 
@@ -94,23 +107,32 @@ def fixture_basic_outlier_parquet(
     return parquet_path
 
 
-def test_generate_show_report_html_output(cytotable_CFReT_data_df: pd.DataFrame):
+@pytest.fixture(name="generate_show_report_html_output")
+def fixture_generate_show_report_html_output(cytotable_CFReT_data_df: pd.DataFrame):
     """
     Used for generating report output for use with other tests.
     """
 
+    # create outliers dataframe
     df = cosmicqc.analyze.label_outliers(
         df=cytotable_CFReT_data_df,
         include_threshold_scores=True,
     )
-
+    
+    # show a report
     df.show_report(
-        report_path=pathlib.Path(__file__).parent
-        / "data"
-        / "coSMicQC"
-        / "show_report"
-        / "cosmicqc_example_report.html"
+        report_path=(
+            report_path := pathlib.Path(__file__).parent
+            / "data"
+            / "coSMicQC"
+            / "show_report"
+            / "cosmicqc_example_report.html"
+        ),
+        color_palette=pc.qualitative.Dark24[0:2],
+        auto_open=False,
     )
+
+    return report_path
 
 
 @pytest.fixture(name="jump_cytotable_data")

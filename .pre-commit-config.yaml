@@ -22,7 +22,8 @@ repos:
         exclude: |
           (?x)^(
               .*\.lock |
-              .*\.json
+              .*\.json |
+              .*\.ipynb
           )$
   - repo: https://github.com/executablebooks/mdformat
     rev: 0.7.17
