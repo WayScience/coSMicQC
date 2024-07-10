@@ -471,7 +471,11 @@ def test_label_outliers_jump(
     test_df = pd.read_parquet("example.parquet")
 
     # check the shape
-    assert test_df.shape == (74226, 5936)
+    assert test_df.shape == (5000, 5936)
+
+    print(test_df["cqc.small_and_low_formfactor_nuclei.is_outlier"].sum())
+    print(test_df["cqc.elongated_nuclei.is_outlier"].sum())
+    print(test_df["cqc.large_nuclei.is_outlier"].sum())
 
     # check the detected outlier count
     assert test_df["cqc.small_and_low_formfactor_nuclei.is_outlier"].sum() == 1680

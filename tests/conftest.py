@@ -143,12 +143,37 @@ def fixture_jump_cytotable_data(
         parsl_config=parsl.load(
             Config(executors=[ThreadPoolExecutor(label="tpe_for_cosmicqc_testing")])
         ),
+        # note: we use a custom join to limit the
+        # data processing required within the context
+        # of GitHub Actions runner image resources.
+        joins="""
+            SELECT
+                image.Image_TableNumber,
+                image.Metadata_ImageNumber,
+                image.Metadata_Plate,
+                image.Metadata_Well,
+                image.Image_Metadata_Site,
+                image.Image_Metadata_Row,
+                cytoplasm.* EXCLUDE (Metadata_ImageNumber),
+                cells.* EXCLUDE (Metadata_ImageNumber),
+                nuclei.* EXCLUDE (Metadata_ImageNumber)
+            FROM
+                (SELECT * FROM read_parquet('cytoplasm.parquet') LIMIT 5000) AS cytoplasm
+            LEFT JOIN (SELECT * FROM read_parquet('cells.parquet') LIMIT 5000) AS cells ON
+                cells.Metadata_ImageNumber = cytoplasm.Metadata_ImageNumber
+                AND cells.Metadata_ObjectNumber = cytoplasm.Cytoplasm_Parent_Cells
+            LEFT JOIN (SELECT * FROM read_parquet('nuclei.parquet') LIMIT 5000) AS nuclei ON
+                nuclei.Metadata_ImageNumber = cytoplasm.Metadata_ImageNumber
+                AND nuclei.Metadata_ObjectNumber = cytoplasm.Cytoplasm_Parent_Nuclei
+            LEFT JOIN (SELECT * FROM read_parquet('image.parquet') LIMIT 5000) AS image ON
+                image.Metadata_ImageNumber = cytoplasm.Metadata_ImageNumber
+        """,
     )
 
     # read only the metadata from parquet file
     parquet_file_meta = parquet.ParquetFile(s3_result).metadata
 
     # check the shape of the data
-    assert (parquet_file_meta.num_rows, parquet_file_meta.num_columns) == (74226, 5928)
+    assert (parquet_file_meta.num_rows, parquet_file_meta.num_columns) == (5000, 5928)
 
     return dest_path
