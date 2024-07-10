@@ -28,7 +28,7 @@ ipython = "^8.12.3"
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.2.0"
 botocore = "^1.34.133"
-cytotable = { git = "https://github.com/d33bs/cytotable.git", branch = "move-to-real-s3-tests" }
+cytotable = ">=0.0.9"
 
 [tool.poetry.scripts]
 cosmicqc = "cosmicqc.cli:cli_analyze"
