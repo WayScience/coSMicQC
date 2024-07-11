@@ -181,20 +181,20 @@ def fixture_jump_cytotable_data(
             FROM
                 (SELECT *
                     FROM read_parquet('cytoplasm.parquet')
-                LIMIT 24000) AS cytoplasm
+                LIMIT 48000) AS cytoplasm
             LEFT JOIN (SELECT *
                 FROM read_parquet('cells.parquet')
-                LIMIT 24000) AS cells ON
+                LIMIT 48000) AS cells ON
                 cells.Metadata_ImageNumber = cytoplasm.Metadata_ImageNumber
                 AND cells.Metadata_ObjectNumber = cytoplasm.Cytoplasm_Parent_Cells
             LEFT JOIN (SELECT *
                 FROM read_parquet('nuclei.parquet')
-                LIMIT 24000) AS nuclei ON
+                LIMIT 48000) AS nuclei ON
                 nuclei.Metadata_ImageNumber = cytoplasm.Metadata_ImageNumber
                 AND nuclei.Metadata_ObjectNumber = cytoplasm.Cytoplasm_Parent_Nuclei
             LEFT JOIN (SELECT *
                 FROM read_parquet('image.parquet')
-                LIMIT 24000) AS image ON
+                LIMIT 48000) AS image ON
                 image.Metadata_ImageNumber = cytoplasm.Metadata_ImageNumber
         """,
     )
@@ -203,6 +203,6 @@ def fixture_jump_cytotable_data(
     parquet_file_meta = parquet.ParquetFile(s3_result).metadata
 
     # check the shape of the data
-    assert (parquet_file_meta.num_rows, parquet_file_meta.num_columns) == (24000, 5928)
+    assert (parquet_file_meta.num_rows, parquet_file_meta.num_columns) == (48000, 5928)
 
     return dest_path
