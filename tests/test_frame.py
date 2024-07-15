@@ -1,5 +1,5 @@
 """
-Tests cosmicqc SCDataFrame module
+Tests cosmicqc CytoDataFrame module
 """
 
 import pathlib
@@ -7,11 +7,11 @@ import pathlib
 import cosmicqc
 import pandas as pd
 import plotly
-from cosmicqc.frame import SCDataFrame
+from cosmicqc.frame import CytoDataFrame
 from pyarrow import parquet
 
 
-def test_SCDataFrame_with_dataframe(
+def test_CytoDataFrame_with_dataframe(
     tmp_path: pathlib.Path,
     basic_outlier_dataframe: pd.DataFrame,
     basic_outlier_csv: str,
@@ -19,8 +19,8 @@ def test_SCDataFrame_with_dataframe(
     basic_outlier_tsv: str,
     basic_outlier_parquet: str,
 ):
-    # Tests SCDataFrame with pd.DataFrame input.
-    sc_df = SCDataFrame(data=basic_outlier_dataframe)
+    # Tests CytoDataFrame with pd.DataFrame input.
+    sc_df = CytoDataFrame(data=basic_outlier_dataframe)
 
     # test that we ingested the data properly
     assert sc_df._custom_attrs["data_source"] == "pandas.DataFrame"
@@ -34,15 +34,15 @@ def test_SCDataFrame_with_dataframe(
 
     assert parquet.read_table(control_path).equals(parquet.read_table(test_path))
 
-    # Tests SCDataFrame with pd.Series input.
-    sc_df = SCDataFrame(data=basic_outlier_dataframe.loc[0])
+    # Tests CytoDataFrame with pd.Series input.
+    sc_df = CytoDataFrame(data=basic_outlier_dataframe.loc[0])
 
     # test that we ingested the data properly
     assert sc_df._custom_attrs["data_source"] == "pandas.Series"
     assert sc_df.equals(pd.DataFrame(basic_outlier_dataframe.loc[0]))
 
-    # Tests SCDataFrame with CSV input.
-    sc_df = SCDataFrame(data=basic_outlier_csv)
+    # Tests CytoDataFrame with CSV input.
+    sc_df = CytoDataFrame(data=basic_outlier_csv)
     expected_df = pd.read_csv(basic_outlier_csv)
 
     # test that we ingested the data properly
@@ -54,8 +54,8 @@ def test_SCDataFrame_with_dataframe(
 
     pd.testing.assert_frame_equal(expected_df, pd.read_csv(test_path))
 
-    # Tests SCDataFrame with CSV input.
-    sc_df = SCDataFrame(data=basic_outlier_csv_gz)
+    # Tests CytoDataFrame with CSV input.
+    sc_df = CytoDataFrame(data=basic_outlier_csv_gz)
     expected_df = pd.read_csv(basic_outlier_csv_gz)
 
     # test that we ingested the data properly
@@ -69,8 +69,8 @@ def test_SCDataFrame_with_dataframe(
         expected_df, pd.read_csv(test_path, compression="gzip")
     )
 
-    # Tests SCDataFrame with TSV input.
-    sc_df = SCDataFrame(data=basic_outlier_tsv)
+    # Tests CytoDataFrame with TSV input.
+    sc_df = CytoDataFrame(data=basic_outlier_tsv)
     expected_df = pd.read_csv(basic_outlier_tsv, delimiter="\t")
 
     # test that we ingested the data properly
@@ -82,8 +82,8 @@ def test_SCDataFrame_with_dataframe(
 
     pd.testing.assert_frame_equal(expected_df, pd.read_csv(test_path, sep="\t"))
 
-    # Tests SCDataFrame with parquet input.
-    sc_df = SCDataFrame(data=basic_outlier_parquet)
+    # Tests CytoDataFrame with parquet input.
+    sc_df = CytoDataFrame(data=basic_outlier_parquet)
     expected_df = pd.read_parquet(basic_outlier_parquet)
 
     # test that we ingested the data properly
@@ -97,8 +97,8 @@ def test_SCDataFrame_with_dataframe(
         parquet.read_table(test_path)
     )
 
-    # test SCDataFrame with SCDataFrame input
-    copy_sc_df = SCDataFrame(data=sc_df)
+    # test CytoDataFrame with CytoDataFrame input
+    copy_sc_df = CytoDataFrame(data=sc_df)
 
     pd.testing.assert_frame_equal(copy_sc_df, sc_df)
 
@@ -132,10 +132,10 @@ def test_show_report(cytotable_CFReT_data_df: pd.DataFrame):
 
 def test_repr_html(cytotable_NF1_data_parquet_shrunken: str):
     """
-    Tests how images are rendered through customized repr_html in SCdataFrame
+    Tests how images are rendered through customized repr_html in CytoDataFrame
     """
 
-    scdf = SCDataFrame(
+    scdf = CytoDataFrame(
         data=cytotable_NF1_data_parquet_shrunken,
         data_context_dir=f"{pathlib.Path(cytotable_NF1_data_parquet_shrunken).parent}/Plate_2_images",
     )
