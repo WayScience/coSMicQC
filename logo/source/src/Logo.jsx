@@ -25,7 +25,7 @@ const Logo = () => {
       xmlns="http://www.w3.org/2000/svg"
       strokeLinecap="round"
       strokeLinejoin="round"
-      style={{ fontSize: "30", fontFamily: font }}
+      style={{ fontSize: "35", fontFamily: font }}
       textAnchor="middle"
       dominantBaseline="middle"
     >
@@ -147,22 +147,22 @@ const Logo = () => {
 
       {/* text */}
       <g>
-        <text x="78" y="-5" fill={darkBg ? colorALight : colorA}>
+        <text x="76" y="-5" fill={darkBg ? colorALight : colorA}>
           co
         </text>
-        <text x="105" y="-5" fill={darkBg ? colorBLight : colorB}>
+        <text x="107" y="-5" fill={darkBg ? colorBLight : colorB}>
           S
         </text>
-        <text x="125" y="-5" fill={darkBg ? colorBLight : colorB}>
+        <text x="130" y="-5" fill={darkBg ? colorBLight : colorB}>
           M
         </text>
-        <text x="149" y="-5" fill={darkBg ? colorALight : colorA}>
+        <text x="159" y="-5" fill={darkBg ? colorALight : colorA}>
           ic
         </text>
-        <text x="105" y="20" fill={darkBg ? colorCLight : colorC}>
+        <text x="107" y="25" fill={darkBg ? colorCLight : colorC}>
           Q
         </text>
-        <text x="125" y="20" fill={darkBg ? colorCLight : colorC}>
+        <text x="130" y="25" fill={darkBg ? colorCLight : colorC}>
           C
         </text>
       </g>

@@ -1,15 +1,9 @@
 <svg
   xmlns="http://www.w3.org/2000/svg"
+  viewBox="-46 -46 92 93"
   stroke-linecap="round"
   stroke-linejoin="round"
-  text-anchor="middle"
-  dominant-baseline="middle"
-  style="font-size: 30px; font-family: Rubik"
-  viewBox="-46 -46 92 93"
 >
-  <style>
-    @import url("https://fonts.googleapis.com/css2?family=Rubik");
-  </style>
   <g>
     <path
       d="M 20 34.64 L 20 34.64 C 20 34.64 57.06 18.54 40 0 L 40 0 C 40 0 44.59 -40.15 20 -34.64 L 20 -34.64 C 20 -34.64 -12.47 -58.69 -20 -34.64 L -20 -34.64 C -20 -34.64 -57.06 -18.54 -40 0 L -40 0 C -40 0 -44.59 40.15 -20 34.64 L -20 34.64 C -20 34.64 12.47 58.69 20 34.64 z"

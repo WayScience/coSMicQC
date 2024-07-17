@@ -1,11 +1,11 @@
 <svg
   xmlns="http://www.w3.org/2000/svg"
+  viewBox="-46 -46 220 93"
   stroke-linecap="round"
   stroke-linejoin="round"
   text-anchor="middle"
   dominant-baseline="middle"
-  style="font-size: 30px; font-family: Rubik"
-  viewBox="-46 -46 208 93"
+  style="font-size: 35px; font-family: Rubik"
 >
   <style>
     @import url("https://fonts.googleapis.com/css2?family=Rubik");
@@ -51,11 +51,11 @@
     ></path>
   </g>
   <g>
-    <text x="78" y="-5" fill="#e9d5ff">co</text>
-    <text x="105" y="-5" fill="#e879f9">S</text>
-    <text x="125" y="-5" fill="#e879f9">M</text>
-    <text x="149" y="-5" fill="#e9d5ff">ic</text>
-    <text x="105" y="20" fill="#f472b6">Q</text>
-    <text x="125" y="20" fill="#f472b6">C</text>
+    <text x="76" y="-5" fill="#e9d5ff">co</text>
+    <text x="107" y="-5" fill="#e879f9">S</text>
+    <text x="130" y="-5" fill="#e879f9">M</text>
+    <text x="159" y="-5" fill="#e9d5ff">ic</text>
+    <text x="107" y="25" fill="#f472b6">Q</text>
+    <text x="130" y="25" fill="#f472b6">C</text>
   </g>
 </svg>
