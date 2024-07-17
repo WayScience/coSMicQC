@@ -8,6 +8,7 @@ const colorC = "#ec4899";
 const colorCLight = "#f472b6";
 const colorD = "#0ea5e9";
 const darkBg = false;
+const text = true;
 
 // const font = "Urbanist";
 // const font = "Roboto Condensed";
@@ -25,13 +26,15 @@ const Logo = () => {
       xmlns="http://www.w3.org/2000/svg"
       strokeLinecap="round"
       strokeLinejoin="round"
-      style={{ fontSize: "35", fontFamily: font }}
-      textAnchor="middle"
-      dominantBaseline="middle"
+      style={text ? { fontSize: "35", fontFamily: font } : undefined}
+      textAnchor={text ? "middle" : undefined}
+      dominantBaseline={text ? "middle" : undefined}
     >
-      <style>
-        {`@import url("https://fonts.googleapis.com/css2?family=${fontUrl}");`}
-      </style>
+      {text && (
+        <style>
+          {`@import url("https://fonts.googleapis.com/css2?family=${fontUrl}");`}
+        </style>
+      )}
 
       {/* pulsars */}
       <g>
@@ -146,26 +149,28 @@ const Logo = () => {
       </g>
 
       {/* text */}
-      <g>
-        <text x="76" y="-5" fill={darkBg ? colorALight : colorA}>
-          co
-        </text>
-        <text x="107" y="-5" fill={darkBg ? colorBLight : colorB}>
-          S
-        </text>
-        <text x="130" y="-5" fill={darkBg ? colorBLight : colorB}>
-          M
-        </text>
-        <text x="159" y="-5" fill={darkBg ? colorALight : colorA}>
-          ic
-        </text>
-        <text x="107" y="25" fill={darkBg ? colorCLight : colorC}>
-          Q
-        </text>
-        <text x="130" y="25" fill={darkBg ? colorCLight : colorC}>
-          C
-        </text>
-      </g>
+      {text && (
+        <g>
+          <text x="75" y="-9" fill={darkBg ? colorALight : colorA}>
+            co
+          </text>
+          <text x="106" y="-9" fill={darkBg ? colorBLight : colorB}>
+            S
+          </text>
+          <text x="129" y="-9" fill={darkBg ? colorBLight : colorB}>
+            M
+          </text>
+          <text x="158" y="-9" fill={darkBg ? colorALight : colorA}>
+            ic
+          </text>
+          <text x="106" y="21" fill={darkBg ? colorCLight : colorC}>
+            Q
+          </text>
+          <text x="129" y="21" fill={darkBg ? colorCLight : colorC}>
+            C
+          </text>
+        </g>
+      )}
     </svg>
   );
 };
@@ -222,13 +227,16 @@ const fitViewBox = () => {
   const padding = 1;
   const svg = document.querySelector("svg");
   let { x, y, width, height } = svg.getBBox();
-  const viewBox = [
-    x - padding,
-    y - padding,
-    width + 2 * padding,
-    height + 2 * padding,
-  ]
-    .map(Math.round)
-    .join(" ");
+  x -= padding;
+  y -= padding;
+  width += 2 * padding;
+  height += 2 * padding;
+  x -= (round(width) - width) / 2;
+  y -= (round(height) - height) / 2;
+  width = round(width);
+  height = round(height);
+  const viewBox = [x, y, width, height].map(Math.round).join(" ");
   svg.setAttribute("viewBox", viewBox);
 };
+
+const round = (value, factor = 10) => Math.ceil(value / factor) * factor;
