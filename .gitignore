@@ -139,3 +139,5 @@ cython_debug/
 *.parquet
 *.zip
 *.csv
+
+.DS_Store
