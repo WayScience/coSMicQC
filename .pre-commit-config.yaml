@@ -23,7 +23,8 @@ repos:
           (?x)^(
               .*\.lock |
               .*\.json |
-              .*\.ipynb
+              .*\.ipynb |
+              .*\.cppipe
           )$
   - repo: https://github.com/executablebooks/mdformat
     rev: 0.7.17
