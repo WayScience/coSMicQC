@@ -167,7 +167,7 @@ ConvertObjectsToImage:[module_num:10|svn_version:'Unknown'|variable_revision_num
     Select the colormap:Default
 
 SaveImages:[module_num:11|svn_version:'Unknown'|variable_revision_number:16|show_window:False|notes:[]|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
-    Select the type of image to save:Mask
+    Select the type of image to save:Image
     Select the image to save:MaskNuclei
     Select method for constructing file names:From image filename
     Select image name for file prefix:DAPI
@@ -187,7 +187,7 @@ SaveImages:[module_num:11|svn_version:'Unknown'|variable_revision_number:16|show
     Save with lossless compression?:Yes
 
 SaveImages:[module_num:12|svn_version:'Unknown'|variable_revision_number:16|show_window:False|notes:[]|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
-    Select the type of image to save:Mask
+    Select the type of image to save:Image
     Select the image to save:MaskCells
     Select method for constructing file names:From image filename
     Select image name for file prefix:RFP
@@ -207,7 +207,7 @@ SaveImages:[module_num:12|svn_version:'Unknown'|variable_revision_number:16|show
     Save with lossless compression?:Yes
 
 SaveImages:[module_num:13|svn_version:'Unknown'|variable_revision_number:16|show_window:False|notes:[]|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
-    Select the type of image to save:Mask
+    Select the type of image to save:Image
     Select the image to save:MaskCytoplasm
     Select method for constructing file names:From image filename
     Select image name for file prefix:RFP
