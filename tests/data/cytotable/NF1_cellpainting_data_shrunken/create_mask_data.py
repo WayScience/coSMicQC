@@ -10,9 +10,9 @@ of the project repository:
 tests/data/cytotable/NF1_cellpainting_data_shrunken/create_mask_data.py`
 """
 
-import subprocess
-import pathlib
 import os
+import pathlib
+import subprocess
 
 # create a dir for segmentation masks
 pathlib.Path("tests/data/cytotable/NF1_cellpainting_data_shrunken/Plate_2_masks").mkdir(
