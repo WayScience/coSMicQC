@@ -34,7 +34,8 @@ from pandas._config import (
 from pandas.io.formats import (
     format as fmt,
 )
-from PIL import Image
+import numpy as np
+from PIL import Image, ImageDraw
 
 # provide backwards compatibility for Self type in earlier Python versions.
 # see: https://peps.python.org/pep-0484/#annotating-instance-and-class-methods
@@ -134,7 +135,9 @@ class CytoDataFrame(pd.DataFrame):
         else:
             self._custom_attrs["data_bounding_box"] = data_bounding_box
 
-    def __getitem__(self: CytoDataFrame_type, key: Union[int, str]) -> Any:  # noqa: ANN401
+    def __getitem__(
+        self: CytoDataFrame_type, key: Union[int, str]
+    ) -> Any:  # noqa: ANN401
         """
         Returns an element or a slice of the underlying pandas DataFrame.
 
@@ -589,6 +592,71 @@ class CytoDataFrame(pd.DataFrame):
             )
             .any()
         ]
+
+    @staticmethod
+    def draw_outline_on_image(tiff_image_path: str, mask_image_path: str) -> Image:
+        """
+        Draws outlines on a TIFF image based on a mask image and returns
+        the combined result.
+
+        This method takes the path to a TIFF image and a mask image, creates
+        anoutline from the mask, and overlays it on the TIFF image. The resulting
+        image, which combines the TIFF image with the mask outline, is returned.
+
+        Args:
+            tiff_image_path (str):
+                Path to the TIFF image file.
+            mask_image_path (str):
+                Path to the mask image file.
+
+        Returns:
+            PIL.Image.Image:
+                A PIL Image object that is the result of
+                combining the TIFF image with the mask outline.
+
+        Raises:
+            FileNotFoundError:
+                If the specified image or mask file does not exist.
+            ValueError:
+                If the images are not in compatible formats or sizes.
+        """
+        # Load the TIFF image and convert it to grayscale array
+        tiff_image_array = skimage.io.imread(tiff_image_path, as_gray=True)
+        # Convert to PIL Image and then to 'RGBA'
+        tiff_image = Image.fromarray(np.uint8(tiff_image_array))
+        tiff_image = tiff_image.convert("RGBA")
+
+        # Load the mask image and convert it to grayscale
+        mask_image = Image.open(mask_image_path).convert("L")
+
+        # Create an outline image with transparent background
+        outline_image = Image.new("RGBA", tiff_image.size, (0, 0, 0, 0))
+        draw = ImageDraw.Draw(outline_image)
+
+        # Convert mask to binary array
+        mask_array = np.array(mask_image)
+        mask_array[mask_array > 0] = 255  # Ensure non-zero values are 255 (white)
+
+        # Find contours of the mask (edges where mask is white)
+        for y in range(1, mask_array.shape[0] - 1):
+            for x in range(1, mask_array.shape[1] - 1):
+                if mask_array[y, x] > 0 and (
+                    mask_array[y - 1, x] == 0
+                    or mask_array[y + 1, x] == 0
+                    or mask_array[y, x - 1] == 0
+                    or mask_array[y, x + 1] == 0
+                ):
+                    draw.point(
+                        (x, y),
+                        # Green color with partial transparency
+                        fill=(50, 255, 0, 128),
+                    )
+
+        # Ensure outline_image is in 'RGBA' mode
+        outline_image = outline_image.convert("RGBA")
+
+        # return combined images
+        return Image.alpha_composite(tiff_image, outline_image)
 
     @staticmethod
     def process_image_data_as_html_display(
