@@ -67,6 +67,8 @@ class CytoDataFrame(pd.DataFrame):
         data: Union[CytoDataFrame_type, pd.DataFrame, str, pathlib.Path],
         data_context_dir: Optional[str] = None,
         data_bounding_box: Optional[pd.DataFrame] = None,
+        data_mask_context_dir: Optional[str] = None,
+        data_mask_filename_suffix: Optional[str] = None,
         **kwargs: Dict[str, Any],
     ) -> None:
         """
@@ -79,6 +81,11 @@ class CytoDataFrame(pd.DataFrame):
                 Directory context for the image data within the DataFrame.
             data_bounding_box (Optional[pd.DataFrame]):
                 Bounding box data for the DataFrame images.
+            data_mask_context_dir: Optional[str]:
+                Directory context for the mask data for images.
+            data_mask_filename_suffix: Optional[str]:
+                Filename suffix given to mask images from CellProfiler.
+                Corresponds to option labeled 'Text to append to the image name'.
             **kwargs:
                 Additional keyword arguments to pass to the pandas read functions.
         """
@@ -87,10 +94,18 @@ class CytoDataFrame(pd.DataFrame):
             "data_source": None,
             "data_context_dir": None,
             "data_bounding_box": None,
+            "data_mask_context_dir": None,
+            "data_mask_filename_suffix": None,
         }
 
         if data_context_dir is not None:
             self._custom_attrs["data_context_dir"] = data_context_dir
+
+        if data_mask_context_dir is not None:
+            self._custom_attrs["data_mask_context_dir"] = data_mask_context_dir
+
+        if data_mask_filename_suffix is not None:
+            self._custom_attrs["data_mask_filename_suffix"] = data_mask_filename_suffix
 
         if isinstance(data, CytoDataFrame):
             self._custom_attrs["data_source"] = data._custom_attrs["data_source"]
@@ -160,6 +175,8 @@ class CytoDataFrame(pd.DataFrame):
                 super().__getitem__(key),
                 data_context_dir=self._custom_attrs["data_context_dir"],
                 data_bounding_box=self._custom_attrs["data_bounding_box"],
+                data_mask_context_dir=self._custom_attrs["data_mask_context_dir"],
+                data_mask_filename_suffix=self._custom_attrs["data_mask_filename_suffix"],
             )
 
     def _wrap_method(
@@ -193,6 +210,8 @@ class CytoDataFrame(pd.DataFrame):
                 result,
                 data_context_dir=self._custom_attrs["data_context_dir"],
                 data_bounding_box=self._custom_attrs["data_bounding_box"],
+                data_mask_context_dir=self._custom_attrs["data_mask_context_dir"],
+                data_mask_filename_suffix=self._custom_attrs["data_mask_filename_suffix"],
             )
         return result
 
@@ -594,7 +613,7 @@ class CytoDataFrame(pd.DataFrame):
         ]
 
     @staticmethod
-    def draw_outline_on_image(tiff_image_path: str, mask_image_path: str) -> Image:
+    def draw_outline_on_image(actual_image_path: str, mask_image_path: str) -> Image:
         """
         Draws outlines on a TIFF image based on a mask image and returns
         the combined result.
@@ -604,7 +623,7 @@ class CytoDataFrame(pd.DataFrame):
         image, which combines the TIFF image with the mask outline, is returned.
 
         Args:
-            tiff_image_path (str):
+            actual_image_path (str):
                 Path to the TIFF image file.
             mask_image_path (str):
                 Path to the mask image file.
@@ -621,7 +640,7 @@ class CytoDataFrame(pd.DataFrame):
                 If the images are not in compatible formats or sizes.
         """
         # Load the TIFF image and convert it to grayscale array
-        tiff_image_array = skimage.io.imread(tiff_image_path, as_gray=True)
+        tiff_image_array = skimage.io.imread(actual_image_path, as_gray=True)
         # Convert to PIL Image and then to 'RGBA'
         tiff_image = Image.fromarray(np.uint8(tiff_image_array))
         tiff_image = tiff_image.convert("RGBA")
@@ -660,6 +679,7 @@ class CytoDataFrame(pd.DataFrame):
 
     @staticmethod
     def process_image_data_as_html_display(
+        self: CytoDataFrame_type,
         data_value: Any,  # noqa: ANN401
         bounding_box: Tuple[int, int, int, int],
         data_context_dir: Optional[str] = None,
@@ -672,11 +692,24 @@ class CytoDataFrame(pd.DataFrame):
             else:
                 data_value = candidate_path
 
-        # Read the TIFF image from the byte array
-        tiff_image = skimage.io.imread(data_value)
+        if (
+            self._custom_attrs["data_mask_context_dir"] is not None
+            and self._custom_attrs["data_mask_filename_suffix"] is not None
+        ):
+            pil_image = self.draw_outline_on_image(
+                actual_image_path=data_value,
+                mask_image_path=(
+                    f"{pathlib.Path(self._custom_attrs['data_mask_context_dir'])}/"
+                    f"{pathlib.Path(data_value).name}.{self._custom_attrs['data_mask_filename_suffix']}."
+                    f"{pathlib.Path(data_value).suffixes}"
+                ),
+            )
+        else:
+            # Read the TIFF image from the byte array
+            tiff_image = skimage.io.imread(data_value)
 
-        # Convert the image array to a PIL Image
-        pil_image = Image.fromarray(tiff_image)
+            # Convert the image array to a PIL Image
+            pil_image = Image.fromarray(tiff_image)
 
         cropped_img = pil_image.crop(bounding_box)
 
