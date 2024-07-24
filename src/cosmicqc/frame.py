@@ -20,6 +20,7 @@ from typing import (
     Union,
 )
 
+import numpy as np
 import pandas as pd
 import plotly
 import plotly.colors as pc
@@ -34,7 +35,6 @@ from pandas._config import (
 from pandas.io.formats import (
     format as fmt,
 )
-import numpy as np
 from PIL import Image, ImageDraw
 
 # provide backwards compatibility for Self type in earlier Python versions.
@@ -62,7 +62,7 @@ class CytoDataFrame(pd.DataFrame):
 
     _metadata: ClassVar = ["_custom_attrs"]
 
-    def __init__(
+    def __init__(  # noqa: C901, PLR0912, PLR0913
         self: CytoDataFrame_type,
         data: Union[CytoDataFrame_type, pd.DataFrame, str, pathlib.Path],
         data_context_dir: Optional[str] = None,
@@ -150,9 +150,7 @@ class CytoDataFrame(pd.DataFrame):
         else:
             self._custom_attrs["data_bounding_box"] = data_bounding_box
 
-    def __getitem__(
-        self: CytoDataFrame_type, key: Union[int, str]
-    ) -> Any:  # noqa: ANN401
+    def __getitem__(self: CytoDataFrame_type, key: Union[int, str]) -> Any:  # noqa: ANN401
         """
         Returns an element or a slice of the underlying pandas DataFrame.
 
@@ -176,7 +174,9 @@ class CytoDataFrame(pd.DataFrame):
                 data_context_dir=self._custom_attrs["data_context_dir"],
                 data_bounding_box=self._custom_attrs["data_bounding_box"],
                 data_mask_context_dir=self._custom_attrs["data_mask_context_dir"],
-                data_mask_filename_suffix=self._custom_attrs["data_mask_filename_suffix"],
+                data_mask_filename_suffix=self._custom_attrs[
+                    "data_mask_filename_suffix"
+                ],
             )
 
     def _wrap_method(
@@ -211,7 +211,9 @@ class CytoDataFrame(pd.DataFrame):
                 data_context_dir=self._custom_attrs["data_context_dir"],
                 data_bounding_box=self._custom_attrs["data_bounding_box"],
                 data_mask_context_dir=self._custom_attrs["data_mask_context_dir"],
-                data_mask_filename_suffix=self._custom_attrs["data_mask_filename_suffix"],
+                data_mask_filename_suffix=self._custom_attrs[
+                    "data_mask_filename_suffix"
+                ],
             )
         return result
 
