@@ -666,34 +666,41 @@ class CytoDataFrame(pd.DataFrame):
             ).is_file():
                 return data_value
             else:
-                data_value = candidate_path
+                pass
 
-        if self._custom_attrs["data_mask_context_dir"] is not None and (
-            matching_mask_file := list(
-                pathlib.Path(self._custom_attrs["data_mask_context_dir"]).glob(
-                    f"{pathlib.Path(data_value).stem}*"
+        try:
+            if self._custom_attrs["data_mask_context_dir"] is not None and (
+                matching_mask_file := list(
+                    pathlib.Path(self._custom_attrs["data_mask_context_dir"]).glob(
+                        f"{pathlib.Path(candidate_path).stem}*"
+                    )
                 )
-            )
-        ):
-            pil_image = self.draw_outline_on_image(
-                actual_image_path=data_value,
-                mask_image_path=matching_mask_file[0],
-            )
-        else:
-            # Read the TIFF image from the byte array
-            tiff_image = skimage.io.imread(data_value)
+            ):
+                pil_image = self.draw_outline_on_image(
+                    actual_image_path=candidate_path,
+                    mask_image_path=matching_mask_file[0],
+                )
 
-            # Convert the image array to a PIL Image
-            pil_image = Image.fromarray(tiff_image)
+            else:
+                # Read the TIFF image from the byte array
+                tiff_image = skimage.io.imread(candidate_path)
 
-        cropped_img = pil_image.crop(bounding_box)
+                # Convert the image array to a PIL Image
+                pil_image = Image.fromarray(tiff_image)
 
-        # Save the PIL Image as PNG to a BytesIO object
-        png_bytes_io = BytesIO()
-        cropped_img.save(png_bytes_io, format="PNG")
+            cropped_img = pil_image.crop(bounding_box)
 
-        # Get the PNG byte data
-        png_bytes = png_bytes_io.getvalue()
+            # Save the PIL Image as PNG to a BytesIO object
+            png_bytes_io = BytesIO()
+            cropped_img.save(png_bytes_io, format="PNG")
+
+            # Get the PNG byte data
+            png_bytes = png_bytes_io.getvalue()
+
+        except (FileNotFoundError, ValueError):
+            # return the raw data value if we run into an exception of some kind
+            print("Unable to process image from {candidate_path}")
+            return data_value
 
         return (
             '<img src="data:image/png;base64,'
