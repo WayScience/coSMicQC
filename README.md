@@ -4,17 +4,21 @@
 
 [![Build Status](https://github.com/WayScience/coSMicQC/actions/workflows/run-tests.yml/badge.svg?branch=main)](https://github.com/WayScience/coSMicQC/actions/workflows/run-tests.yml?query=branch%3Amain)
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
+[![Poetry](https://img.shields.io/endpoint?url=https://python-poetry.org/badge/v0.json)](https://python-poetry.org/)
+![PyPI - Version](https://img.shields.io/pypi/v/cosmicqc)
 
 > :stars: Navigate the cosmos of single-cell morphology with confidence — coSMicQC keeps your data on course!
 
-coSMicQC is a software tool to evaluate converted single-cell morphology outputs from CytoTable.
+coSMicQC is a Python package to evaluate converted single-cell morphology outputs from CytoTable.
 
-When performing object detection in CellProfiler, it is very hard to get "perfect" compartment segmentation across a large high-throughput screen.
-Technical artifacts can occur during segmentation, including under or over segmentation or segmentation of background or smudges/bright artifacts.
+It can be challenging to get "perfect" single-cell compartment segmentation across large high-throughput screens when performing object detection in CellProfiler (or similar software).
+Technical artifacts can arise during segmentation, leading to issues such as under-segmentation, over-segmentation, or the erroneous segmentation of background noise, smudges, or bright artifacts.
 
-In single-cell analysis, interesting phenotypes often emerge by looking at the morphological differences. However, the presence of technical outliers in the data can obscure these biological insights, undermining the validity of the findings.
+In single-cell analysis, intriguing phenotypes often emerge by examining morphological differences.
+However, technical outliers in the data can obscure these biological insights, compromising the validity of the findings.
 
-By utilizing specific CellProfiler extracted morphological features, which we show work best with AreaShape features, you can detect technically incorrect segmentations that you can either label or remove prior to further preprocessing steps (like with pycytominer).
+By utilizing specific morphological features extracted with CellProfiler, particularly AreaShape features, you can identify technically incorrect segmentations.
+These can then be labeled or removed before further preprocessing steps, such as those performed with pycytominer.
 
 ## Installation
 
@@ -30,8 +34,7 @@ pip install git+https://github.com/WayScience/coSMicQC.git
 
 ## Contributing, Development, and Testing
 
-Please see [contributing.md](docs/source/contributing.md) for more details on contributions, development, and testing.
-
+Please see [CONTRIBUTING.md](CONTRIBUTING.md) for more details on contributions, development, and testing.
 ## References
 
 - [pycytominer](https://github.com/cytomining/pycytominer)
