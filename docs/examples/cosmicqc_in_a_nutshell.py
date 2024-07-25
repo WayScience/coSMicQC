@@ -30,9 +30,14 @@ data_path = (
 
 # set a context directory for images associated with the dataset
 image_context_dir = pathlib.Path(data_path).parent / "Plate_2_images"
+mask_context_dir = pathlib.Path(data_path).parent / "Plate_2_masks"
 
 # create a cosmicqc CytoDataFrame (single-cell DataFrame)
-scdf = cosmicqc.CytoDataFrame(data=data_path, data_context_dir=image_context_dir)
+scdf = cosmicqc.CytoDataFrame(
+    data=data_path,
+    data_context_dir=image_context_dir,
+    data_mask_context_dir=mask_context_dir,
+)
 
 # display the dataframe
 scdf
