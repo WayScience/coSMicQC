@@ -625,7 +625,7 @@ class CytoDataFrame(pd.DataFrame):
             FileNotFoundError: If the specified image or mask file does not exist.
             ValueError: If the images are not in compatible formats or sizes.
         """
-        # Load the TIFF image and convert it to grayscale array
+        # Load the TIFF image
         tiff_image_array = skimage.io.imread(actual_image_path)
         # Convert to PIL Image and then to 'RGBA'
         tiff_image = Image.fromarray(np.uint8(tiff_image_array)).convert("RGBA")
