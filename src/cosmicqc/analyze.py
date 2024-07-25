@@ -125,6 +125,7 @@ def identify_outliers(
                 axis=1,
             ),
             data_context_dir=df._custom_attrs["data_context_dir"],
+            data_mask_context_dir=df._custom_attrs["data_mask_context_dir"],
         )
     )
 
@@ -289,6 +290,7 @@ def label_outliers(  # noqa: PLR0913
                 axis=1,
             ),
             data_context_dir=df._custom_attrs["data_context_dir"],
+            data_mask_context_dir=df._custom_attrs["data_mask_context_dir"],
         )
 
     # for multiple outlier processing
@@ -315,6 +317,7 @@ def label_outliers(  # noqa: PLR0913
         result = CytoDataFrame(
             labeled_df.loc[:, ~labeled_df.columns.duplicated()],
             data_context_dir=df._custom_attrs["data_context_dir"],
+            data_mask_context_dir=df._custom_attrs["data_mask_context_dir"],
         )
 
     # export the file if specified

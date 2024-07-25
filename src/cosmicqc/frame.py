@@ -62,13 +62,12 @@ class CytoDataFrame(pd.DataFrame):
 
     _metadata: ClassVar = ["_custom_attrs"]
 
-    def __init__(  # noqa: C901, PLR0912, PLR0913
+    def __init__(  # noqa: PLR0912
         self: CytoDataFrame_type,
         data: Union[CytoDataFrame_type, pd.DataFrame, str, pathlib.Path],
         data_context_dir: Optional[str] = None,
         data_bounding_box: Optional[pd.DataFrame] = None,
         data_mask_context_dir: Optional[str] = None,
-        data_mask_filename_suffix: Optional[str] = None,
         **kwargs: Dict[str, Any],
     ) -> None:
         """
@@ -83,9 +82,6 @@ class CytoDataFrame(pd.DataFrame):
                 Bounding box data for the DataFrame images.
             data_mask_context_dir: Optional[str]:
                 Directory context for the mask data for images.
-            data_mask_filename_suffix: Optional[str]:
-                Filename suffix given to mask images from CellProfiler.
-                Corresponds to option labeled 'Text to append to the image name'.
             **kwargs:
                 Additional keyword arguments to pass to the pandas read functions.
         """
@@ -95,7 +91,6 @@ class CytoDataFrame(pd.DataFrame):
             "data_context_dir": None,
             "data_bounding_box": None,
             "data_mask_context_dir": None,
-            "data_mask_filename_suffix": None,
         }
 
         if data_context_dir is not None:
@@ -104,13 +99,13 @@ class CytoDataFrame(pd.DataFrame):
         if data_mask_context_dir is not None:
             self._custom_attrs["data_mask_context_dir"] = data_mask_context_dir
 
-        if data_mask_filename_suffix is not None:
-            self._custom_attrs["data_mask_filename_suffix"] = data_mask_filename_suffix
-
         if isinstance(data, CytoDataFrame):
             self._custom_attrs["data_source"] = data._custom_attrs["data_source"]
             self._custom_attrs["data_context_dir"] = data._custom_attrs[
                 "data_context_dir"
+            ]
+            self._custom_attrs["data_mask_context_dir"] = data._custom_attrs[
+                "data_mask_context_dir"
             ]
             super().__init__(data)
         elif isinstance(data, (pd.DataFrame, pd.Series)):
@@ -174,9 +169,6 @@ class CytoDataFrame(pd.DataFrame):
                 data_context_dir=self._custom_attrs["data_context_dir"],
                 data_bounding_box=self._custom_attrs["data_bounding_box"],
                 data_mask_context_dir=self._custom_attrs["data_mask_context_dir"],
-                data_mask_filename_suffix=self._custom_attrs[
-                    "data_mask_filename_suffix"
-                ],
             )
 
     def _wrap_method(
@@ -211,9 +203,6 @@ class CytoDataFrame(pd.DataFrame):
                 data_context_dir=self._custom_attrs["data_context_dir"],
                 data_bounding_box=self._custom_attrs["data_bounding_box"],
                 data_mask_context_dir=self._custom_attrs["data_mask_context_dir"],
-                data_mask_filename_suffix=self._custom_attrs[
-                    "data_mask_filename_suffix"
-                ],
             )
         return result
 
@@ -621,90 +610,74 @@ class CytoDataFrame(pd.DataFrame):
         the combined result.
 
         This method takes the path to a TIFF image and a mask image, creates
-        anoutline from the mask, and overlays it on the TIFF image. The resulting
+        an outline from the mask, and overlays it on the TIFF image. The resulting
         image, which combines the TIFF image with the mask outline, is returned.
 
         Args:
-            actual_image_path (str):
-                Path to the TIFF image file.
-            mask_image_path (str):
-                Path to the mask image file.
+            actual_image_path (str): Path to the TIFF image file.
+            mask_image_path (str): Path to the mask image file.
 
         Returns:
-            PIL.Image.Image:
-                A PIL Image object that is the result of
-                combining the TIFF image with the mask outline.
+            PIL.Image.Image: A PIL Image object that is the result of
+            combining the TIFF image with the mask outline.
 
         Raises:
-            FileNotFoundError:
-                If the specified image or mask file does not exist.
-            ValueError:
-                If the images are not in compatible formats or sizes.
+            FileNotFoundError: If the specified image or mask file does not exist.
+            ValueError: If the images are not in compatible formats or sizes.
         """
         # Load the TIFF image and convert it to grayscale array
-        tiff_image_array = skimage.io.imread(actual_image_path, as_gray=True)
+        tiff_image_array = skimage.io.imread(actual_image_path)
         # Convert to PIL Image and then to 'RGBA'
-        tiff_image = Image.fromarray(np.uint8(tiff_image_array))
-        tiff_image = tiff_image.convert("RGBA")
+        tiff_image = Image.fromarray(np.uint8(tiff_image_array)).convert("RGBA")
 
         # Load the mask image and convert it to grayscale
         mask_image = Image.open(mask_image_path).convert("L")
+        mask_array = np.array(mask_image)
+        mask_array[mask_array > 0] = 255  # Ensure non-zero values are 255 (white)
+
+        # Find contours of the mask
+        contours = skimage.measure.find_contours(mask_array, level=128)
 
         # Create an outline image with transparent background
         outline_image = Image.new("RGBA", tiff_image.size, (0, 0, 0, 0))
         draw = ImageDraw.Draw(outline_image)
 
-        # Convert mask to binary array
-        mask_array = np.array(mask_image)
-        mask_array[mask_array > 0] = 255  # Ensure non-zero values are 255 (white)
+        for contour in contours:
+            # Swap x and y to match image coordinates
+            draw.line(
+                [(x, y) for y, x in np.round(contour).astype(int)],
+                fill=(0, 255, 0, 200),
+                width=2,
+            )
 
-        # Find contours of the mask (edges where mask is white)
-        for y in range(1, mask_array.shape[0] - 1):
-            for x in range(1, mask_array.shape[1] - 1):
-                if mask_array[y, x] > 0 and (
-                    mask_array[y - 1, x] == 0
-                    or mask_array[y + 1, x] == 0
-                    or mask_array[y, x - 1] == 0
-                    or mask_array[y, x + 1] == 0
-                ):
-                    draw.point(
-                        (x, y),
-                        # Green color with partial transparency
-                        fill=(50, 255, 0, 128),
-                    )
-
-        # Ensure outline_image is in 'RGBA' mode
-        outline_image = outline_image.convert("RGBA")
-
-        # return combined images
+        # Combine the TIFF image with the outline image
         return Image.alpha_composite(tiff_image, outline_image)
 
-    @staticmethod
     def process_image_data_as_html_display(
         self: CytoDataFrame_type,
         data_value: Any,  # noqa: ANN401
         bounding_box: Tuple[int, int, int, int],
-        data_context_dir: Optional[str] = None,
     ) -> str:
         if not pathlib.Path(data_value).is_file():
             if not pathlib.Path(
-                candidate_path := (f"{data_context_dir}/{data_value}")
+                candidate_path := (
+                    f"{self._custom_attrs['data_context_dir']}/{data_value}"
+                )
             ).is_file():
                 return data_value
             else:
                 data_value = candidate_path
 
-        if (
-            self._custom_attrs["data_mask_context_dir"] is not None
-            and self._custom_attrs["data_mask_filename_suffix"] is not None
+        if self._custom_attrs["data_mask_context_dir"] is not None and (
+            matching_mask_file := list(
+                pathlib.Path(self._custom_attrs["data_mask_context_dir"]).glob(
+                    f"{pathlib.Path(data_value).stem}*"
+                )
+            )
         ):
             pil_image = self.draw_outline_on_image(
                 actual_image_path=data_value,
-                mask_image_path=(
-                    f"{pathlib.Path(self._custom_attrs['data_mask_context_dir'])}/"
-                    f"{pathlib.Path(data_value).name}.{self._custom_attrs['data_mask_filename_suffix']}."
-                    f"{pathlib.Path(data_value).suffixes}"
-                ),
+                mask_image_path=matching_mask_file[0],
             )
         else:
             # Read the TIFF image from the byte array
@@ -797,7 +770,6 @@ class CytoDataFrame(pd.DataFrame):
                 data.loc[display_indices, image_col] = data.loc[display_indices].apply(
                     lambda row: self.process_image_data_as_html_display(
                         data_value=row[image_col],
-                        data_context_dir=self._custom_attrs["data_context_dir"],
                         bounding_box=(
                             row["Cytoplasm_AreaShape_BoundingBoxMinimum_X"],
                             row["Cytoplasm_AreaShape_BoundingBoxMinimum_Y"],
