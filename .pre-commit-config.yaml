@@ -49,3 +49,17 @@ repos:
     hooks:
       - id: ruff
       - id: ruff-format
+  - repo: local
+    hooks:
+      - id: code-cov-gen
+        name: Generate code coverage
+        language: system
+        entry: poetry run coverage run -m pytest
+        pass_filenames: false
+        always_run: true
+  - repo: https://github.com/Weird-Sheep-Labs/coverage-pre-commit
+    rev: 0.1.1
+    hooks:
+      - id: coverage-xml
+      - id: coverage-badge
+        args: ["-o", "media/coverage-badge.svg"]
