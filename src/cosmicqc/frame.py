@@ -486,7 +486,7 @@ class CytoDataFrame(pd.DataFrame):
         # return the path of the file
         return report_path
 
-    def create_threshold_set_outlier_visualization(  # noqa: PLR0913
+    def create_threshold_set_outlier_visualization(
         self: CytoDataFrame_type,
         df: pd.DataFrame,
         threshold_set_name: str,
