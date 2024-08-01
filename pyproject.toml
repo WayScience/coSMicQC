@@ -97,6 +97,12 @@ markers = [
     "generate_report_image: tests which involve the creation of report images.",
 ]
 
+[tool.coverage.run]
+omit = [
+    "config.py",
+    "config-3.py",
+]
+
 # set dynamic versioning capabilities for project
 [tool.poetry-dynamic-versioning]
 enable = true
