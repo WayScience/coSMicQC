@@ -4,7 +4,7 @@
 
 ![PyPI - Version](https://img.shields.io/pypi/v/cosmicqc)
 [![Build Status](https://github.com/WayScience/coSMicQC/actions/workflows/run-tests.yml/badge.svg?branch=main)](https://github.com/WayScience/coSMicQC/actions/workflows/run-tests.yml?query=branch%3Amain)
-![Coverage Status](./media/coverage-badge.svg)
+![Coverage Status](https://raw.githubusercontent.com/WayScience/coSMicQC/main/media/coverage-badge.svg)
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 [![Poetry](https://img.shields.io/endpoint?url=https://python-poetry.org/badge/v0.json)](https://python-poetry.org/)
 
