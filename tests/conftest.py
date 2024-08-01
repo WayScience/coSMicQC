@@ -5,7 +5,9 @@ https://docs.pytest.org/en/7.1.x/explanation/fixtures.html
 """
 
 import pathlib
-
+import pytest
+from PIL import Image
+import numpy as np
 import cosmicqc
 import pandas as pd
 import plotly.colors as pc
@@ -127,3 +129,21 @@ def fixture_generate_show_report_html_output(cytotable_CFReT_data_df: pd.DataFra
     )
 
     return report_path
+
+@pytest.fixture
+def fixture_dark_image():
+    # Create a dark image (50x50 pixels, almost black)
+    dark_img_array = np.zeros((50, 50, 3), dtype=np.uint8)
+    return Image.fromarray(dark_img_array)
+
+@pytest.fixture
+def fixture_mid_brightness_image():
+    # Create an image with medium brightness (50x50 pixels, mid gray)
+    mid_brightness_img_array = np.full((50, 50, 3), 128, dtype=np.uint8)
+    return Image.fromarray(mid_brightness_img_array)
+
+@pytest.fixture
+def fixture_bright_image():
+    # Create a bright image (50x50 pixels, almost white)
+    bright_img_array = np.full((50, 50, 3), 255, dtype=np.uint8)
+    return Image.fromarray(bright_img_array)

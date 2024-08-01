@@ -41,6 +41,7 @@ from pandas.io.formats import (
     format as fmt,
 )
 from PIL import Image, ImageDraw
+from .image import is_image_too_dark, adjust_image_brightness
 
 # provide backwards compatibility for Self type in earlier Python versions.
 # see: https://peps.python.org/pep-0484/#annotating-instance-and-class-methods
@@ -611,29 +612,6 @@ class CytoDataFrame(pd.DataFrame):
         ]
 
     @staticmethod
-    def adjust_brightness(image: Image, target_brightness: float = 1.0) -> Image:
-        """
-        Adjust the brightness of an image to a target brightness level.
-
-        Args:
-            image (Image): The input PIL Image.
-            target_brightness (float): The target brightness level (1.0 means no change).
-
-        Returns:
-            Image: The brightness-adjusted PIL Image.
-        """
-        # Convert image to grayscale and calculate the mean brightness
-        grayscale = image.convert("L")
-        mean_brightness = np.mean(np.array(grayscale))
-
-        # Calculate the adjustment factor
-        factor = target_brightness / (mean_brightness / 255)
-
-        # Adjust the brightness
-        enhancer = ImageEnhance.Brightness(image)
-        return enhancer.enhance(factor)
-
-    @staticmethod
     def draw_outline_on_image(actual_image_path: str, mask_image_path: str) -> Image:
         """
         Draws outlines on a TIFF image based on a mask image and returns
@@ -665,6 +643,10 @@ class CytoDataFrame(pd.DataFrame):
             tiff_image_array = (tiff_image_array / 256).astype(np.uint8)
 
         tiff_image = Image.fromarray(tiff_image_array).convert("RGBA")
+
+        # Check if the image is too dark and adjust brightness if needed
+        if is_image_too_dark(tiff_image):
+            tiff_image = adjust_image_brightness(tiff_image)
 
         # Load the mask image and convert it to grayscale
         mask_image = Image.open(mask_image_path).convert("L")
