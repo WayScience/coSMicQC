@@ -32,6 +32,7 @@ pywavelets = [
   {version = "^1.4.1", python = "<3.9"},
   {version = ">1.4.1", python = ">=3.9"}
 ] # dependency of scikit-image
+opencv-python = "^4.10.0.84"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.2.0" # provides testing capabilities for project
