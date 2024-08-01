@@ -2,11 +2,10 @@
 Helper functions for working with images in the context of coSMicQC.
 """
 
-from PIL import Image, ImageEnhance
 import cv2
-
 import numpy as np
-from PIL import Image
+from PIL import Image, ImageEnhance
+
 
 def is_image_too_dark(image: Image, threshold: float = 10.0) -> bool:
     """
@@ -31,6 +30,7 @@ def is_image_too_dark(image: Image, threshold: float = 10.0) -> bool:
     mean_brightness = np.mean(gray_image)
 
     return mean_brightness < threshold
+
 
 def adjust_image_brightness(image: Image) -> Image:
     """

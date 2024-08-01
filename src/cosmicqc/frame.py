@@ -6,11 +6,6 @@ import base64
 import pathlib
 import random
 import re
-
-from PIL import Image, ImageDraw, ImageEnhance
-import numpy as np
-import skimage.io
-import skimage.measure
 import webbrowser
 from io import BytesIO, StringIO
 from typing import (
@@ -32,6 +27,8 @@ import plotly.colors as pc
 import plotly.express as px
 import plotly.graph_objects as go
 import skimage
+import skimage.io
+import skimage.measure
 from IPython import get_ipython
 from jinja2 import Environment, FileSystemLoader
 from pandas._config import (
@@ -41,7 +38,8 @@ from pandas.io.formats import (
     format as fmt,
 )
 from PIL import Image, ImageDraw
-from .image import is_image_too_dark, adjust_image_brightness
+
+from .image import adjust_image_brightness, is_image_too_dark
 
 # provide backwards compatibility for Self type in earlier Python versions.
 # see: https://peps.python.org/pep-0484/#annotating-instance-and-class-methods
@@ -151,9 +149,7 @@ class CytoDataFrame(pd.DataFrame):
         else:
             self._custom_attrs["data_bounding_box"] = data_bounding_box
 
-    def __getitem__(
-        self: CytoDataFrame_type, key: Union[int, str]
-    ) -> Any:  # noqa: ANN401
+    def __getitem__(self: CytoDataFrame_type, key: Union[int, str]) -> Any:  # noqa: ANN401
         """
         Returns an element or a slice of the underlying pandas DataFrame.
 
