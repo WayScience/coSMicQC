@@ -8,7 +8,7 @@
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 [![Poetry](https://img.shields.io/endpoint?url=https://python-poetry.org/badge/v0.json)](https://python-poetry.org/)
 
-> :stars: Navigate the cosmos of single-cell morphology with confidence — coSMicQC keeps your data on course!
+> 🌠 Navigate the cosmos of single-cell morphology with confidence — coSMicQC keeps your data on course!
 
 coSMicQC is a Python package to evaluate converted single-cell morphology outputs from CytoTable.
 
