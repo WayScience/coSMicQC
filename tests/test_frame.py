@@ -1,17 +1,22 @@
 """
-Tests cosmicqc SCDataFrame module
+Tests cosmicqc CytoDataFrame module
 """
 
+import base64
 import pathlib
+import re
+from io import BytesIO
 
 import cosmicqc
+import numpy as np
 import pandas as pd
 import plotly
-from cosmicqc.frame import SCDataFrame
+from cosmicqc.frame import CytoDataFrame
+from PIL import Image
 from pyarrow import parquet
 
 
-def test_SCDataFrame_with_dataframe(
+def test_CytoDataFrame_with_dataframe(
     tmp_path: pathlib.Path,
     basic_outlier_dataframe: pd.DataFrame,
     basic_outlier_csv: str,
@@ -19,8 +24,8 @@ def test_SCDataFrame_with_dataframe(
     basic_outlier_tsv: str,
     basic_outlier_parquet: str,
 ):
-    # Tests SCDataFrame with pd.DataFrame input.
-    sc_df = SCDataFrame(data=basic_outlier_dataframe)
+    # Tests CytoDataFrame with pd.DataFrame input.
+    sc_df = CytoDataFrame(data=basic_outlier_dataframe)
 
     # test that we ingested the data properly
     assert sc_df._custom_attrs["data_source"] == "pandas.DataFrame"
@@ -34,15 +39,15 @@ def test_SCDataFrame_with_dataframe(
 
     assert parquet.read_table(control_path).equals(parquet.read_table(test_path))
 
-    # Tests SCDataFrame with pd.Series input.
-    sc_df = SCDataFrame(data=basic_outlier_dataframe.loc[0])
+    # Tests CytoDataFrame with pd.Series input.
+    sc_df = CytoDataFrame(data=basic_outlier_dataframe.loc[0])
 
     # test that we ingested the data properly
     assert sc_df._custom_attrs["data_source"] == "pandas.Series"
     assert sc_df.equals(pd.DataFrame(basic_outlier_dataframe.loc[0]))
 
-    # Tests SCDataFrame with CSV input.
-    sc_df = SCDataFrame(data=basic_outlier_csv)
+    # Tests CytoDataFrame with CSV input.
+    sc_df = CytoDataFrame(data=basic_outlier_csv)
     expected_df = pd.read_csv(basic_outlier_csv)
 
     # test that we ingested the data properly
@@ -54,8 +59,8 @@ def test_SCDataFrame_with_dataframe(
 
     pd.testing.assert_frame_equal(expected_df, pd.read_csv(test_path))
 
-    # Tests SCDataFrame with CSV input.
-    sc_df = SCDataFrame(data=basic_outlier_csv_gz)
+    # Tests CytoDataFrame with CSV input.
+    sc_df = CytoDataFrame(data=basic_outlier_csv_gz)
     expected_df = pd.read_csv(basic_outlier_csv_gz)
 
     # test that we ingested the data properly
@@ -69,8 +74,8 @@ def test_SCDataFrame_with_dataframe(
         expected_df, pd.read_csv(test_path, compression="gzip")
     )
 
-    # Tests SCDataFrame with TSV input.
-    sc_df = SCDataFrame(data=basic_outlier_tsv)
+    # Tests CytoDataFrame with TSV input.
+    sc_df = CytoDataFrame(data=basic_outlier_tsv)
     expected_df = pd.read_csv(basic_outlier_tsv, delimiter="\t")
 
     # test that we ingested the data properly
@@ -82,8 +87,8 @@ def test_SCDataFrame_with_dataframe(
 
     pd.testing.assert_frame_equal(expected_df, pd.read_csv(test_path, sep="\t"))
 
-    # Tests SCDataFrame with parquet input.
-    sc_df = SCDataFrame(data=basic_outlier_parquet)
+    # Tests CytoDataFrame with parquet input.
+    sc_df = CytoDataFrame(data=basic_outlier_parquet)
     expected_df = pd.read_parquet(basic_outlier_parquet)
 
     # test that we ingested the data properly
@@ -97,8 +102,8 @@ def test_SCDataFrame_with_dataframe(
         parquet.read_table(test_path)
     )
 
-    # test SCDataFrame with SCDataFrame input
-    copy_sc_df = SCDataFrame(data=sc_df)
+    # test CytoDataFrame with CytoDataFrame input
+    copy_sc_df = CytoDataFrame(data=sc_df)
 
     pd.testing.assert_frame_equal(copy_sc_df, sc_df)
 
@@ -132,21 +137,49 @@ def test_show_report(cytotable_CFReT_data_df: pd.DataFrame):
 
 def test_repr_html(cytotable_NF1_data_parquet_shrunken: str):
     """
-    Tests how images are rendered through customized repr_html in SCdataFrame
+    Tests how images are rendered through customized repr_html in CytoDataFrame.
     """
 
-    scdf = SCDataFrame(
+    # create cytodataframe with context and mask dirs
+    scdf = CytoDataFrame(
         data=cytotable_NF1_data_parquet_shrunken,
         data_context_dir=f"{pathlib.Path(cytotable_NF1_data_parquet_shrunken).parent}/Plate_2_images",
+        data_mask_context_dir=f"{pathlib.Path(cytotable_NF1_data_parquet_shrunken).parent}/Plate_2_masks",
     )
 
-    # collect html output from repr_html
-    # note: we filter here to avoid the dataframerenderer excluding the image results
-    # (exclusions automatically occur based on large data output via '...' ellipsis).
+    # Collect HTML output from repr_html
     html_output = scdf[
         ["Image_FileName_DAPI", "Image_FileName_GFP", "Image_FileName_RFP"]
     ]._repr_html_()
 
-    # assert the presence of specific image-focused string within HTML used
-    # for rendering the images when they appear in a Jupyter notebook.
-    assert 'src="data:image/png;base64' in html_output
+    # Extract all base64 image data from the HTML
+    matches = re.findall(r'data:image/png;base64,([^"]+)', html_output)
+    assert len(matches) > 0, "No base64 image data found in HTML"
+
+    # Select the third base64 image data (indexing starts from 0)
+    # (we expect the first ones to not contain outlines based on the
+    # html and example data)
+    base64_data = matches[2]
+
+    # Decode the base64 image data
+    image_data = base64.b64decode(base64_data)
+    image = Image.open(BytesIO(image_data)).convert("RGB")
+
+    # Check for the presence of green pixels in the image
+    image_array = np.array(image)
+
+    # gather color channels from image
+    red_channel = image_array[:, :, 0]
+    green_channel = image_array[:, :, 1]
+    blue_channel = image_array[:, :, 2]
+
+    # Define a threshold to identify greenish pixels
+    green_threshold = 50
+    green_pixels = (
+        (green_channel > green_threshold)
+        & (green_channel > red_channel)
+        & (green_channel > blue_channel)
+    )
+
+    # Ensure there's at least one greenish pixel in the image
+    assert np.any(green_pixels), "The image does not contain green outlines."

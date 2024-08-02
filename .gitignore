@@ -135,8 +135,10 @@ cython_debug/
 
 # test data ignores
 *.tif
+*.tiff
 *.sqlite
 *.parquet
 *.zip
 *.csv
-runinfo
+
+.DS_Store

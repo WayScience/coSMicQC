@@ -1,5 +1,5 @@
 """
-Defines a SCDataFrame class for use in coSMicQC.
+Defines a CytoDataFrame class for use in coSMicQC.
 """
 
 import base64
@@ -20,6 +20,7 @@ from typing import (
     Union,
 )
 
+import numpy as np
 import pandas as pd
 import plotly
 import plotly.colors as pc
@@ -34,14 +35,14 @@ from pandas._config import (
 from pandas.io.formats import (
     format as fmt,
 )
-from PIL import Image
+from PIL import Image, ImageDraw
 
 # provide backwards compatibility for Self type in earlier Python versions.
 # see: https://peps.python.org/pep-0484/#annotating-instance-and-class-methods
-SCDataFrame_type = TypeVar("SCDataFrame_type", bound="SCDataFrame")
+CytoDataFrame_type = TypeVar("CytoDataFrame_type", bound="CytoDataFrame")
 
 
-class SCDataFrame(pd.DataFrame):
+class CytoDataFrame(pd.DataFrame):
     """
     A class designed to enhance single-cell data handling by wrapping
     pandas DataFrame capabilities, providing advanced methods for quality control,
@@ -61,23 +62,26 @@ class SCDataFrame(pd.DataFrame):
 
     _metadata: ClassVar = ["_custom_attrs"]
 
-    def __init__(
-        self: SCDataFrame_type,
-        data: Union[SCDataFrame_type, pd.DataFrame, str, pathlib.Path],
+    def __init__(  # noqa: PLR0912
+        self: CytoDataFrame_type,
+        data: Union[CytoDataFrame_type, pd.DataFrame, str, pathlib.Path],
         data_context_dir: Optional[str] = None,
         data_bounding_box: Optional[pd.DataFrame] = None,
+        data_mask_context_dir: Optional[str] = None,
         **kwargs: Dict[str, Any],
     ) -> None:
         """
-        Initializes the SCDataFrame with either a DataFrame or a file path.
+        Initializes the CytoDataFrame with either a DataFrame or a file path.
 
         Args:
-            data (Union[SCDataFrame_type, pd.DataFrame, str, pathlib.Path]):
+            data (Union[CytoDataFrame_type, pd.DataFrame, str, pathlib.Path]):
                 The data source, either a pandas DataFrame or a file path.
             data_context_dir (Optional[str]):
                 Directory context for the image data within the DataFrame.
             data_bounding_box (Optional[pd.DataFrame]):
                 Bounding box data for the DataFrame images.
+            data_mask_context_dir: Optional[str]:
+                Directory context for the mask data for images.
             **kwargs:
                 Additional keyword arguments to pass to the pandas read functions.
         """
@@ -86,15 +90,22 @@ class SCDataFrame(pd.DataFrame):
             "data_source": None,
             "data_context_dir": None,
             "data_bounding_box": None,
+            "data_mask_context_dir": None,
         }
 
         if data_context_dir is not None:
             self._custom_attrs["data_context_dir"] = data_context_dir
 
-        if isinstance(data, SCDataFrame):
+        if data_mask_context_dir is not None:
+            self._custom_attrs["data_mask_context_dir"] = data_mask_context_dir
+
+        if isinstance(data, CytoDataFrame):
             self._custom_attrs["data_source"] = data._custom_attrs["data_source"]
             self._custom_attrs["data_context_dir"] = data._custom_attrs[
                 "data_context_dir"
+            ]
+            self._custom_attrs["data_mask_context_dir"] = data._custom_attrs[
+                "data_mask_context_dir"
             ]
             super().__init__(data)
         elif isinstance(data, (pd.DataFrame, pd.Series)):
@@ -121,7 +132,7 @@ class SCDataFrame(pd.DataFrame):
             elif data_path.suffix == ".parquet":
                 data = pd.read_parquet(data_path, **kwargs)
             else:
-                raise ValueError("Unsupported file format for SCDataFrame.")
+                raise ValueError("Unsupported file format for CytoDataFrame.")
 
             super().__init__(data)
 
@@ -134,7 +145,7 @@ class SCDataFrame(pd.DataFrame):
         else:
             self._custom_attrs["data_bounding_box"] = data_bounding_box
 
-    def __getitem__(self: SCDataFrame_type, key: Union[int, str]) -> Any:  # noqa: ANN401
+    def __getitem__(self: CytoDataFrame_type, key: Union[int, str]) -> Any:  # noqa: ANN401
         """
         Returns an element or a slice of the underlying pandas DataFrame.
 
@@ -153,21 +164,22 @@ class SCDataFrame(pd.DataFrame):
             return result
 
         elif isinstance(result, pd.DataFrame):
-            return SCDataFrame(
+            return CytoDataFrame(
                 super().__getitem__(key),
                 data_context_dir=self._custom_attrs["data_context_dir"],
                 data_bounding_box=self._custom_attrs["data_bounding_box"],
+                data_mask_context_dir=self._custom_attrs["data_mask_context_dir"],
             )
 
     def _wrap_method(
-        self: SCDataFrame_type,
+        self: CytoDataFrame_type,
         method: Callable,
         *args: List[Any],
         **kwargs: Dict[str, Any],
     ) -> Any:  # noqa: ANN401
         """
         Wraps a given method to ensure that the returned result
-        is an SCDataFrame if applicable.
+        is an CytoDataFrame if applicable.
 
         Args:
             method (Callable):
@@ -180,28 +192,29 @@ class SCDataFrame(pd.DataFrame):
         Returns:
             Any:
                 The result of the method call. If the result is a pandas DataFrame,
-                it is wrapped in an SCDataFrame instance with additional context
+                it is wrapped in an CytoDataFrame instance with additional context
                 information (data context directory and data bounding box).
 
         """
         result = method(*args, **kwargs)
         if isinstance(result, pd.DataFrame):
-            result = SCDataFrame(
+            result = CytoDataFrame(
                 result,
                 data_context_dir=self._custom_attrs["data_context_dir"],
                 data_bounding_box=self._custom_attrs["data_bounding_box"],
+                data_mask_context_dir=self._custom_attrs["data_mask_context_dir"],
             )
         return result
 
     def sort_values(
-        self: SCDataFrame_type, *args: List[Any], **kwargs: Dict[str, Any]
-    ) -> SCDataFrame_type:
+        self: CytoDataFrame_type, *args: List[Any], **kwargs: Dict[str, Any]
+    ) -> CytoDataFrame_type:
         """
         Sorts the DataFrame by the specified column(s) and returns a
-        new SCDataFrame instance.
+        new CytoDataFrame instance.
 
-        Note: we wrap this method within SCDataFrame to help ensure the consistent
-        return of SCDataFrames in the context of pd.Series (which are
+        Note: we wrap this method within CytoDataFrame to help ensure the consistent
+        return of CytoDataFrames in the context of pd.Series (which are
         treated separately but have specialized processing within the
         context of sort_values).
 
@@ -214,16 +227,16 @@ class SCDataFrame(pd.DataFrame):
                 DataFrame's `sort_values` method.
 
         Returns:
-            SCDataFrame_type:
-                A new instance of SCDataFrame sorted by the specified column(s).
+            CytoDataFrame_type:
+                A new instance of CytoDataFrame sorted by the specified column(s).
 
         """
 
         return self._wrap_method(super().sort_values, *args, **kwargs)
 
     def get_bounding_box_from_data(
-        self: SCDataFrame_type,
-    ) -> Optional[SCDataFrame_type]:
+        self: CytoDataFrame_type,
+    ) -> Optional[CytoDataFrame_type]:
         """
         Retrieves bounding box data from the DataFrame based
         on predefined column groups.
@@ -231,11 +244,12 @@ class SCDataFrame(pd.DataFrame):
         This method identifies specific groups of columns representing bounding box
         coordinates for different cellular components (cytoplasm, nuclei, cells) and
         checks for their presence in the DataFrame. If all required columns are present,
-        it filters and returns a new SCDataFrame instance containing only these columns.
+        it filters and returns a new CytoDataFrame instance containing only these
+        columns.
 
         Returns:
-            Optional[SCDataFrame_type]:
-                A new instance of SCDataFrame containing the bounding box columns if
+            Optional[CytoDataFrame_type]:
+                A new instance of CytoDataFrame containing the bounding box columns if
                 they exist in the DataFrame. Returns None if the required columns
                 are not found.
 
@@ -276,7 +290,7 @@ class SCDataFrame(pd.DataFrame):
         return None
 
     def export(
-        self: SCDataFrame_type, file_path: str, **kwargs: Dict[str, Any]
+        self: CytoDataFrame_type, file_path: str, **kwargs: Dict[str, Any]
     ) -> None:
         """
         Exports the underlying pandas DataFrame to a file.
@@ -333,7 +347,7 @@ class SCDataFrame(pd.DataFrame):
             return False
 
     def show_report(
-        self: SCDataFrame_type,
+        self: CytoDataFrame_type,
         report_path: Optional[str] = None,
         auto_open: bool = True,
         color_palette: Optional[List[str]] = None,
@@ -472,8 +486,8 @@ class SCDataFrame(pd.DataFrame):
         # return the path of the file
         return report_path
 
-    def create_threshold_set_outlier_visualization(  # noqa: PLR0913
-        self: SCDataFrame_type,
+    def create_threshold_set_outlier_visualization(
+        self: CytoDataFrame_type,
         df: pd.DataFrame,
         threshold_set_name: str,
         col_outlier: str,
@@ -576,7 +590,7 @@ class SCDataFrame(pd.DataFrame):
 
         return fig
 
-    def find_image_columns(self: SCDataFrame_type) -> bool:
+    def find_image_columns(self: CytoDataFrame_type) -> bool:
         pattern = r".*\.(tif|tiff)$"
         return [
             column
@@ -590,40 +604,110 @@ class SCDataFrame(pd.DataFrame):
         ]
 
     @staticmethod
+    def draw_outline_on_image(actual_image_path: str, mask_image_path: str) -> Image:
+        """
+        Draws outlines on a TIFF image based on a mask image and returns
+        the combined result.
+
+        This method takes the path to a TIFF image and a mask image, creates
+        an outline from the mask, and overlays it on the TIFF image. The resulting
+        image, which combines the TIFF image with the mask outline, is returned.
+
+        Args:
+            actual_image_path (str): Path to the TIFF image file.
+            mask_image_path (str): Path to the mask image file.
+
+        Returns:
+            PIL.Image.Image: A PIL Image object that is the result of
+            combining the TIFF image with the mask outline.
+
+        Raises:
+            FileNotFoundError: If the specified image or mask file does not exist.
+            ValueError: If the images are not in compatible formats or sizes.
+        """
+        # Load the TIFF image
+        tiff_image_array = skimage.io.imread(actual_image_path)
+        # Convert to PIL Image and then to 'RGBA'
+        tiff_image = Image.fromarray(np.uint8(tiff_image_array)).convert("RGBA")
+
+        # Load the mask image and convert it to grayscale
+        mask_image = Image.open(mask_image_path).convert("L")
+        mask_array = np.array(mask_image)
+        mask_array[mask_array > 0] = 255  # Ensure non-zero values are 255 (white)
+
+        # Find contours of the mask
+        contours = skimage.measure.find_contours(mask_array, level=128)
+
+        # Create an outline image with transparent background
+        outline_image = Image.new("RGBA", tiff_image.size, (0, 0, 0, 0))
+        draw = ImageDraw.Draw(outline_image)
+
+        for contour in contours:
+            # Swap x and y to match image coordinates
+            draw.line(
+                [(x, y) for y, x in np.round(contour).astype(int)],
+                fill=(0, 255, 0, 200),
+                width=2,
+            )
+
+        # Combine the TIFF image with the outline image
+        return Image.alpha_composite(tiff_image, outline_image)
+
     def process_image_data_as_html_display(
+        self: CytoDataFrame_type,
         data_value: Any,  # noqa: ANN401
         bounding_box: Tuple[int, int, int, int],
-        data_context_dir: Optional[str] = None,
     ) -> str:
         if not pathlib.Path(data_value).is_file():
             if not pathlib.Path(
-                candidate_path := (f"{data_context_dir}/{data_value}")
+                candidate_path := (
+                    f"{self._custom_attrs['data_context_dir']}/{data_value}"
+                )
             ).is_file():
                 return data_value
             else:
-                data_value = candidate_path
+                pass
 
-        # Read the TIFF image from the byte array
-        tiff_image = skimage.io.imread(data_value)
+        try:
+            if self._custom_attrs["data_mask_context_dir"] is not None and (
+                matching_mask_file := list(
+                    pathlib.Path(self._custom_attrs["data_mask_context_dir"]).glob(
+                        f"{pathlib.Path(candidate_path).stem}*"
+                    )
+                )
+            ):
+                pil_image = self.draw_outline_on_image(
+                    actual_image_path=candidate_path,
+                    mask_image_path=matching_mask_file[0],
+                )
 
-        # Convert the image array to a PIL Image
-        pil_image = Image.fromarray(tiff_image)
+            else:
+                # Read the TIFF image from the byte array
+                tiff_image = skimage.io.imread(candidate_path)
 
-        cropped_img = pil_image.crop(bounding_box)
+                # Convert the image array to a PIL Image
+                pil_image = Image.fromarray(tiff_image)
 
-        # Save the PIL Image as PNG to a BytesIO object
-        png_bytes_io = BytesIO()
-        cropped_img.save(png_bytes_io, format="PNG")
+            cropped_img = pil_image.crop(bounding_box)
 
-        # Get the PNG byte data
-        png_bytes = png_bytes_io.getvalue()
+            # Save the PIL Image as PNG to a BytesIO object
+            png_bytes_io = BytesIO()
+            cropped_img.save(png_bytes_io, format="PNG")
+
+            # Get the PNG byte data
+            png_bytes = png_bytes_io.getvalue()
+
+        except (FileNotFoundError, ValueError):
+            # return the raw data value if we run into an exception of some kind
+            print("Unable to process image from {candidate_path}")
+            return data_value
 
         return (
             '<img src="data:image/png;base64,'
             f'{base64.b64encode(png_bytes).decode("utf-8")}" style="width:300px;"/>'
         )
 
-    def get_displayed_rows(self: SCDataFrame_type) -> List[int]:
+    def get_displayed_rows(self: CytoDataFrame_type) -> List[int]:
         # Get the current display settings
         max_rows = pd.get_option("display.max_rows")
         min_rows = pd.get_option("display.min_rows")
@@ -639,7 +723,7 @@ class SCDataFrame(pd.DataFrame):
             return start_display + end_display
 
     def _repr_html_(
-        self: SCDataFrame_type, key: Optional[Union[int, str]] = None
+        self: CytoDataFrame_type, key: Optional[Union[int, str]] = None
     ) -> str:
         """
         Returns HTML representation of the underlying pandas DataFrame
@@ -649,7 +733,7 @@ class SCDataFrame(pd.DataFrame):
         https://github.com/pandas-dev/pandas/blob/v2.2.2/pandas/core/frame.py#L1216
 
         Modifications added to help achieve image-based output for single-cell data
-        within the context of SCDataFrame and coSMicQC.
+        within the context of CytoDataFrame and coSMicQC.
 
         Mainly for Jupyter notebooks.
 
@@ -693,7 +777,6 @@ class SCDataFrame(pd.DataFrame):
                 data.loc[display_indices, image_col] = data.loc[display_indices].apply(
                     lambda row: self.process_image_data_as_html_display(
                         data_value=row[image_col],
-                        data_context_dir=self._custom_attrs["data_context_dir"],
                         bounding_box=(
                             row["Cytoplasm_AreaShape_BoundingBoxMinimum_X"],
                             row["Cytoplasm_AreaShape_BoundingBoxMinimum_Y"],

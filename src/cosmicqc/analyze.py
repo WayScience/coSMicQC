@@ -11,7 +11,7 @@ import pandas as pd
 import yaml
 from scipy.stats import zscore as scipy_zscore
 
-from .frame import SCDataFrame
+from .frame import CytoDataFrame
 
 DEFAULT_QC_THRESHOLD_FILE = (
     f"{pathlib.Path(__file__).parent!s}/data/qc_nuclei_thresholds_default.yml"
@@ -19,12 +19,12 @@ DEFAULT_QC_THRESHOLD_FILE = (
 
 
 def identify_outliers(
-    df: Union[SCDataFrame, pd.DataFrame, str],
+    df: Union[CytoDataFrame, pd.DataFrame, str],
     feature_thresholds: Union[Dict[str, float], str],
     feature_thresholds_file: Optional[str] = DEFAULT_QC_THRESHOLD_FILE,
     include_threshold_scores: bool = False,
     export_path: Optional[str] = None,
-) -> Union[pd.Series, SCDataFrame]:
+) -> Union[pd.Series, CytoDataFrame]:
     """
     This function uses z-scoring to format the data for detecting outlier
     nuclei or cells using specific CellProfiler features. Thresholds are
@@ -33,7 +33,7 @@ def identify_outliers(
     threshold of 0 as that would represent the whole dataset.
 
     Args:
-        df: Union[SCDataFrame, pd.DataFrame, str]
+        df: Union[CytoDataFrame, pd.DataFrame, str]
             DataFrame or file string-based filepath of a
             Parquet, CSV, or TSV file with CytoTable output or similar data.
         feature_thresholds: Dict[str, float]
@@ -51,18 +51,18 @@ def identify_outliers(
             Whether to include the threshold scores in addition to whether
             the threshold set passes per row.
         export_path: Optional[str] = None
-            An optional path to export the data using SCDataFrame export
+            An optional path to export the data using CytoDataFrame export
             capabilities. If None no export is performed.
             Note: compatible exports are CSV's, TSV's, and parquet.
 
     Returns:
-        Union[pd.Series, SCDataFrame]:
+        Union[pd.Series, CytoDataFrame]:
             Outlier series with booleans based on whether outliers were detected
             or not for use within other functions.
     """
 
-    # interpret the df as SCDataFrame
-    df = SCDataFrame(data=df)
+    # interpret the df as CytoDataFrame
+    df = CytoDataFrame(data=df)
 
     # create a copy of the dataframe to ensure
     # we don't modify the supplied dataframe inplace.
@@ -109,12 +109,12 @@ def identify_outliers(
         reduce(operator.and_, conditions)
         if not include_threshold_scores
         # otherwise, provide the threshold zscore col and the above column
-        else SCDataFrame(
+        else CytoDataFrame(
             data=pd.concat(
                 [
                     # grab only the outlier zscore columns from the outlier_df
                     outlier_df[zscore_columns.values()],
-                    SCDataFrame(
+                    CytoDataFrame(
                         {
                             f"{thresholds_name}.is_outlier": reduce(
                                 operator.and_, conditions
@@ -125,12 +125,13 @@ def identify_outliers(
                 axis=1,
             ),
             data_context_dir=df._custom_attrs["data_context_dir"],
+            data_mask_context_dir=df._custom_attrs["data_mask_context_dir"],
         )
     )
 
     if export_path is not None:
         if isinstance(result, pd.Series):
-            SCDataFrame(result).export(file_path=export_path)
+            CytoDataFrame(result).export(file_path=export_path)
         else:
             result.export(file_path=export_path)
 
@@ -138,7 +139,7 @@ def identify_outliers(
 
 
 def find_outliers(
-    df: Union[SCDataFrame, pd.DataFrame, str],
+    df: Union[CytoDataFrame, pd.DataFrame, str],
     metadata_columns: List[str],
     feature_thresholds: Union[Dict[str, float], str],
     feature_thresholds_file: Optional[str] = DEFAULT_QC_THRESHOLD_FILE,
@@ -149,7 +150,7 @@ def find_outliers(
     with only the outliers and provided metadata columns.
 
     Args:
-        df: Union[SCDataFrame, pd.DataFrame, str]
+        df: Union[CytoDataFrame, pd.DataFrame, str]
             DataFrame or file string-based filepath of a
             Parquet, CSV, or TSV file with CytoTable output or similar data.
         metadata_columns: List[str]
@@ -166,7 +167,7 @@ def find_outliers(
             An optional feature thresholds file where thresholds may be
             defined within a file.
         export_path: Optional[str] = None
-            An optional path to export the data using SCDataFrame export
+            An optional path to export the data using CytoDataFrame export
             capabilities. If None no export is performed.
             Note: compatible exports are CSV's, TSV's, and parquet.
 
@@ -175,8 +176,8 @@ def find_outliers(
             Outlier data frame for the given conditions.
     """
 
-    # interpret the df as SCDataFrame
-    df = SCDataFrame(data=df)
+    # interpret the df as CytoDataFrame
+    df = CytoDataFrame(data=df)
 
     if isinstance(feature_thresholds, str):
         feature_thresholds = read_thresholds_set_from_file(
@@ -215,20 +216,20 @@ def find_outliers(
 
 
 def label_outliers(  # noqa: PLR0913
-    df: Union[SCDataFrame, pd.DataFrame, str],
+    df: Union[CytoDataFrame, pd.DataFrame, str],
     feature_thresholds: Optional[Union[Dict[str, float], str]] = None,
     feature_thresholds_file: Optional[str] = DEFAULT_QC_THRESHOLD_FILE,
     include_threshold_scores: bool = False,
     export_path: Optional[str] = None,
     report_path: Optional[str] = None,
     **kwargs: Dict[str, Any],
-) -> SCDataFrame:
+) -> CytoDataFrame:
     """
     Use identify_outliers to label the original dataset for
     where a cell passed or failed the quality control condition(s).
 
         Args:
-            df: Union[SCDataFrame, pd.DataFrame, str]
+            df: Union[CytoDataFrame, pd.DataFrame, str]
                 DataFrame or file string-based filepath of a
                 Parquet, CSV, or TSV file with CytoTable output or similar data.
             feature_thresholds: Dict[str, float]
@@ -246,17 +247,17 @@ def label_outliers(  # noqa: PLR0913
                 Whether to include the scores in addition to whether an outlier
                 was detected or not.
             export_path: Optional[str] = None
-                An optional path to export the data using SCDataFrame export
+                An optional path to export the data using CytoDataFrame export
                 capabilities. If None no export is performed.
                 Note: compatible exports are CSV's, TSV's, and parquet.
 
         Returns:
-            SCDataFrame:
+            CytoDataFrame:
                 Full dataframe with optional scores and outlier boolean column.
     """
 
-    # interpret the df as SCDataFrame
-    df = SCDataFrame(data=df)
+    # interpret the df as CytoDataFrame
+    df = CytoDataFrame(data=df)
 
     # for single outlier processing
     if isinstance(feature_thresholds, (str, dict)):
@@ -268,14 +269,14 @@ def label_outliers(  # noqa: PLR0913
             include_threshold_scores=include_threshold_scores,
         )
 
-        result = SCDataFrame(
+        result = CytoDataFrame(
             data=pd.concat(
                 [
                     df,
                     (
                         identified_outliers
                         if isinstance(identified_outliers, pd.DataFrame)
-                        else SCDataFrame(
+                        else CytoDataFrame(
                             {
                                 (
                                     f"cqc.{feature_thresholds}.is_outlier"
@@ -289,6 +290,7 @@ def label_outliers(  # noqa: PLR0913
                 axis=1,
             ),
             data_context_dir=df._custom_attrs["data_context_dir"],
+            data_mask_context_dir=df._custom_attrs["data_mask_context_dir"],
         )
 
     # for multiple outlier processing
@@ -312,9 +314,10 @@ def label_outliers(  # noqa: PLR0913
             axis=1,
         )
         # return a dataframe with a deduplicated columns by name
-        result = SCDataFrame(
+        result = CytoDataFrame(
             labeled_df.loc[:, ~labeled_df.columns.duplicated()],
             data_context_dir=df._custom_attrs["data_context_dir"],
+            data_mask_context_dir=df._custom_attrs["data_mask_context_dir"],
         )
 
     # export the file if specified

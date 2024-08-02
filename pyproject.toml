@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "coSMicQC"
-version = "0.0.5.post45.dev0+9a2bfc2"
+version = "0.0.1"
 description = "coSMicQC is a software tool for single-cell quality control of morphology datasets."
 authors = ["Way Science Community"]
 license = "BSD-3-Clause"
@@ -42,8 +42,7 @@ jupytext = "^1.16.2" # used for example notebook formatting
 jupyterlab-code-formatter = "^2.2.1" # used for example notebook formatting
 black = "^24.4.2" # used for example notebook formatting
 isort = "^5.13.2" # used for example notebook formatting
-botocore = "^1.34.133" # used for avoiding dependency resolution issues
-cytotable = ">=0.0.9" # used for generating test data
+coverage = "^7.6.0" # added to generate test coverage reports
 
 [tool.poetry.scripts]
 cosmicqc = "cosmicqc.cli:cli_analyze"
@@ -87,7 +86,7 @@ select = [
 # Ignore `E402` and `F401` (unused imports) in all `__init__.py` files
 "__init__.py" = ["E402", "F401"]
 # ignore typing rules for tests
-"tests/*" = ["ANN201", "PLR0913", "PLR2004"]
+"tests/*" = ["ANN201", "PLR0913"]
 
 [tool.jupytext]
 formats = "ipynb,py:light"
@@ -95,23 +94,17 @@ formats = "ipynb,py:light"
 [tool.pytest.ini_options]
 markers = [
     "generate_report_image: tests which involve the creation of report images.",
-    "large_data_tests: tests which involve the use of large data."
 ]
 
 # set dynamic versioning capabilities for project
 [tool.poetry-dynamic-versioning]
-enable = false
+enable = true
 style = "pep440"
 vcs = "git"
 
 # specify where version replacement is performed
 [tool.poetry-dynamic-versioning.substitution]
 files = ["src/cosmicqc/__init__.py"]
-
-# set persistent versions within the __init__.py file in cases
-# where we may not have or want access to full git history
-[tool.poetry-dynamic-versioning.files."src/cosmicqc/__init__.py"]
-persistent-substitution = true
 
 [build-system]
 requires = ["poetry-core>=1.0.0", "poetry-dynamic-versioning>=1.0.0,<2.0.0"]

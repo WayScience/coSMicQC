@@ -8,22 +8,27 @@ repos:
     hooks:
       - id: trailing-whitespace
       - id: end-of-file-fixer
+        exclude: |
+          (?x)^(
+              .*\.svg
+          )$
       - id: check-yaml
       - id: check-added-large-files
       - id: detect-private-key
   - repo: https://github.com/python-poetry/poetry
-    rev: "1.5.1"
+    rev: "1.8.0"
     hooks:
       - id: poetry-check
   - repo: https://github.com/codespell-project/codespell
-    rev: v2.2.6
+    rev: v2.3.0
     hooks:
       - id: codespell
         exclude: |
           (?x)^(
               .*\.lock |
               .*\.json |
-              .*\.ipynb
+              .*\.ipynb |
+              .*\.cppipe
           )$
   - repo: https://github.com/executablebooks/mdformat
     rev: 0.7.17
@@ -40,11 +45,25 @@ repos:
     hooks:
       - id: yamllint
   - repo: https://github.com/rhysd/actionlint
-    rev: v1.7.0
+    rev: v1.7.1
     hooks:
       - id: actionlint
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: "v0.4.4"
+    rev: "v0.5.5"
     hooks:
       - id: ruff
       - id: ruff-format
+  - repo: local
+    hooks:
+      - id: code-cov-gen
+        name: Generate code coverage
+        language: system
+        entry: poetry run coverage run -m pytest
+        pass_filenames: false
+        always_run: true
+  - repo: https://github.com/Weird-Sheep-Labs/coverage-pre-commit
+    rev: 0.1.1
+    hooks:
+      - id: coverage-xml
+      - id: coverage-badge
+        args: ["-o", "media/coverage-badge.svg"]

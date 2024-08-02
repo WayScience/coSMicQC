@@ -30,9 +30,14 @@ data_path = (
 
 # set a context directory for images associated with the dataset
 image_context_dir = pathlib.Path(data_path).parent / "Plate_2_images"
+mask_context_dir = pathlib.Path(data_path).parent / "Plate_2_masks"
 
-# create a cosmicqc SCDataFrame (single-cell DataFrame)
-scdf = cosmicqc.SCDataFrame(data=data_path, data_context_dir=image_context_dir)
+# create a cosmicqc CytoDataFrame (single-cell DataFrame)
+scdf = cosmicqc.CytoDataFrame(
+    data=data_path,
+    data_context_dir=image_context_dir,
+    data_mask_context_dir=mask_context_dir,
+)
 
 # display the dataframe
 scdf
@@ -72,7 +77,7 @@ labeled_scdf.iloc[:, -8:]
 # for each threshold set in the new columns
 labeled_scdf.show_report()
 
-# show cropped images through SCDataFrame from the dataset to help analyze outliers
+# show cropped images through CytoDataFrame from the dataset to help analyze outliers
 labeled_scdf.sort_values(by="cqc.large_nuclei.is_outlier", ascending=False)[
     [
         "Metadata_ImageNumber",
@@ -84,7 +89,7 @@ labeled_scdf.sort_values(by="cqc.large_nuclei.is_outlier", ascending=False)[
     ]
 ]
 
-# One can convert from cosmicqc.SCDataFrame to pd.DataFrame's
+# One can convert from cosmicqc.CytoDataFrame to pd.DataFrame's
 # (when or if needed!)
 df = pd.DataFrame(scdf)
 print(type(df))
