@@ -43,6 +43,8 @@ jupyterlab-code-formatter = "^2.2.1" # used for example notebook formatting
 black = "^24.4.2" # used for example notebook formatting
 isort = "^5.13.2" # used for example notebook formatting
 coverage = "^7.6.0" # added to generate test coverage reports
+botocore = "^1.34.133" # used for avoiding dependency resolution issues
+cytotable = { git = "https://github.com/d33bs/cytotable.git", branch = "pagination-changes" } # used for generating test data
 
 [tool.poetry.scripts]
 cosmicqc = "cosmicqc.cli:cli_analyze"
