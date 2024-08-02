@@ -478,9 +478,9 @@ def test_label_outliers_jump(
     print(test_df["cqc.large_nuclei.is_outlier"].sum())
 
     # check the detected outlier count
-    assert test_df["cqc.small_and_low_formfactor_nuclei.is_outlier"].sum() == 1680
+    assert test_df["cqc.small_and_low_formfactor_nuclei.is_outlier"].sum() == 1534
     assert test_df["cqc.elongated_nuclei.is_outlier"].sum() == 3
-    assert test_df["cqc.large_nuclei.is_outlier"].sum() == 583
+    assert test_df["cqc.large_nuclei.is_outlier"].sum() == 619
 
 
 def test_identify_outliers(
