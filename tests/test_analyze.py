@@ -452,37 +452,6 @@ def test_label_outliers(
     )
 
 
-@pytest.mark.large_data_tests
-def test_label_outliers_jump(
-    jump_cytotable_data: str,
-):
-    """
-    Test label_outliers with JUMP data
-    """
-
-    # test single-column result
-    test_df = analyze.label_outliers(
-        df=jump_cytotable_data,
-        include_threshold_scores=True,
-    )
-
-    test_df.to_parquet("example.parquet")
-
-    test_df = pd.read_parquet("example.parquet")
-
-    # check the shape
-    assert test_df.shape == (74226, 5936)
-
-    print(test_df["cqc.small_and_low_formfactor_nuclei.is_outlier"].sum())
-    print(test_df["cqc.elongated_nuclei.is_outlier"].sum())
-    print(test_df["cqc.large_nuclei.is_outlier"].sum())
-
-    # check the detected outlier count
-    assert test_df["cqc.small_and_low_formfactor_nuclei.is_outlier"].sum() == 1534  # noqa: PLR2004
-    assert test_df["cqc.elongated_nuclei.is_outlier"].sum() == 3  # noqa: PLR2004
-    assert test_df["cqc.large_nuclei.is_outlier"].sum() == 619  # noqa: PLR2004
-
-
 def test_identify_outliers(
     basic_outlier_dataframe: pd.DataFrame,
     basic_outlier_csv: str,

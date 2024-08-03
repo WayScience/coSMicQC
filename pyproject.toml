@@ -99,6 +99,12 @@ markers = [
     "large_data_tests: tests which involve large amounts of data and/or processing",
 ]
 
+[tool.coverage.run]
+omit = [
+    # omit large data tests
+    "tests/test_large_data.py"
+]
+
 # set dynamic versioning capabilities for project
 [tool.poetry-dynamic-versioning]
 enable = true
