@@ -2,15 +2,16 @@
 Module dedicated to testing large data for cosmicqc
 """
 
+import pathlib
+
+import cytotable
+import parsl
 import pytest
 from cosmicqc import analyze
-import cytotable
-from pyarrow import parquet
-import pathlib
-import parsl
 from parsl.config import Config
 from parsl.executors import ThreadPoolExecutor
 from pyarrow import parquet
+
 
 @pytest.fixture(name="jump_cytotable_data")
 def fixture_jump_cytotable_data(
