@@ -44,6 +44,8 @@ jupyterlab-code-formatter = "^2.2.1" # used for example notebook formatting
 black = "^24.4.2" # used for example notebook formatting
 isort = "^5.13.2" # used for example notebook formatting
 coverage = "^7.6.0" # added to generate test coverage reports
+botocore = "^1.34.133" # used for avoiding dependency resolution issues
+cytotable = { git = "https://github.com/d33bs/cytotable.git", branch = "pagination-changes" } # used for generating test data
 
 [tool.poetry.scripts]
 cosmicqc = "cosmicqc.cli:cli_analyze"
@@ -95,14 +97,17 @@ formats = "ipynb,py:light"
 [tool.pytest.ini_options]
 markers = [
     "generate_report_image: tests which involve the creation of report images.",
+    "large_data_tests: tests which involve large amounts of data and/or processing",
 ]
 
 [tool.coverage.run]
-# settings to avoid errors with cv2 and coverage
-# see here for more: https://github.com/nedbat/coveragepy/issues/1653
 omit = [
+    # settings to avoid errors with cv2 and coverage
+    # see here for more: https://github.com/nedbat/coveragepy/issues/1653
     "config.py",
     "config-3.py",
+    # omit large data tests
+    "tests/test_large_data.py"
 ]
 
 # set dynamic versioning capabilities for project
