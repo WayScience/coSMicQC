@@ -142,3 +142,5 @@ cython_debug/
 *.csv
 
 .DS_Store
+
+tests/data/cytotable/Nuclear_speckles

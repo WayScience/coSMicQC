@@ -27,6 +27,8 @@ import plotly.colors as pc
 import plotly.express as px
 import plotly.graph_objects as go
 import skimage
+import skimage.io
+import skimage.measure
 from IPython import get_ipython
 from jinja2 import Environment, FileSystemLoader
 from pandas._config import (
@@ -36,6 +38,8 @@ from pandas.io.formats import (
     format as fmt,
 )
 from PIL import Image, ImageDraw
+
+from .image import adjust_image_brightness, is_image_too_dark
 
 # provide backwards compatibility for Self type in earlier Python versions.
 # see: https://peps.python.org/pep-0484/#annotating-instance-and-class-methods
@@ -628,7 +632,17 @@ class CytoDataFrame(pd.DataFrame):
         # Load the TIFF image
         tiff_image_array = skimage.io.imread(actual_image_path)
         # Convert to PIL Image and then to 'RGBA'
-        tiff_image = Image.fromarray(np.uint8(tiff_image_array)).convert("RGBA")
+
+        # Check if the image is 16-bit and grayscale
+        if tiff_image_array.dtype == np.uint16:
+            # Normalize the image to 8-bit for display purposes
+            tiff_image_array = (tiff_image_array / 256).astype(np.uint8)
+
+        tiff_image = Image.fromarray(tiff_image_array).convert("RGBA")
+
+        # Check if the image is too dark and adjust brightness if needed
+        if is_image_too_dark(tiff_image):
+            tiff_image = adjust_image_brightness(tiff_image)
 
         # Load the mask image and convert it to grayscale
         mask_image = Image.open(mask_image_path).convert("L")
@@ -659,19 +673,20 @@ class CytoDataFrame(pd.DataFrame):
         bounding_box: Tuple[int, int, int, int],
     ) -> str:
         if not pathlib.Path(data_value).is_file():
-            if not pathlib.Path(
-                candidate_path := (
-                    f"{self._custom_attrs['data_context_dir']}/{data_value}"
-                )
-            ).is_file():
-                return data_value
+            # Use rglob to recursively search for a matching file
+            if candidate_paths := list(
+                pathlib.Path(self._custom_attrs["data_context_dir"]).rglob(data_value)
+            ):
+                # if we find a candidate, return the first one
+                candidate_path = candidate_paths[0]
             else:
-                pass
+                # we don't have any candidate paths so return the unmodified value
+                return data_value
 
         try:
             if self._custom_attrs["data_mask_context_dir"] is not None and (
                 matching_mask_file := list(
-                    pathlib.Path(self._custom_attrs["data_mask_context_dir"]).glob(
+                    pathlib.Path(self._custom_attrs["data_mask_context_dir"]).rglob(
                         f"{pathlib.Path(candidate_path).stem}*"
                     )
                 )
@@ -773,15 +788,46 @@ class CytoDataFrame(pd.DataFrame):
             # gather indices which will be displayed based on pandas configuration
             display_indices = self.get_displayed_rows()
 
+            # gather bounding box columns for use below
+            bounding_box_cols = self._custom_attrs["data_bounding_box"].columns.tolist()
+
             for image_col in image_cols:
                 data.loc[display_indices, image_col] = data.loc[display_indices].apply(
                     lambda row: self.process_image_data_as_html_display(
                         data_value=row[image_col],
                         bounding_box=(
-                            row["Cytoplasm_AreaShape_BoundingBoxMinimum_X"],
-                            row["Cytoplasm_AreaShape_BoundingBoxMinimum_Y"],
-                            row["Cytoplasm_AreaShape_BoundingBoxMaximum_X"],
-                            row["Cytoplasm_AreaShape_BoundingBoxMaximum_Y"],
+                            # rows below are specified using the column name to
+                            # determine which part of the bounding box the columns
+                            # relate to (the list of column names could be in
+                            # various order).
+                            row[
+                                next(
+                                    col
+                                    for col in bounding_box_cols
+                                    if "Minimum_X" in col
+                                )
+                            ],
+                            row[
+                                next(
+                                    col
+                                    for col in bounding_box_cols
+                                    if "Minimum_Y" in col
+                                )
+                            ],
+                            row[
+                                next(
+                                    col
+                                    for col in bounding_box_cols
+                                    if "Maximum_X" in col
+                                )
+                            ],
+                            row[
+                                next(
+                                    col
+                                    for col in bounding_box_cols
+                                    if "Maximum_Y" in col
+                                )
+                            ],
                         ),
                     ),
                     axis=1,
