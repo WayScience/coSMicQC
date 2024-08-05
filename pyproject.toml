@@ -102,16 +102,12 @@ markers = [
 
 [tool.coverage.run]
 omit = [
-    # omit large data tests
-    "tests/test_large_data.py"
-]
-
-[tool.coverage.run]
-# settings to avoid errors with cv2 and coverage
-# see here for more: https://github.com/nedbat/coveragepy/issues/1653
-omit = [
+    # settings to avoid errors with cv2 and coverage
+    # see here for more: https://github.com/nedbat/coveragepy/issues/1653
     "config.py",
     "config-3.py",
+    # omit large data tests
+    "tests/test_large_data.py"
 ]
 
 # set dynamic versioning capabilities for project
