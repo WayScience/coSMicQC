@@ -51,8 +51,8 @@ repos:
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: "v0.5.5"
     hooks:
-      - id: ruff
       - id: ruff-format
+      - id: ruff
   - repo: local
     hooks:
       - id: code-cov-gen

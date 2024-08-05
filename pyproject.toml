@@ -32,6 +32,7 @@ pywavelets = [
   {version = "^1.4.1", python = "<3.9"},
   {version = ">1.4.1", python = ">=3.9"}
 ] # dependency of scikit-image
+opencv-python = "^4.10.0.84" # used for image modifications in cytodataframe
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.2.0" # provides testing capabilities for project
@@ -94,6 +95,14 @@ formats = "ipynb,py:light"
 [tool.pytest.ini_options]
 markers = [
     "generate_report_image: tests which involve the creation of report images.",
+]
+
+[tool.coverage.run]
+# settings to avoid errors with cv2 and coverage
+# see here for more: https://github.com/nedbat/coveragepy/issues/1653
+omit = [
+    "config.py",
+    "config-3.py",
 ]
 
 # set dynamic versioning capabilities for project
