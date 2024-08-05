@@ -7,7 +7,7 @@ import numpy as np
 from PIL import Image, ImageEnhance
 
 
-def is_image_too_dark(image: Image, threshold: float = 10.0) -> bool:
+def is_image_too_dark(image: Image, pixel_brightness_threshold: float = 10.0) -> bool:
     """
     Check if the image is too dark based on the mean brightness.
     By "too dark" we mean not as visible to the human eye.
@@ -29,7 +29,7 @@ def is_image_too_dark(image: Image, threshold: float = 10.0) -> bool:
     # Calculate the mean brightness
     mean_brightness = np.mean(gray_image)
 
-    return mean_brightness < threshold
+    return mean_brightness < pixel_brightness_threshold
 
 
 def adjust_image_brightness(image: Image) -> Image:
