@@ -9,78 +9,80 @@ format:
     footer-text: "footer-text"
     footer-url: "footer-url"
     footer-emails: "footer-email"
-    footer-color: "ebcfb2"
+    footer-color: "ADA7FF"
     keywords: ["single-cell-profiling"]
 ---
 
-# Background
+## Erroneous outliers and analysis
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim aeque doleamus animo, cum corpore dolemus, fieri tamen permagna accessio potest, si aliquod aeternum et infinitum impendere malum nobis opinemur. Quod idem licet transferre in voluptatem, ut postea variari voluptas distinguique possit, augeri amplificarique non possit. At etiam Athenis, ut e patre audiebam facete et urbane Stoicos irridente, statua est in quo a nobis philosophia defensa et collaudata est, cum id, quod maxime placeat, facere possimus, omnis voluptas assumenda est, om- nis dolor repellendus. Temporibus autem quibusdam et.
+![_Outlier anomalies measure outside our expectations._](./images/example-outliers.png){style="margin-top:-20px; padding-top:-20px; width:100%;"}
 
-![Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do.](./images/waylab.png){width="50%"}
+Single-cell morphology data from high-throughput microscopy provide critical insights into disease mechanisms and therapeutic efficacy.
+However, segmentation errors during image analysis—such as misidentifying cell compartments or artifacts as cells—can lead to inaccurate single-cell measurements.
+These inaccuracies emerge as ___anomalies___, data which do not conform to expectations, which complicate data interpretation and result in unreliable scientific conclusions.
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim aeque doleamus animo, cum corpore dolemus, fieri tamen permagna accessio potest, si aliquod aeternum et infinitum impendere malum nobis opinemur. Quod idem licet transferre in voluptatem, ut postea variari voluptas distinguique possit, augeri amplificarique non pos- sit. At.
+Researchers often resort to error-prone bespoke filtering methods or aggregate data into bulk profiles to avoid discrepancies caused by anomaly outliers.
+These techniques fail to perform quality control on the data, often compromising the quality of single-cell profiles and impeding the potential for meaningful discoveries.
 
-# Lorem ipsum
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim aeque doleamus animo, cum corpore dolemus, fieri.
+## coSMicQC: open source single-cell quality control
+```{mermaid}
+%%| fig-cap: "_coSMicQC enables high-quality data outcomes._"
+%%| label: fig-cosmicqc-flow
+%%| width: 100%
+graph LR
+    images[("🌄 Single-Cell Images")] --> profiling["Profiling\n(CellProfiler, etc.)"]
+    profiling --> profiles[("🦠 Single-cell Profiles")]
+    profiles --> analysis[Analysis]
+    analysis --> |find \n outliers| cosmicqc["✨ coSMicQC"]
+    analysis --> |analyze \n segmentation| cosmicqc
+    cosmicqc --> good[("✅ Corrected data")]
+    analysis --> errors["😟 Data quality\nerrors"]
+    errors --> bad["❌ Bad Data"]
+    
+    classDef cosmicqc fill:#8431D0,color:#fff;
+    class cosmicqc cosmicqc;
 
-1. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do.
-1. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do.
-1. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do.
+```
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim aeque doleamus animo, cum corpore dolemus, fieri tamen permagna accessio potest, si aliquod aeternum et infinitum impendere malum nobis opinemur. Quod idem licet transferre in voluptatem, ut.
 
-| Lorem ipsum dolor sit. | Lorem ipsum. | Lorem ipsum. |
-|------------------------|--------------|--------------|
-| Lorem ipsum dolor.     | Lorem ipsum. | $\alpha$     |
-| Lorem ipsum.           | Lorem ipsum. | $\beta$      |
-| Lorem.                 | Lorem.       | $\gamma$     |
-| Lorem ipsum dolor.     | Lorem.       | $\theta$     |
+To address these challenges, we introduce ___`coSMicQC` (Single-cell Morphology Quality Control)___, an open source Python package designed to enhance the accuracy of single-cell morphology analysis.
+__`coSMicQC`__ offers default and customizable thresholds for quality control, integrating seamlessly into both command line and Python API workflows.
+When using __`coSMicQC`__ through Jupyter notebooks it displays dynamic plots and labeled DataFrames for swift analysis iterations.
+Our goal is to create an open-science tool to study and eliminate erroneous data anomalies in a reproducible manner.
 
-: Lorem ipsum dolor sit amet {#tbl-1}
+__`coSMicQC`__ features interactive visualizations that help users identify outlier distributions, and it introduces the ___CytoDataFrame___ — a novel data format that links single-cell measurements with their corresponding images and segmentation masks in real-time, enriching data analysis and interpretation.
 
-Lorem @tbl-1 ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim aeque doleamus animo, cum corpore dolemus, fieri tamen permagna accessio potest, si aliquod aeternum et infinitum impendere malum nobis opinemur. Quod idem licet transferre in voluptatem, ut postea variari voluptas distinguique possit, augeri amplificarique non possit. At etiam Athenis, ut e patre audiebam facete et urbane Stoicos irridente, statua est in quo a nobis philosophia defensa et.
+## Getting started with coSMicQC
 
-## Lorem ipsum dolor sit amet
+See below for a quick guide on how to get started with __coSMicQC__.
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim aeque doleamus animo, cum corpore dolemus, fieri tamen permagna accessio potest, si aliquod aeternum et infinitum impendere malum nobis opinemur. Quod idem licet transferre in voluptatem, ut postea variari voluptas distinguique possit, augeri amplificarique non possit. At etiam Athenis, ut e patre.
+### Installation
 
-![Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do.](./images/waylab.png){width="100%"}
+```shell
+# pip install from pypi
+pip install coSMicQC
 
-# Lorem ipsum dolor.
+# poetry install from pypi
+poetry add coSMicQC
 
-::: {.block fill="luma(230)" inset="8pt" radius="4pt"}
+# install directly from source
+pip install git+https://github.com/WayScience/coSMicQC.git
+```
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim aeque doleamus animo, cum corpore dolemus, fieri tamen permagna accessio potest, si aliquod aeternum et infinitum impendere malum nobis opinemur. Quod idem licet transferre in voluptatem, ut postea variari voluptas distinguique possit, augeri amplifi- carique non possit. At etiam Athenis, ut e patre audiebam facete et urbane Stoicos irridente, statua est in quo a nobis philosophia defensa et.
+__coSMicQC__ may be installed from PyPI or from source.
 
-- Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do.
-- Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do.
-- Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do.
+### Finding outliers
 
-:::
+## Real-world impact
 
-## Lorem ipsum etiam
+The effectiveness of coSMicQC is demonstrated through its application to the Joint Undertaking in Morphological Profiling (CPJUMP1) dataset. Researchers using coSMicQC have successfully identified and corrected technical outliers in single-cell profiles, leading to more accurate data interpretation and enhanced discovery potential. The package has been employed in various studies to refine single-cell morphology analysis and improve the reliability of research outcomes.
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim aeque doleamus animo, cum corpore dolemus, fieri tamen permagna accessio potest, si aliquod aeternum et infinitum impendere malum nobis opinemur. 
+## Future Steps
 
-## Lorem ipsum possimus
+Moving forward, we aim to expand coSMicQC’s capabilities by integrating additional quality control metrics and enhancing its compatibility with other data analysis platforms. We plan to incorporate feedback from the scientific community to further refine the tool and explore its application to other domains of microscopy and imaging research. Continued development will focus on improving user experience and extending the package’s functionality to address emerging challenges in single-cell analysis.
 
-Quod idem licet transferre in voluptatem, ut postea variari voluptas distinguique possit, augeri amplificarique non possit. At etiam Athenis, ut e patre audiebam facete et urbane Stoicos irridente, statua est in quo a nobis philosophia defensa et collaudata est, cum id, quod maxime placeat, facere possimus, omnis voluptas assumenda est, om- nis dolor repellendus. Temporibus autem quibusdam et.
-
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim aeque doleamus animo, cum corpore dolemus, fieri tamen permagna accessio potest, si aliquod aeternum et infinitum impendere malum nobis opinemur. 
-
-![Temperature and ozone level](images/waylab.png)
-
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim aeque doleamus animo, cum corpore dolemus, fieri tamen permagna accessio potest, si aliquod aeternum et infinitum impendere malum nobis opinemur. Quod idem licet transferre in voluptatem, ut postea variari voluptas distinguique possit, augeri amplificarique non possit. At etiam Athenis, ut e patre audiebam facete et urbane Stoicos irridente, statua est in quo a nobis philosophia defensa et collaudata est, cum id, quod maxime placeat, facere possimus, omnis voluptas assumenda est, om- nis dolor repellendus. Temporibus autem quibusdam et.
-
-- Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do.
-  - Lorem ipsum dolor sit amet.
-  -  Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-- Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore.
-  - Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed. 
-  - Lorem ipsum dolor sit amet, consectetur adipiscing.
-
-$$
-\sum_(k=1)^n k = \frac{(n(n+1))}{2} = \frac{(n^2 + n)}{2}
-$$
+## References
+[Author(s) Last Name, Initial(s). (Year). Title of the reference. Journal Name, Volume(Issue), Page numbers. DOI]
+[Author(s) Last Name, Initial(s). (Year). Title of the reference. Conference Name, Location, Date.]
+[Software Documentation: coSMicQC. (Year). Title. URL]
