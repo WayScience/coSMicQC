@@ -44,6 +44,7 @@ jupyterlab-code-formatter = "^2.2.1" # used for example notebook formatting
 black = "^24.4.2" # used for example notebook formatting
 isort = "^5.13.2" # used for example notebook formatting
 coverage = "^7.6.0" # added to generate test coverage reports
+poethepoet = "^0.27.0" # for standardizing various dev tasks
 
 [tool.poetry.scripts]
 cosmicqc = "cosmicqc.cli:cli_analyze"
@@ -114,6 +115,20 @@ vcs = "git"
 # specify where version replacement is performed
 [tool.poetry-dynamic-versioning.substitution]
 files = ["src/cosmicqc/__init__.py"]
+
+# defines various development tasks
+[tool.poe.tasks]
+# note: quarto commands below expect quarto installed on the local system.
+# see here for more information: https://quarto.org/docs/download/
+poster-preview.shell = """
+quarto preview \
+  docs/presentations/2024-08-27-CU-Anschutz-DBMI-Retreat/poster.qmd
+"""
+poster-render.shell = """
+  quarto render \
+  docs/presentations/2024-08-27-CU-Anschutz-DBMI-Retreat/poster.qmd \
+  --output-dir docs/presentations/2024-08-27-CU-Anschutz-DBMI-Retreat/
+"""
 
 [build-system]
 requires = ["poetry-core>=1.0.0", "poetry-dynamic-versioning>=1.0.0,<2.0.0"]
