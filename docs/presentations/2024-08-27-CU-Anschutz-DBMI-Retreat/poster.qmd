@@ -6,7 +6,7 @@ format:
     poster-authors: "Dave Bunten¹, Jenna Tomkinson¹, Gregory Way¹"
     departments: "¹Department of Biomedical Informatics, University of Colorado Anschutz Medical Campus"
     institution-logo: "./images/header-combined-images.png"
-    footer-text: "footer-text"
+    footer-text: "Way Lab"
     footer-url: "https://github.com/WayScience/coSMicQC"
     footer-emails: "footer-email"
     footer-color: "ADA7FF"
@@ -24,7 +24,7 @@ Researchers often resort to error-prone, bespoke filtering methods or aggregate 
 These techniques fail to perform quality control on the data, often compromising the quality of single-cell profiles and impeding the potential for meaningful discoveries.
 
 
-## coSMicQC: open source single-cell quality control
+## Single-cell quality control package
 ```{mermaid}
 %%| fig-cap: "_coSMicQC enables high-quality data outcomes by checking for outliers._"
 %%| label: fig-cosmicqc-flow
