@@ -7,7 +7,7 @@ format:
     departments: "¹Department of Biomedical Informatics, University of Colorado Anschutz Medical Campus"
     institution-logo: "./images/header-combined-images.png"
     footer-text: "footer-text"
-    footer-url: "footer-url"
+    footer-url: "https://github.com/WayScience/coSMicQC"
     footer-emails: "footer-email"
     footer-color: "ADA7FF"
     keywords: ["single-cell-profiling"]
@@ -15,21 +15,20 @@ format:
 
 ## Erroneous outliers and analysis
 
-![_Outlier anomalies measure outside our expectations._](./images/example-outliers.png){style="margin-top:-20px; padding-top:-20px; width:100%;"}
+![_Erroneous outlier anomalies can measure outside our expectations and impact analysis._](./images/example-outliers.png){width=100%}
 
 Single-cell morphology data from high-throughput microscopy provide critical insights into disease mechanisms and therapeutic efficacy.
-However, segmentation errors during image analysis—such as misidentifying cell compartments or artifacts as cells—can lead to inaccurate single-cell measurements.
-These inaccuracies emerge as ___anomalies___, data which do not conform to expectations, which complicate data interpretation and result in unreliable scientific conclusions.
+However, segmentation errors during image analysis such as misidentifying cell compartments or artifacts as cells can lead to inaccurate single-cell measurements and erroneous anomalies within the data.
 
-Researchers often resort to error-prone bespoke filtering methods or aggregate data into bulk profiles to avoid discrepancies caused by anomaly outliers.
+Researchers often resort to error-prone, bespoke filtering methods or aggregate data into bulk profiles to avoid discrepancies caused by anomaly outliers.
 These techniques fail to perform quality control on the data, often compromising the quality of single-cell profiles and impeding the potential for meaningful discoveries.
 
 
 ## coSMicQC: open source single-cell quality control
 ```{mermaid}
-%%| fig-cap: "_coSMicQC enables high-quality data outcomes._"
+%%| fig-cap: "_coSMicQC enables high-quality data outcomes by checking for outliers._"
 %%| label: fig-cosmicqc-flow
-%%| width: 100%
+%%| fig-width: 50%
 graph LR
     images[("🌄 Single-Cell Images")] --> profiling["Profiling\n(CellProfiler, etc.)"]
     profiling --> profiles[("🦠 Single-cell Profiles")]
@@ -42,20 +41,15 @@ graph LR
     
     classDef cosmicqc fill:#8431D0,color:#fff;
     class cosmicqc cosmicqc;
-
 ```
 
 
 To address these challenges, we introduce ___`coSMicQC` (Single-cell Morphology Quality Control)___, an open source Python package designed to enhance the accuracy of single-cell morphology analysis.
 __`coSMicQC`__ offers default and customizable thresholds for quality control, integrating seamlessly into both command line and Python API workflows.
-When using __`coSMicQC`__ through Jupyter notebooks it displays dynamic plots and labeled DataFrames for swift analysis iterations.
-Our goal is to create an open-science tool to study and eliminate erroneous data anomalies in a reproducible manner.
 
 __`coSMicQC`__ features interactive visualizations that help users identify outlier distributions, and it introduces the ___CytoDataFrame___ — a novel data format that links single-cell measurements with their corresponding images and segmentation masks in real-time, enriching data analysis and interpretation.
 
 ## Getting started with coSMicQC
-
-See below for a quick guide on how to get started with __coSMicQC__.
 
 ### Installation
 
@@ -63,16 +57,35 @@ See below for a quick guide on how to get started with __coSMicQC__.
 # pip install from pypi
 pip install coSMicQC
 
-# poetry install from pypi
-poetry add coSMicQC
-
 # install directly from source
 pip install git+https://github.com/WayScience/coSMicQC.git
 ```
 
-__coSMicQC__ may be installed from PyPI or from source.
+__`coSMicQC`__ may be installed from PyPI or source.
 
 ### Finding outliers
+
+```python
+import cosmicqc
+
+# load a parquet file with single-cell profile data and find outliers
+scdf = cosmicqc.analyze.find_outliers(
+    df="single-cell-profiles.parquet",
+    metadata_columns=[
+      "Metadata_ImageNumber",
+      "Image_Metadata_Plate_x"
+    ],
+    feature_thresholds={
+      "Nuclei_AreaShape_Area": -1
+    },
+)
+```
+
+![](./images/cosmicqc-example-find-outliers-output.png)
+
+### Visualizing outliers
+
+![](./images/cosmicqc-example-histogram.png){width=100%}
 
 ## Real-world impact
 

@@ -9,7 +9,7 @@
   footer_email_ids: "Email IDs (separated by commas)",
   footer_color: "Hex Color Code",
   keywords: (),
-  num_columns: "3",
+  num_columns: "4",
   univ_logo_scale: "210",
   univ_logo_column_size: "10",
   title_column_size: "25",
@@ -73,7 +73,15 @@
 
     set text(24pt, weight: 400)
     if it.level == 1 [
-      // First-level headings are centered smallcaps.
+      #set text(style: "italic")
+      #v(32pt, weak: true)
+      #if it.numbering != none {
+        numbering("i.", deepest)
+        h(7pt, weak: true)
+      }
+      #it.body
+    ] else if it.level == 2 [
+      #v(10pt, weak: true)
       #set align(left)
       #set text({ 40pt }, weight: 600, font: "Merriweather")
       #show: smallcaps
@@ -86,21 +94,14 @@
       #v(30pt, weak: true)
       #line(length: 100%, stroke: rgb(200, 200, 200))
       #v(30pt, weak: true)
-    ] else if it.level == 2 [
-      #set text(style: "italic")
-      #v(32pt, weak: true)
-      #if it.numbering != none {
-        numbering("i.", deepest)
-        h(7pt, weak: true)
-      }
-      #it.body
-      #v(10pt, weak: true)
     ] else [
+      #set text({ 32pt }, weight: 600, font: "Merriweather")
       #if it.level == 3 {
-        numbering("1)", deepest)
+        numbering("☆ 1)", deepest)
         [ ]
       }
-      _#(it.body):_
+      ___#(it.body):___
+      #v(40pt, weak: true)
     ]
   })
 
