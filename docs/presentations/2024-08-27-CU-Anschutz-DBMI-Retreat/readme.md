@@ -4,11 +4,26 @@ The content here is for creating a poster for the University of Colorado Anschut
 
 ## Poster Details
 
-Poster dimensions abide (but may not exactly match) SBI2 2023's maximum specifications: `91" wide x 44.75” high`.
+Poster dimensions will be within (but may not exactly match) SBI2 2023's maximum specifications: `91" wide x 44.75” high`.
+
+## Poster development
+
+We use [Quarto](https://github.com/quarto-dev/quarto-cli)'s [Typst](https://github.com/typst/typst) [integration](https://quarto.org/docs/output-formats/typst.html) through a Quarto extension for posters under [`quarto-ext/typst-templates/poster`](https://github.com/quarto-ext/typst-templates/tree/main/poster).
+Related [Poe the Poet](https://poethepoet.natn.io/index.html) tasks are defined to run processes defined within `pyproject.toml` under the section `[tool.poe.tasks]`.
+
+See the following examples for more information:
+
+```bash
+# preview the poster during development
+poetry run poe poster-preview
+
+# build the poster PDF from source
+poetry run poe poster-render
+```
 
 ## Additional notes
 
-- Fonts were sourced locally for rendering:
+- Fonts were sourced locally for rendering within Quarto and Typst:
   - [Merriweather](https://fonts.google.com/specimen/Merriweather)
   - [Lato](https://fonts.google.com/specimen/Lato)
 - QR codes with images were generated and saved manually via [https://github.com/kciter/qart.js](https://github.com/kciter/qart.js)
