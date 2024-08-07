@@ -12,6 +12,8 @@
 #     name: python3
 # ---
 
+# # Generate figures for poster
+
 # +
 import numpy as np
 import plotly.graph_objects as go
@@ -37,7 +39,7 @@ fig.add_trace(
         y=inlier_y,
         mode="markers",
         name="Inliers",
-        marker=dict(color="green", size=8),
+        marker={"color": "green", "size": 8},
     )
 )
 
@@ -48,21 +50,21 @@ fig.add_trace(
         y=outlier_y,
         mode="markers",
         name="Outliers",
-        marker=dict(color="red", size=8),
+        marker={"color": "red", "size": 8},
     )
 )
 
 # Update layout
 fig.update_layout(
     legend_title="Legend",
-    legend=dict(
-        x=1,  # Position legend at the right edge
-        y=0,  # Position legend at the bottom
-        traceorder="normal",
-        orientation="v",  # Vertical legend
-        xanchor="right",  # Anchor to the right
-        yanchor="bottom",  # Anchor to the bottom
-    ),
+    legend={
+        "x": 1,
+        "y": 0,
+        "traceorder": "normal",
+        "orientation": "v",
+        "xanchor": "right",
+        "yanchor": "bottom",
+    },
     width=1200,
     height=500,
 )
@@ -71,4 +73,3 @@ fig.update_layout(
 fig.write_image("images/example-outliers.png")
 
 fig.show()
-# -

@@ -143,11 +143,11 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit. In vel augue ante. Duis
 
 ![_Ut ut metus at diam hendrerit dictum._](./images/example-outliers.png){width=100%}
 
-Donec bibendum ex vitae egestas ornare. Cras ut vulputate diam. Nullam feugiat feugiat purus, eu varius metus maximus sit amet.
+Donec bibendum ex vitae egestas ornare. Cras ut vulputate diam. Nullam feugiat feugiat purus, eu various metus maximus sit amet.
 
 ![_Praesent eu sem id nibh viverra finibus._](./images/example-outliers.png){width=100%}
 
-Fusce ac mi eu augue suscipit sodales. Morbi quis gravida dui. Nam tellus elit, ullamcorper ut ipsum ut, eleifend facilisis dui.
+Fusce ac mi eu augue suscipit sodales. Morbi quis gravida dui. Name tellus elit, ullamcorper ut ipsum ut, eleifend facilisis dui.
 
 ## Future steps
 
