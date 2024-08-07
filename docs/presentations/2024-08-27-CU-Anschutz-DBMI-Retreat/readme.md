@@ -9,8 +9,8 @@ Poster dimensions abide (but may not exactly match) SBI2 2023's maximum specific
 ## Additional notes
 
 - Fonts were sourced locally for rendering:
-    - [Merriweather](https://fonts.google.com/specimen/Merriweather)
-    - [Lato](https://fonts.google.com/specimen/Lato)
+  - [Merriweather](https://fonts.google.com/specimen/Merriweather)
+  - [Lato](https://fonts.google.com/specimen/Lato)
 - QR codes with images were generated and saved manually via [https://github.com/kciter/qart.js](https://github.com/kciter/qart.js)
 - [ImageMagick](http://www.imagemagick.org/) was used to form the bottom logos together as one and render the poster pdf as png using the following commands:
 

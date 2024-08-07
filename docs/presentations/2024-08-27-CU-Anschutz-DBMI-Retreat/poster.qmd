@@ -1,14 +1,14 @@
 ---
 title: Single-cell Morphology Quality Control (coSMicQC)
 format:
-  poster-typst: 
+  poster-typst:
     size: "48x36"
     poster-authors: "Dave Bunten¹, Jenna Tomkinson¹, Gregory Way¹"
     departments: "¹Department of Biomedical Informatics, University of Colorado Anschutz Medical Campus"
     institution-logo: "./images/header-combined-images.png"
     footer-text: "Way Lab"
     footer-url: "https://github.com/WayScience/coSMicQC"
-    footer-emails: "footer-email"
+    footer-emails: "https://www.waysciencelab.com"
     footer-color: "ADA7FF"
     keywords: ["single-cell-profiling"]
 ---
@@ -18,10 +18,10 @@ format:
 ![_Erroneous outlier anomalies can measure outside our expectations and impact analysis._](./images/example-outliers.png){width=100%}
 
 Single-cell morphology data from high-throughput microscopy provide critical insights into disease mechanisms and therapeutic efficacy.
-However, segmentation errors during image analysis such as misidentifying cell compartments or artifacts as cells can lead to inaccurate single-cell measurements and erroneous anomalies within the data.
+However, ___segmentation errors___ during image analysis such as misidentifying cell compartments or artifacts as cells can lead to inaccurate single-cell measurements and ___erroneous anomalies___ within the data.
 
-Researchers often resort to error-prone, bespoke filtering methods or aggregate data into bulk profiles to avoid discrepancies caused by anomaly outliers.
-These techniques fail to perform quality control on the data, often compromising the quality of single-cell profiles and impeding the potential for meaningful discoveries.
+Researchers often resort to ___error-prone, bespoke filtering methods___ or aggregate data into bulk profiles to avoid discrepancies caused by anomaly outliers.
+These techniques fail to perform ___quality control___ on the data, often compromising the quality of single-cell profiles and impeding the potential for meaningful discoveries.
 
 
 ## Single-cell quality control package
@@ -38,7 +38,7 @@ graph LR
     cosmicqc --> good[("✅ Corrected data")]
     analysis --> errors["😟 Data quality\nerrors"]
     errors --> bad["❌ Bad Data"]
-    
+
     classDef cosmicqc fill:#8431D0,color:#fff;
     class cosmicqc cosmicqc;
 ```
@@ -81,21 +81,74 @@ scdf = cosmicqc.analyze.find_outliers(
 )
 ```
 
-![](./images/cosmicqc-example-find-outliers-output.png)
+![_Reports in __coSMicQC__ provide quality control feedback for analysis._](./images/cosmicqc-example-find-outliers-output.png)
 
-### Visualizing outliers
+The `find_outliers` function in __coSMicQC__ uses single-cell feature thresholds to provide a report on how many outliers were detected.
+We use ___z-scores___ to help define thresholds used throughout coSMicQC.
+`find_outliers` may be used through Python or CLI (see below).
 
-![](./images/cosmicqc-example-histogram.png){width=100%}
+```shell
+# CLI interface for coSMicQC find_outliers
+$ cosmicqc find_outliers \
+  --df single-cell-profiles.parquet \
+  --metadata_columns \[Metadata_ImageNumber\] \
+  --feature_thresholds '{"Nuclei_AreaShape_Area": -1}'
 
-## Real-world impact
+Number of outliers: 328
+Outliers Range:
+Nuclei_AreaShape_Area Min: 734.0
+Nuclei_AreaShape_Area Max: 1904.0
+...
+```
 
-The effectiveness of coSMicQC is demonstrated through its application to the Joint Undertaking in Morphological Profiling (CPJUMP1) dataset. Researchers using coSMicQC have successfully identified and corrected technical outliers in single-cell profiles, leading to more accurate data interpretation and enhanced discovery potential. The package has been employed in various studies to refine single-cell morphology analysis and improve the reliability of research outcomes.
+### Visualizing outlier distributions
 
-## Future Steps
+```python
+import cosmicqc
 
-Moving forward, we aim to expand coSMicQC’s capabilities by integrating additional quality control metrics and enhancing its compatibility with other data analysis platforms. We plan to incorporate feedback from the scientific community to further refine the tool and explore its application to other domains of microscopy and imaging research. Continued development will focus on improving user experience and extending the package’s functionality to address emerging challenges in single-cell analysis.
+# label outliers within the profiles
+scdf = cosmicqc.analyze.label_outliers(
+    df="single-cell-profiles.parquet",
+    include_threshold_scores=True,
+# show outlier histogram plots
+).show_report()
+```
 
-## References
-[Author(s) Last Name, Initial(s). (Year). Title of the reference. Journal Name, Volume(Issue), Page numbers. DOI]
-[Author(s) Last Name, Initial(s). (Year). Title of the reference. Conference Name, Location, Date.]
-[Software Documentation: coSMicQC. (Year). Title. URL]
+![_Histograms from __coSMicQC__ help scientists identify where outliers occur in the distribution._](./images/cosmicqc-example-histogram.png){width=100%}
+
+Deep erroneous anomaly analysis is enabled within __coSMicQC__ through the ___`label_outliers`___ function, which appends z-score data for features, and the ___`CytoDataFrame.show_report`___ method to visualize where outliers are detected within the dataset.
+
+### Understanding outlier segmentation issues
+
+```python
+import cosmicqc
+
+# passing image and mask dirs to display images
+cosmicqc.CytoDataFrame(
+    data="single-cell-profiles.parquet",
+    data_context_dir="./image_directory/",
+    data_mask_context_dir="./mask_directory/",
+)
+```
+
+![_Displaying outlier and image data increases analysis iteration within familiar interfaces._](./images/cosmicqc-example-cytodataframe.png)
+
+___CytoDataFrames___ returned by all __coSMicQC__ operations enable researchers to analyze outlier status alongside single-cell images directly in a Jupyter environment.
+
+## Real-world applications
+
+![_Etiam viverra sollicitudin velit._](./images/example-outliers.png){width=100%}
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. In vel augue ante. Duis placerat ex id turpis consequat, at aliquet arcu vehicula.
+
+![_Ut ut metus at diam hendrerit dictum._](./images/example-outliers.png){width=100%}
+
+Donec bibendum ex vitae egestas ornare. Cras ut vulputate diam. Nullam feugiat feugiat purus, eu varius metus maximus sit amet.
+
+![_Praesent eu sem id nibh viverra finibus._](./images/example-outliers.png){width=100%}
+
+Fusce ac mi eu augue suscipit sodales. Morbi quis gravida dui. Nam tellus elit, ullamcorper ut ipsum ut, eleifend facilisis dui.
+
+## Future steps
+
+We plan to strengthen __coSMicQC__ through further erroneous anomaly detection techniques, integrate with existing single-cell pipelines technologies, and expand image format compatibility.

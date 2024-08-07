@@ -72,5 +72,3 @@ fig.write_image("images/example-outliers.png")
 
 fig.show()
 # -
-
-

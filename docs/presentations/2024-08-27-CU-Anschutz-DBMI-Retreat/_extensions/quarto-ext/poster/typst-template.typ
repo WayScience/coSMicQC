@@ -1,6 +1,6 @@
 #let poster(
-  size: "'36x24' or '48x36''", 
-  title: "Paper Title", 
+  size: "'36x24' or '48x36''",
+  title: "Paper Title",
   authors: "Author Names (separated by commas)",
   departments: "Department Name",
   univ_logo: "Logo Path",
@@ -35,7 +35,7 @@
   set page(
     width: width,
     height: height,
-    margin: 
+    margin:
       (top: 1in, left: 1in, right: 1in, bottom: 2in),
     footer: [
       #set align(center)
@@ -46,10 +46,10 @@
         inset: 20pt,
         radius: 10pt,
         [
-          #text(font: "Lato", size: footer_url_font_size, footer_url) 
-          #h(1fr) 
-          #text(size: footer_text_font_size, smallcaps(footer_text)) 
-          #h(1fr) 
+          #text(font: "Lato", size: footer_url_font_size, footer_url)
+          #h(1fr)
+          #text(size: footer_text_font_size, smallcaps(footer_text))
+          #h(1fr)
           #text(font: "Lato", size: footer_url_font_size, footer_email_ids)
         ]
       )
@@ -83,7 +83,7 @@
     ] else if it.level == 2 [
       #v(10pt, weak: true)
       #set align(left)
-      #set text({ 40pt }, weight: 600, font: "Merriweather")
+      #set text({ 40pt }, weight: 600, font: "Merriweather", fill: rgb(31, 23, 112))
       #show: smallcaps
       #v(50pt, weak: true)
       #if it.numbering != none {
@@ -100,7 +100,7 @@
         numbering("☆ 1)", deepest)
         [ ]
       }
-      ___#(it.body):___
+      ___#(it.body)___
       #v(40pt, weak: true)
     ]
   })
@@ -119,13 +119,13 @@
       text(size: 50pt, authors),
       text(size: 38pt, emph(departments)),
     )
-  ) 
+  )
 
-  v(60pt) 
+  v(60pt)
 
   show: columns.with(num_columns, gutter: 70pt)
   set par(leading: 10pt,
-    justify: false, 
+    justify: false,
     first-line-indent: 0em,
     linebreaks: "optimized"
   )
