@@ -1,4 +1,6 @@
 #let poster(
+  // set variables for use throughout
+  // note: some are referenced from `.qmd` file
   size: "'36x24' or '48x36''",
   title: "Paper Title",
   authors: "Author Names (separated by commas)",
@@ -19,6 +21,7 @@
   footer_text_font_size: "40",
   body
 ) = {
+  // initialize template display formatting
   set text(font: "Lato", size: 35pt)
   let sizes = size.split("x")
   let width = int(sizes.at(0)) * 1in
@@ -32,11 +35,15 @@
   footer_url_font_size = int(footer_url_font_size) * 1pt
   footer_text_font_size = int(footer_text_font_size) * 1pt
 
+  // create overall page output
   set page(
+    // total dimensions
     width: width,
     height: height,
+    // margin on all sides
     margin:
       (top: 1in, left: 1in, right: 1in, bottom: 2in),
+    // footer section
     footer: [
       #set align(center)
       #set text(42pt)
@@ -45,6 +52,7 @@
         width: 100%,
         inset: 20pt,
         radius: 10pt,
+        // adds text to footer
         [
           #text(font: "Lato", size: footer_url_font_size, footer_url)
           #h(1fr)
@@ -56,12 +64,14 @@
     ]
   )
 
+  // set math display properties
   set math.equation(numbering: "(1)")
   show math.equation: set block(spacing: 0.65em)
 
   set enum(indent: 10pt, body-indent: 9pt)
   set list(indent: 10pt, body-indent: 9pt)
 
+  // set the heading numbering system
   set heading(numbering: "I.A.1.")
   show heading: it => locate(loc => {
     let levels = counter(heading).at(loc)
@@ -71,7 +81,9 @@
       1
     }
 
+    // defines how sub-headers display
     set text(24pt, weight: 400)
+    // sub-header level 1
     if it.level == 1 [
       #set text(style: "italic")
       #v(32pt, weak: true)
@@ -80,6 +92,7 @@
         h(7pt, weak: true)
       }
       #it.body
+    // sub-header level 2
     ] else if it.level == 2 [
       #v(10pt, weak: true)
       #set align(left)
@@ -94,6 +107,7 @@
       #v(30pt, weak: true)
       #line(length: 100%, stroke: rgb(200, 200, 200))
       #v(30pt, weak: true)
+    // all other headers
     ] else [
       #set text({ 32pt }, weight: 600, font: "Merriweather")
       #if it.level == 3 {
@@ -105,30 +119,39 @@
     ]
   })
 
+  // header grid
   align(left,
     grid(
+      // rows and cols in the header
       rows: (auto, auto),
       columns: (title_column_size, univ_logo_column_size),
       column-gutter: 10pt,
       row-gutter: 45pt,
+      // main title
       text(font: "Merriweather", weight: 1000, size: 58pt, title),
       grid.cell(
         image(univ_logo, width: univ_logo_scale),
         rowspan: 3
       ),
+      // author display
       text(size: 50pt, authors),
+      // department display
       text(size: 38pt, emph(departments)),
     )
   )
 
+  // spacing between the header and body
   v(60pt)
 
+  // set main body display
   show: columns.with(num_columns, gutter: 70pt)
+  // paragraph display properties
   set par(leading: 10pt,
     justify: false,
     first-line-indent: 0em,
     linebreaks: "optimized"
   )
 
+  // adds body content to page
   body
 }
