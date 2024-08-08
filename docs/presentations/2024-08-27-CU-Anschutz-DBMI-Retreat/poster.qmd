@@ -149,6 +149,9 @@ Donec bibendum ex vitae egestas ornare. Cras ut vulputate diam. Nullam feugiat f
 
 Fusce ac mi eu augue suscipit sodales. Morbi quis gravida dui. Name tellus elit, ullamcorper ut ipsum ut, eleifend facilisis dui.
 
-## References
+## Acknowledgements
 
+Special thanks goes to the following for their help in contributing to the __coSMicQC__ inspiration, development, or related work.
 
+- ___CU Anschutz___: Timothy A. McKinsey, Josh Travers
+- ___iNFixion___: Michelle Mattson-Hoss, Herb Sarnoff
