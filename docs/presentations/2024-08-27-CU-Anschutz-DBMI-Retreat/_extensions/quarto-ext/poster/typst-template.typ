@@ -126,17 +126,17 @@
       rows: (auto, auto),
       columns: (title_column_size, univ_logo_column_size),
       column-gutter: 10pt,
-      row-gutter: 45pt,
+      row-gutter: 40pt,
       // main title
-      text(font: "Merriweather", weight: 1000, size: 58pt, title),
+      text(font: "Merriweather", weight: 1000, size: 56pt, title),
       grid.cell(
         image(univ_logo, width: univ_logo_scale),
         rowspan: 3
       ),
       // author display
-      text(size: 50pt, authors),
-      // department display
-      text(size: 38pt, emph(departments)),
+      text(size: 46pt, authors),
+      // department and notes display
+      text(size: 30pt, emph(departments)),
     )
   )
 
