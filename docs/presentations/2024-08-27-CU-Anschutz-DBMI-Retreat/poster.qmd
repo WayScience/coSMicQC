@@ -3,7 +3,7 @@ title: Single-cell Morphology Quality Control (coSMicQC)
 format:
   poster-typst:
     size: "48x36"
-    poster-authors: "Dave Bunten¹\\*, Jenna Tomkinson¹\\*, Gregory Way¹"
+    poster-authors: "Dave Bunten¹\\*, Jenna Tomkinson¹\\*, Vincent Rubinetti¹, Gregory Way¹"
     departments: "¹Department of Biomedical Informatics, University of Colorado Anschutz Medical Campus\n\n\\*These authors contributed equally to this work."
     institution-logo: "./images/header-combined-images.png"
     footer-text: "Way Lab"
@@ -149,6 +149,6 @@ Donec bibendum ex vitae egestas ornare. Cras ut vulputate diam. Nullam feugiat f
 
 Fusce ac mi eu augue suscipit sodales. Morbi quis gravida dui. Name tellus elit, ullamcorper ut ipsum ut, eleifend facilisis dui.
 
-## Future steps
+## References
 
-We plan to strengthen __coSMicQC__ through further erroneous anomaly detection techniques, integrate with existing single-cell pipelines technologies, and expand image format compatibility.
+

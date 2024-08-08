@@ -134,7 +134,7 @@
         rowspan: 3
       ),
       // author display
-      text(size: 46pt, authors),
+      text(size: 44pt, authors),
       // department and notes display
       text(size: 30pt, emph(departments)),
     )
@@ -144,7 +144,7 @@
   v(60pt)
 
   // set main body display
-  show: columns.with(num_columns, gutter: 70pt)
+  show: columns.with(num_columns, gutter: 60pt)
   // paragraph display properties
   set par(leading: 10pt,
     justify: false,
