@@ -12,6 +12,7 @@
 #
 import pathlib
 import sys
+
 from dunamai import Version
 
 basedir = str(pathlib.Path(__file__).parent.parent.parent.resolve())
@@ -21,7 +22,8 @@ sys.path.insert(0, basedir)
 # -- Project information -----------------------------------------------------
 
 project = "coSMicQC"
-copyright = "2024, WayScience Community"
+# is used here due to sphinx decision-making: https://github.com/sphinx-doc/sphinx/issues/8132
+copyright = "2024, WayScience Community"  # noqa: A001
 author = "WayScience Community"
 
 # -- General configuration ---------------------------------------------------
@@ -43,7 +45,7 @@ templates_path = ["_templates"]
 html_sidebars = {
     "**": [
         "about.html",
-        'searchfield.html',
+        "searchfield.html",
         "navigation.html",
         "relations.html",
         "versioning.html",

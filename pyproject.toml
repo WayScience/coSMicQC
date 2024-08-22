@@ -8,7 +8,7 @@ readme = "README.md"
 packages = [{include = "cosmicqc", from = "src"}]
 
 [tool.poetry.dependencies]
-python = ">=3.8,<3.13"
+python = ">=3.9,<3.13"
 pandas = [
   {version = "<2.2.2", python = "<3.9"},
   {version = "^2.2.2", python = ">=3.9"}
@@ -49,10 +49,7 @@ coverage = "^7.6.0" # added to generate test coverage reports
 sphinx = "^7.0.0" # used for rendering docs into docsite
 myst-parser = "^3.0.0" # used for rendering markdown through sphinx
 myst-nb = "^1.1.1" # used for rendering notebooks through myst parser
-sphinx-multiversion = { 
-  git = "https://github.com/J-RN/sphinx-multiversion",
-  rev = "a77f0c862dace3a62c18fc866da60ef7dde3873d"
-} # used for extension sphinx-multiversion and to fix git-based challenges with default branch handling
+sphinx-multiversion = {git = "https://github.com/J-RN/sphinx-multiversion", rev = "a77f0c862dace3a62c18fc866da60ef7dde3873d"} # used for extension sphinx-multiversion and to fix git-based challenges with default branch handling
 dunamai = "^1.22.0" # used for gathering version data for docsite
 
 [tool.poetry.scripts]

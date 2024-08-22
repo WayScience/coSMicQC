@@ -1,6 +1,5 @@
 # Examples
 
-
 ```{toctree}
 ---
 caption: "List of examples"
