@@ -14,4 +14,6 @@ maxdepth: 3
 ---
 examples
 python-api
+contributing
+code_of_conduct
 ```

@@ -3,7 +3,7 @@
 ```{eval-rst}
 
 cosmicqc.analyze
--------
+----------------
 
 .. automodule:: src.cosmicqc.analyze
    :members:
@@ -12,7 +12,7 @@ cosmicqc.analyze
    :show-inheritance:
 
 cosmicqc.cli
--------
+------------
 
 .. automodule:: src.cosmicqc.cli
    :members:
@@ -21,7 +21,7 @@ cosmicqc.cli
    :show-inheritance:
 
 cosmicqc.frame
--------
+--------------
 
 .. automodule:: src.cosmicqc.frame
    :members:
@@ -30,7 +30,7 @@ cosmicqc.frame
    :show-inheritance:
 
 cosmicqc.image
--------
+--------------
 
 .. automodule:: src.cosmicqc.image
    :members:

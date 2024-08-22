@@ -3006,6 +3006,17 @@ reference = "a77f0c862dace3a62c18fc866da60ef7dde3873d"
 resolved_reference = "a77f0c862dace3a62c18fc866da60ef7dde3873d"
 
 [[package]]
+name = "sphinx-wagtail-theme"
+version = "6.3.0"
+description = "Sphinx Wagtail theme"
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "sphinx_wagtail_theme-6.3.0-py2.py3-none-any.whl", hash = "sha256:53aa8e4bf69cf64d2549448a98b01bd90ccefa5b906fec9f82c3987506c2687f"},
+    {file = "sphinx_wagtail_theme-6.3.0.tar.gz", hash = "sha256:5038219fa32a78f0da35425c5fa058db4fd87336682318a6b9684495887bccfb"},
+]
+
+[[package]]
 name = "sphinxcontrib-applehelp"
 version = "2.0.0"
 description = "sphinxcontrib-applehelp is a Sphinx extension which outputs Apple help books"
@@ -3485,4 +3496,4 @@ test = ["big-O", "importlib-resources", "jaraco.functools", "jaraco.itertools", 
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9,<3.13"
-content-hash = "fc288723422ba6ab4d279101ffc91ed73d91f76c83ad158f0ccc018f25996e8a"
+content-hash = "1f9c8c13f759bec1650f858620c93f01d9e179bd63cdd3224572f1cb8d620108"

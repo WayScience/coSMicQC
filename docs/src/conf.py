@@ -37,6 +37,7 @@ extensions = [
     "sphinx.ext.napoleon",
     "sphinx.ext.viewcode",
     "sphinx_multiversion",
+    "sphinx_wagtail_theme",
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -44,9 +45,8 @@ templates_path = ["_templates"]
 
 html_sidebars = {
     "**": [
-        "about.html",
-        "searchfield.html",
-        "navigation.html",
+        "searchbox.html",
+        "globaltoc.html",
         "relations.html",
         "versioning.html",
     ],
@@ -61,24 +61,23 @@ exclude_patterns = []  # type: ignore
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-#
-html_theme = "alabaster"
+html_theme = "sphinx_wagtail_theme"
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-# html_static_path = ["_static"]
+html_static_path = ["_static"]
+html_css_files = ["custom.css"]
 
 # set theme options
 html_theme_options = {
-    "font_family": "arial",
-    "sidebar_width": "300px",
-    "page_width": "1000px",
-    "github_user": "WayScience",
-    "github_repo": "coSMicQC",
-    "github_button": "true",
-    "github_type": "star",
-    "github_count": "false",
+        "project_name" : "coSMicQC",
+    "logo" : "just-icon.png",
+    "logo_alt" : "coSMicQC logo",
+    "logo_height" : 59,
+    "logo_url" : "/",
+    "logo_width" : 45,
+    "github_url" : "https://github.com/WayScience/coSMicQC/docs/src"
 }
 
 # Options for myst-nb

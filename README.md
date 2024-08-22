@@ -35,7 +35,7 @@ pip install git+https://github.com/WayScience/coSMicQC.git
 
 ## Contributing, Development, and Testing
 
-Please see [CONTRIBUTING.md](CONTRIBUTING.md) for more details on contributions, development, and testing.
+Please see our [contributing](https://WayScience.github.io/coSMicQC/main/contributing) documentation for more details on contributions, development, and testing.
 
 ## References
 
