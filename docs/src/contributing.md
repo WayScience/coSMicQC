@@ -120,3 +120,16 @@ coSMicQC release git tags are automatically applied through [GitHub Releases](ht
 Documentation for this project is published using [Sphinx](https://www.sphinx-doc.org) with markdown and Jupyter notebook file compatibility provided by [myst-parser](https://myst-parser.readthedocs.io/en/latest/) and [myst-nb](https://myst-nb.readthedocs.io/en/latest/) to create a "documentation website" (also known as "docsite").
 The docsite is hosted through [GitHub Pages](https://pages.github.com/) and deployed through automated [GitHub Actions](https://docs.github.com/en/actions) jobs which trigger on pushes to the main branch or the publishing of a new release on GitHub.
 Documentation is versioned as outlined earlier sections covering versioning details to help ensure users are able to understand each release independently of one another.
+
+It can sometimes be useful to test documentation builds locally before proposing changes within a pull request.
+See below for some examples of how to build documentation locally.
+
+```shell
+# build single-version sphinx documentation
+# (useful for troubleshooting potential issues)
+poetry run sphinx-build docs/src docs/build
+
+# build multi-version sphinx documentation
+# (used in production)
+poetry run sphinx-multiversion docs/src docs/build
+```
