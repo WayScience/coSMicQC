@@ -45,6 +45,16 @@ black = "^24.4.2" # used for example notebook formatting
 isort = "^5.13.2" # used for example notebook formatting
 coverage = "^7.6.0" # added to generate test coverage reports
 
+[tool.poetry.group.docs.dependencies]
+sphinx = "^7.0.0" # used for rendering docs into docsite
+myst-parser = "^3.0.0" # used for rendering markdown through sphinx
+myst-nb = "^1.1.1" # used for rendering notebooks through myst parser
+sphinx-multiversion = { 
+  git = "https://github.com/J-RN/sphinx-multiversion",
+  rev = "a77f0c862dace3a62c18fc866da60ef7dde3873d"
+} # used for extension sphinx-multiversion and to fix git-based challenges with default branch handling
+dunamai = "^1.22.0" # used for gathering version data for docsite
+
 [tool.poetry.scripts]
 cosmicqc = "cosmicqc.cli:cli_analyze"
 

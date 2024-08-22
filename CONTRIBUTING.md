@@ -23,7 +23,7 @@ We use [pytest](https://docs.pytest.org/) for testing and [GitHub actions](https
 
 Perform the following steps to setup a Python development environment.
 
-1. [Install Python](https://www.python.org/downloads/)
+1. [Install Python](https://www.python.org/downloads/) (we recommend using [`pyenv`](https://github.com/pyenv/pyenv) or similar)
 1. [Install Poetry](https://python-poetry.org/docs/#installation)
 1. [Install Poetry Environment](https://python-poetry.org/docs/basic-usage/#installing-dependencies): `poetry install`
 
@@ -114,3 +114,9 @@ coSMicQC release git tags are automatically applied through [GitHub Releases](ht
 1. The draft GitHub release will include a version tag based on the GitHub PR label applied and `release-drafter`.
 1. Make modifications as necessary to the draft GitHub release, then publish the release (the draft release does not normally need additional modifications).
 1. On publishing the release, another GitHub Actions workflow defined in `publish-pypi.yml` will run to build and deploy the Python package to PyPI (utilizing the earlier modified `pyproject.toml` semantic version reference for labeling the release).
+
+## Documentation
+
+Documentation for this project is published using [Sphinx](https://www.sphinx-doc.org) with markdown and Jupyter notebook file compatibility provided by [myst-parser](https://myst-parser.readthedocs.io/en/latest/) and [myst-nb](https://myst-nb.readthedocs.io/en/latest/) to create a "documentation website" (also known as "docsite").
+The docsite is hosted through [GitHub Pages](https://pages.github.com/) and deployed through automated [GitHub Actions](https://docs.github.com/en/actions) jobs which trigger on pushes to the main branch or the publishing of a new release on GitHub.
+Documentation is versioned as outlined earlier sections covering versioning details to help ensure users are able to understand each release independently of one another.
