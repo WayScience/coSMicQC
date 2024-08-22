@@ -71,13 +71,13 @@ html_css_files = ["custom.css"]
 
 # set theme options
 html_theme_options = {
-        "project_name" : "coSMicQC",
-    "logo" : "just-icon.png",
-    "logo_alt" : "coSMicQC logo",
-    "logo_height" : 59,
-    "logo_url" : "/",
-    "logo_width" : 45,
-    "github_url" : "https://github.com/WayScience/coSMicQC/docs/src"
+    "project_name": "coSMicQC",
+    "logo": "just-icon.png",
+    "logo_alt": "coSMicQC logo",
+    "logo_height": 59,
+    "logo_url": "/",
+    "logo_width": 45,
+    "github_url": "https://github.com/WayScience/coSMicQC/docs/src",
 }
 
 # Options for myst-nb
