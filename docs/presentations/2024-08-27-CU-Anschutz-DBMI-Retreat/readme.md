@@ -1,6 +1,6 @@
-# 2024-08-27 University of Colorado Anschutz Medical Campus - DBMI Retreat Poster
+# 2024 SBI2 Conference Poster
 
-The content here is for creating a poster for the University of Colorado Anschutz Medical Campus - Department of Biomedical Informatics (DBMI) Annual Retreat poster session.
+The content here is for creating a poster for 2024 SBI2 conference poster session.
 
 ## Poster Details
 
