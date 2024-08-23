@@ -1,0 +1,60 @@
+<!-- displays and adds docs version selection functionality in sidebar within rendered docs -->
+{% if versions %}
+<h4>{{ _('Versions') }}</h4>
+<select name="versions" id="versions" onchange="redirectToPage()">
+{%- for item in versions %}
+    <option value="{{ item.url }}">{{ item.name }}</option>
+{%- endfor %}
+</select>
+<script>
+/**
+ * Redirects the browser to the URL corresponding to the selected option in the dropdown.
+ *
+ * This function is triggered when the user changes the selection in the dropdown menu. It
+ * retrieves the selected option's value (which is a URL) and sets `window.location.href`
+ * to that URL, causing the browser to navigate to the new page.
+ */
+function redirectToPage() {
+    // Get the <select> element by its ID
+    var selectElement = document.getElementById("versions");
+    // Get the value of the selected option (the URL to redirect to)
+    var selectedValue = selectElement.value;
+
+    // If a valid option is selected (non-empty), redirect the browser to the URL
+    if (selectedValue) {
+        window.location.href = selectedValue;
+    }
+}
+
+/**
+ * Sets the default selection of the dropdown menu based on the current URL.
+ *
+ * This function checks the current page URL and compares it with the values (URLs) of the
+ * options in the dropdown menu. If the current URL contains "index.html" and matches an
+ * option's value, that option is selected as the default.
+ * This function runs automatically when the page loads.
+ */
+ function setDefaultSelection() {
+    // Get the <select> element by its ID
+    var selectElement = document.getElementById("versions");
+    // Get the current page URL
+    var currentUrl = window.location.href;
+
+    // Loop through all options in the dropdown
+    for (var i = 0; i < selectElement.options.length; i++) {
+        var option = selectElement.options[i];
+        var optionUrl = option.value;
+
+        // If the current URL includes "index.html" and matches the option's value, select that option
+        if (optionUrl == "index.html") {
+            selectElement.selectedIndex = i;  // Set the selected index to the matching option
+            break;  // Exit the loop after finding the match
+        }
+    }
+}
+
+// Automatically call setDefaultSelection() when the page finishes loading
+window.onload = setDefaultSelection;
+
+</script>
+{% endif %}

@@ -19,7 +19,7 @@ Pre-commit checks will automatically run as part of opening this pull request an
 
 ## What kind of change(s) are included?
 
-- [ ] Feature (adds or updates new capabilities)
+- [ ] Documentation (changes docs or other related content)
 - [ ] Bug fix (fixes an issue).
 - [ ] Enhancement (adds functionality).
 - [ ] Breaking change (these changes would cause existing functionality to not work as expected).
