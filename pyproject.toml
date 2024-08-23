@@ -130,12 +130,12 @@ files = ["src/cosmicqc/__init__.py"]
 # see here for more information: https://quarto.org/docs/download/
 poster-preview.shell = """
 quarto preview \
-  docs/presentations/2024-08-27-CU-Anschutz-DBMI-Retreat/poster.qmd
+  docs/presentations/2024-09-18-SBI2-Conference/poster.qmd
 """
 poster-render.shell = """
   quarto render \
-  docs/presentations/2024-08-27-CU-Anschutz-DBMI-Retreat/poster.qmd \
-  --output-dir docs/presentations/2024-08-27-CU-Anschutz-DBMI-Retreat/
+  docs/presentations/2024-09-18-SBI2-Conference/poster.qmd \
+  --output-dir docs/presentations/2024-09-18-SBI2-Conference/
 """
 
 [build-system]
