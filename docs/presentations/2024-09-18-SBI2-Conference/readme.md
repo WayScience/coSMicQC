@@ -33,6 +33,19 @@ poetry run poe poster-render
 # append text to qr codes
 magick images/cosmicqc-qr.png -gravity South -background transparent -splice 0x15 -pointsize 40 -font Arial -weight Bold -annotate 0x15 'Scan for coSMicQC!' images/cosmicqc-qr-text.png
 
+# append text to UMAPs and combine them for use as a figure in poster
+magick images/UMAP_localhost230405150001_DMSO_and_TGFRi_no_QC.png -resize 864x864\! images/UMAP_localhost230405150001_DMSO_and_TGFRi_no_QC_resized.png
+magick images/UMAP_localhost230405150001_failing_DMSO_and_TGFRi_w_healthy_DMSO_Merged.pdf -resize 864x864\! images/UMAP_localhost230405150001_failing_DMSO_and_TGFRi_w_healthy_DMSO_Merged.png
+magick images/UMAP_localhost230405150001_DMSO_and_TGFRi_no_QC_resized.png -gravity SouthWest -background transparent -splice 0x15 -pointsize 30 -font Arial-Italic -weight Bold -fill purple -style Italic -annotate +55+25 'Before' images/UMAP_localhost230405150001_DMSO_and_TGFRi_no_QC_with_text.png
+magick images/UMAP_localhost230405150001_failing_DMSO_and_TGFRi_w_healthy_DMSO_Merged.png -gravity SouthWest -background transparent -splice 0x15 -pointsize 30 -font Arial-Italic -weight Bold -fill purple -style Italic -annotate +80+25 'After' images/UMAP_localhost230405150001_failing_DMSO_and_TGFRi_w_healthy_DMSO_Merged_with_text.png 
+magick images/UMAP_localhost230405150001_DMSO_and_TGFRi_no_QC_with_text.png images/UMAP_localhost230405150001_failing_DMSO_and_TGFRi_w_healthy_DMSO_Merged_with_text.png  +append images/CFReT_UMAP_combined.png
+magick images/CFReT_UMAP_combined.png -density 72 images/CFReT_UMAP_combined.png
+
+# adjust single cell images from Durbin Lab collaboration
+magick images/normal_phenotype_cosmicqc.png -resize 904x904 -gravity center -background black -extent 904x904 images/normal_phenotype_cosmicqc_resized.png
+magick images/weird_phenotype_cosmicqc.png -resize 904x904 -gravity center -background black -extent 904x904 images/weird_phenotype_cosmicqc_resized.png
+magick images/normal_phenotype_cosmicqc_resized.png images/weird_phenotype_cosmicqc_resized.png +append images/durbin_phenotypes_combined.png
+
 # create a transparent spacer
 magick -size 100x460 xc:transparent images/spacer.png
 

@@ -10,7 +10,6 @@ format:
     footer-url: "https://github.com/WayScience/coSMicQC"
     footer-emails: "https://www.waysciencelab.com"
     footer-color: "ADA7FF"
-    keywords: ["single-cell-profiling"]
 ---
 
 ## Erroneous outliers and analysis
@@ -137,17 +136,13 @@ ___CytoDataFrames___ returned by all __coSMicQC__ operations enable researchers 
 
 ## Real-world applications
 
-![_Etiam viverra sollicitudin velit._](./images/example-outliers.png){width=100%}
+![_Extra clustering islands can be seen when looking at morphologyical profiles linked to poor segmentation, which when removed, better reveal patterns in the data. (CFReT)_](./images/CFReT_UMAP_combined.png){width=100%}
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. In vel augue ante. Duis placerat ex id turpis consequat, at aliquet arcu vehicula.
+![_A representation of ROC AUC scores from multiple random samples taken from a holdout dataset (that has had QC applied) being applied to the QC trained model and no-QC trained model. The QC model outperforms the no-QC model, and the average performance of the QC model is significantly higher than the no-QC model (t-statistic = -72.1, p-value = 0.0). (CFReT)_](./images/bootstrap_plot.png){width=100%}
 
-![_Ut ut metus at diam hendrerit dictum._](./images/example-outliers.png){width=100%}
+![_coSMicQC helped identify single-cell segmentations which passed (green) or failed (red) the QC conditions for two nuclei channel FOVs with an unusual phenotype (left) and a standard phenotype (right)._](./images/durbin_phenotypes_combined.png){width=100%}
 
-Donec bibendum ex vitae egestas ornare. Cras ut vulputate diam. Nullam feugiat feugiat purus, eu various metus maximus sit amet.
-
-![_Praesent eu sem id nibh viverra finibus._](./images/example-outliers.png){width=100%}
-
-Fusce ac mi eu augue suscipit sodales. Morbi quis gravida dui. Name tellus elit, ullamcorper ut ipsum ut, eleifend facilisis dui.
+![_Praesent eu sem id nibh viverra finibus.Praesent eu sem id nibh viverra finibus.Praesent eu sem id nibh viverra finibus.Praesent eu sem id nibh viverra finibus._](./images/example-outliers.png){width=100%}
 
 ## Acknowledgements
 
