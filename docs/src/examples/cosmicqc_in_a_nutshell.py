@@ -25,7 +25,8 @@ import pandas as pd
 # set a path for the parquet-based dataset
 # (in this case, CellProfiler SQLite data processed by CytoTable)
 data_path = (
-    "../../tests/data/cytotable/NF1_cellpainting_data/Plate_2_with_image_data.parquet"
+    "../../../tests/data/cytotable/NF1_cellpainting_data/"
+    "Plate_2_with_image_data.parquet"
 )
 
 # set a context directory for images associated with the dataset
@@ -76,7 +77,6 @@ labeled_scdf.iloc[:, -8:]
 # show histogram reports on the outliers and inliers
 # for each threshold set in the new columns
 labeled_scdf.show_report()
-
 # show cropped images through CytoDataFrame from the dataset to help analyze outliers
 labeled_scdf.sort_values(by="cqc.large_nuclei.is_outlier", ascending=False)[
     [
