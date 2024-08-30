@@ -12,8 +12,8 @@
   footer_color: "Hex Color Code",
   keywords: (),
   num_columns: "4",
-  univ_logo_scale: "210",
-  univ_logo_column_size: "10",
+  univ_logo_scale: "140",
+  univ_logo_column_size: "15",
   title_column_size: "25",
   title_font_size: "48",
   authors_font_size: "36",
@@ -22,7 +22,7 @@
   body
 ) = {
   // initialize template display formatting
-  set text(font: "Lato", size: 35pt)
+  set text(font: "Lato", size: 32pt)
   let sizes = size.split("x")
   let width = int(sizes.at(0)) * 1in
   let height = int(sizes.at(1)) * 1in
@@ -42,7 +42,7 @@
     height: height,
     // margin on all sides
     margin:
-      (top: 1in, left: 1in, right: 1in, bottom: 2in),
+      (top: .8in, left: .8in, right: .8in, bottom: 1.8in),
     // footer section
     footer: [
       #set align(center)
@@ -109,7 +109,7 @@
       #v(30pt, weak: true)
     // all other headers
     ] else [
-      #set text({ 32pt }, weight: 600, font: "Merriweather")
+      #set text({ 36pt }, weight: 600, font: "Merriweather", fill: rgb(31, 23, 112))
       #if it.level == 3 {
         numbering("☆ 1)", deepest)
         [ ]
@@ -125,23 +125,24 @@
       // rows and cols in the header
       rows: (auto, auto),
       columns: (title_column_size, univ_logo_column_size),
-      column-gutter: 10pt,
-      row-gutter: 40pt,
+      column-gutter: 5pt,
+      row-gutter: 30pt,
       // main title
-      text(font: "Merriweather", weight: 1000, size: 56pt, title),
+      text(font: "Merriweather", weight: 1000, size: 48pt, title),
       grid.cell(
         image(univ_logo, width: univ_logo_scale),
-        rowspan: 3
+        rowspan: 3,
+        align: left,
       ),
       // author display
-      text(size: 44pt, authors),
+      text(size: 38pt, authors),
       // department and notes display
-      text(size: 30pt, emph(departments)),
+      text(size: 29pt, emph(departments)),
     )
   )
 
   // spacing between the header and body
-  v(60pt)
+  v(40pt)
 
   // set main body display
   show: columns.with(num_columns, gutter: 60pt)
@@ -151,6 +152,21 @@
     first-line-indent: 0em,
     linebreaks: "optimized"
   )
+
+  // Configure figures.
+  show figure: it => block({
+    // Display a backdrop rectangle.
+    it.body
+
+    // Display caption.
+    if it.has("caption") {
+      set align(left)
+      v(if it.has("gap") { it.gap } else { 24pt }, weak: true)
+      set text(weight: "bold")
+      it.caption
+    }
+
+  })
 
   // adds body content to page
   body

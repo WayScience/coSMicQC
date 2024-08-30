@@ -14,39 +14,43 @@ format:
 
 ## Erroneous outliers and analysis
 
-![_Erroneous outlier anomalies can measure outside our expectations and impact analysis._](./images/example-outliers.png){width=100%}
+![_Extra clustering islands can be seen when looking at morphologyical profiles linked to poor segmentation, which when removed, better reveal patterns in the data._](./images/CFReT_UMAP_combined.png){width=100%}
 
-Single-cell morphology data from high-throughput microscopy provide critical insights into disease mechanisms and therapeutic efficacy.
-However, ___segmentation errors___ during image analysis such as misidentifying cell compartments or artifacts as cells can lead to inaccurate single-cell measurements and ___erroneous anomalies___ within the data.
-
+___Segmentation errors___ during single-cell morphology image analysis such as misidentifying cell compartments or artifacts as cells can lead to inaccurate single-cell measurements and ___erroneous anomalies___ within the data.
 Researchers often resort to ___error-prone, bespoke filtering methods___ or aggregate data into bulk profiles to avoid discrepancies caused by anomaly outliers.
-These techniques fail to perform ___quality control___ on the data, often compromising the quality of single-cell profiles and impeding the potential for meaningful discoveries.
+These techniques make it challenging to perform ___quality control___ on the data, impeding the potential for meaningful discoveries.
 
 
 ## Single-cell quality control package
+<!-- commented section to avoid rendering issues, deferring
+to render image outside of quarto.
 ```{mermaid}
-%%| fig-cap: "_coSMicQC enables high-quality data outcomes by checking for outliers._"
+%%| fig-cap: "_Enable high-quality data outcomes by checking for outliers with __coSMicQC__._"
 %%| label: fig-cosmicqc-flow
 %%| fig-width: 50%
+-->
+<!--
 graph LR
-    images[("🌄 Single-Cell Images")] --> profiling["Profiling\n(CellProfiler, etc.)"]
-    profiling --> profiles[("🦠 Single-cell Profiles")]
-    profiles --> analysis[Analysis]
-    analysis --> |find \n outliers| cosmicqc["✨ coSMicQC"]
-    analysis --> |analyze \n segmentation| cosmicqc
-    cosmicqc --> good[("✅ Corrected data")]
-    analysis --> errors["😟 Data quality\nerrors"]
-    errors --> bad["❌ Bad Data"]
+    images[("🌄 Single-cell<br> Images")] --> cellprofiler["<img src='https://raw.githubusercontent.com/CellProfiler/CellProfiler/main/src/frontend/cellprofiler/data/icons/CellProfiler-favicon-228.png'> CellProfiler"]
+    cellprofiler --> profiles[("🦠 Single-cell <br> Profiles")]
+    cytotable["<img src='https://github.com/cytomining/CytoTable/blob/81584bae0551ecdbbca9928cd31f17a9ca2de224/logo/just-icon.png?raw=True'> CytoTable"]
+    cytotable --> |find <br> outliers| cosmicqc["<img src='https://wayscience.github.io/coSMicQC/main/_static/just-icon.png'> ✨coSMicQC"]
+    cosmicqc --> |further <br>analysis| pycytominer["<img src='https://pycytominer.readthedocs.io/en/stable/_static/just-icon.svg'> pcytominer"]
 
+    classDef cellprofiler fill:#FFB3CC,color#000,width:0;
+    classDef cytotable fill:#FFEFC2,color:#000;
     classDef cosmicqc fill:#8431D0,color:#fff;
+    classDef pycytominer fill:#FCDCFF,color:#000;
+    class cellprofiler cellprofiler;
     class cosmicqc cosmicqc;
+    class cytotable cytotable;
+    class pycytominer pycytominer;
 ```
-
+-->
+![](./images/cosmicqc_flow.png)
 
 To address these challenges, we introduce ___`coSMicQC` (Single-cell Morphology Quality Control)___, an open source Python package designed to enhance the accuracy of single-cell morphology analysis.
 __`coSMicQC`__ offers default and customizable thresholds for quality control, integrating seamlessly into both command line and Python API workflows.
-
-__`coSMicQC`__ features interactive visualizations that help users identify outlier distributions, and it introduces the ___CytoDataFrame___ — a novel data format that links single-cell measurements with their corresponding images and segmentation masks in real-time, enriching data analysis and interpretation.
 
 ## Getting started with coSMicQC
 
@@ -66,8 +70,7 @@ __`coSMicQC`__ may be installed from PyPI or source.
 
 ```python
 import cosmicqc
-
-# load a parquet file with single-cell profile data and find outliers
+# find outliers from single-cell profiles
 scdf = cosmicqc.analyze.find_outliers(
     df="single-cell-profiles.parquet",
     metadata_columns=[
@@ -75,16 +78,11 @@ scdf = cosmicqc.analyze.find_outliers(
       "Image_Metadata_Plate_x"
     ],
     feature_thresholds={
-      "Nuclei_AreaShape_Area": -1
-    },
+      "Nuclei_AreaShape_Area": -1},
 )
 ```
 
-![_Reports in __coSMicQC__ provide quality control feedback for analysis._](./images/cosmicqc-example-find-outliers-output.png)
-
-The `find_outliers` function in __coSMicQC__ uses single-cell feature thresholds to provide a report on how many outliers were detected.
-We use ___z-scores___ to help define thresholds used throughout coSMicQC.
-`find_outliers` may be used through Python or CLI (see below).
+![_The `find_outliers` function in __coSMicQC__ uses single-cell feature thresholds to provide a report on how many outliers were detected (Python API or CLI). We use ___z-scores___ to help define thresholds used throughout coSMicQC._](./images/cosmicqc-example-find-outliers-output.png)
 
 ```shell
 # CLI interface for coSMicQC find_outliers
@@ -96,7 +94,6 @@ $ cosmicqc find_outliers \
 Number of outliers: 328
 Outliers Range:
 Nuclei_AreaShape_Area Min: 734.0
-Nuclei_AreaShape_Area Max: 1904.0
 ...
 ```
 
@@ -104,20 +101,18 @@ Nuclei_AreaShape_Area Max: 1904.0
 
 ```python
 import cosmicqc
-
-# label outliers within the profiles
+# label and show outliers within the profiles
 scdf = cosmicqc.analyze.label_outliers(
     df="single-cell-profiles.parquet",
     include_threshold_scores=True,
-# show outlier histogram plots
 ).show_report()
 ```
 
-![_Histograms from __coSMicQC__ help scientists identify where outliers occur in the distribution._](./images/cosmicqc-example-histogram.png){width=100%}
+![_Deep erroneous anomaly analysis is enabled within __coSMicQC__ through the `label_outliers` function, which appends z-score data for features, and the `CytoDataFrame.show_report` method to visualize where outliers are detected within the dataset._](./images/cosmicqc-example-histogram.png){width=100%}
 
-Deep erroneous anomaly analysis is enabled within __coSMicQC__ through the ___`label_outliers`___ function, which appends z-score data for features, and the ___`CytoDataFrame.show_report`___ method to visualize where outliers are detected within the dataset.
+&nbsp;
 
-### Understanding outlier segmentation issues
+### Understanding outlier segmentations
 
 ```python
 import cosmicqc
@@ -130,15 +125,11 @@ cosmicqc.CytoDataFrame(
 )
 ```
 
-![_Displaying outlier and image data increases analysis iteration within familiar interfaces._](./images/cosmicqc-example-cytodataframe.png)
-
-___CytoDataFrames___ returned by all __coSMicQC__ operations enable researchers to analyze outlier status alongside single-cell images directly in a Jupyter environment.
+![_Interactive visualizations that help users identify outlier distributions through the ___CytoDataFrame___ — a novel data format that links single-cell measurements with their corresponding images and segmentation masks in real-time, enriching data analysis and interpretation._](./images/cosmicqc-example-cytodataframe.png)
 
 ## Real-world applications
 
-![_Extra clustering islands can be seen when looking at morphologyical profiles linked to poor segmentation, which when removed, better reveal patterns in the data. (CFReT)_](./images/CFReT_UMAP_combined.png){width=100%}
-
-![_A representation of ROC AUC scores from multiple random samples taken from a holdout dataset (that has had QC applied) being applied to the QC trained model and no-QC trained model. The QC model outperforms the no-QC model, and the average performance of the QC model is significantly higher than the no-QC model (t-statistic = -72.1, p-value = 0.0). (CFReT)_](./images/bootstrap_plot.png){width=100%}
+![_A representation of ROC AUC scores from multiple random samples taken from a holdout dataset (that has had QC applied) being applied to the QC trained model and no-QC trained model. The QC model outperforms the no-QC model, and the average performance of the QC model is significantly higher than the no-QC model (t-statistic = -72.1, p-value = 0.0)._](./images/bootstrap_plot_resized.png){width=100%}
 
 ![_coSMicQC helped identify single-cell segmentations which passed (green) or failed (red) the QC conditions for two nuclei channel FOVs with an unusual phenotype (left) and a standard phenotype (right)._](./images/durbin_phenotypes_combined.png){width=100%}
 
