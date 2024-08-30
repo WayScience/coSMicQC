@@ -46,6 +46,9 @@ magick images/normal_phenotype_cosmicqc.png -resize 904x904 -gravity center -bac
 magick images/weird_phenotype_cosmicqc.png -resize 904x904 -gravity center -background black -extent 904x904 images/weird_phenotype_cosmicqc_resized.png
 magick images/normal_phenotype_cosmicqc_resized.png images/weird_phenotype_cosmicqc_resized.png +append images/durbin_phenotypes_combined.png
 
+# adjust roc plot for sizing
+magick images/bootstrap_plot.png -density 300 -resize 8000x8000 images/bootstrap_plot_resized.png
+
 # create a transparent spacer
 magick -size 100x460 xc:transparent images/spacer.png
 
