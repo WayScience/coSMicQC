@@ -44,6 +44,8 @@ jupyterlab-code-formatter = "^2.2.1" # used for example notebook formatting
 black = "^24.4.2" # used for example notebook formatting
 isort = "^5.13.2" # used for example notebook formatting
 coverage = "^7.6.0" # added to generate test coverage reports
+cytotable = "^0.0.10" # added for preparing data for cosmicqc in examples
+umap-learn = "^0.5.6" # added for demonstrating results after using cosmicqc
 
 [tool.poetry.group.docs.dependencies]
 sphinx = "^7.0.0" # used for rendering docs into docsite
