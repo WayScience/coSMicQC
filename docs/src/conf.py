@@ -73,11 +73,18 @@ html_css_files = ["custom.css"]
 html_theme_options = {
     "project_name": "coSMicQC",
     "logo": "just-icon.png",
+    "header_links": "<span class='fab fa-github'></span> GitHub Repository|https://github.com/WayScience/coSMicQC",
     "logo_alt": "coSMicQC logo",
     "logo_height": 59,
-    "logo_url": "/",
+    "logo_url": "https://wayscience.github.io/coSMicQC",
     "logo_width": 45,
-    "github_url": "https://github.com/WayScience/coSMicQC/docs/src",
+    "github_url": "https://github.com/WayScience/coSMicQC/tree/main/docs/src",
+    "footer_links": ",".join(
+        [
+            "Way Lab|https://www.waysciencelab.com/",
+            "coSMicQC GitHub Repository|https://github.com/WayScience/coSMicQC",
+        ]
+    ),
 }
 
 # Options for myst-nb
