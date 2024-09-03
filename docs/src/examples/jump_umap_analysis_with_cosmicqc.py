@@ -29,6 +29,9 @@ import pathlib
 import shutil
 from typing import List, Union
 
+import hvplot.pandas
+import matplotlib.pyplot as plt
+import numpy as np
 import pandas as pd
 import parsl
 import pyarrow as pa
@@ -125,34 +128,64 @@ def generate_umap(
 
     # Fit UMAP and convert to pandas DataFrame
     embeddings = umap_fit.fit_transform(
-        df_input[
+        X=df_input[
             [
                 col
                 for col in df_input.columns.tolist()
                 if col not in metadata_cols and "cqc." not in col
             ]
-        ]
+        ].select_dtypes(include=[np.number])
     )
 
     return embeddings
 
 
-pf = parquet.ParquetFile("./BR00117012.parquet")
-first_rows = next(pf.iter_batches(batch_size=5000))
-df = pa.Table.from_batches([first_rows]).to_pandas().dropna()
+df_labeled = cosmicqc.analyze.label_outliers(
+    df=(
+        pa.Table.from_batches(
+            [
+                next(
+                    parquet.ParquetFile("./BR00117012.parquet").iter_batches(
+                        batch_size=60000
+                    )
+                )
+            ]
+        )
+        .to_pandas()
+        .replace([np.inf, -np.inf], np.nan)
+        .pipe(lambda df: df.drop(labels=df.columns[df.isna().any()], axis=1))
+        .reset_index()
+    ),
+    include_threshold_scores=True,
+)
 
-# RuntimeWarning: overflow encountered in reduce
-# ValueError: Input contains infinity or a value too large for dtype('float64').
-
-
-embeddings = generate_umap(df_input=df, cols_metadata=metadata_cols)
+embeddings = generate_umap(df_input=df_labeled, cols_metadata=metadata_cols)
 embeddings
-
-# + editable=true slideshow={"slide_type": ""}
-import matplotlib.pyplot as plt
-
-plt.scatter(embeddings[:, 0], embeddings[:, 1], s=5)
-plt.title("UMAP projection of dataset", fontsize=15);
 # -
+
+pd.DataFrame(embeddings).hvplot.scatter(
+    title="UMAP of JUMP dataset",
+    x="0",
+    y="1",
+    alpha=0.1,
+    rasterize=True,
+    cnorm="linear",
+    height=500,
+    width=800,
+)
+
+pd.DataFrame(embeddings).hvplot.scatter(
+    title="UMAP of JUMP erroneous outliers",
+    x="0",
+    y="1",
+    alpha=0.1,
+    rasterize=True,
+    c=df_labeled["cqc.small_and_low_formfactor_nuclei.is_outlier"].astype(int).values,
+    cnorm="linear",
+    cmap="plasma",
+    bgcolor="black",
+    height=500,
+    width=800,
+)
 
 

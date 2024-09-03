@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "coSMicQC"
-version = "0.0.1"
+version = "0.0.10.post7.dev0+d8d16e9"
 description = "coSMicQC is a software tool for single-cell quality control of morphology datasets."
 authors = ["Way Science Community"]
 license = "BSD-3-Clause"
@@ -33,6 +33,9 @@ pywavelets = [
   {version = ">1.4.1", python = ">=3.9"}
 ] # dependency of scikit-image
 opencv-python = "^4.10.0.84" # used for image modifications in cytodataframe
+botocore = "^1.35.11" # used to avoid dependency resolution issues during installs
+hvplot = "^0.10.0" # used for visualizing large plot data
+datashader = "^0.16.3" # used for visualization options with hvplot
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.2.0" # provides testing capabilities for project
@@ -117,7 +120,7 @@ omit = [
 
 # set dynamic versioning capabilities for project
 [tool.poetry-dynamic-versioning]
-enable = true
+enable = false
 style = "pep440"
 vcs = "git"
 
