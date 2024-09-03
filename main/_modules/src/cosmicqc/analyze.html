@@ -380,7 +380,11 @@ window.onload = setDefaultSelection;
     <span class="p">]</span>
 
     <span class="c1"># Print outliers count and range for each feature</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Number of outliers:&quot;</span><span class="p">,</span> <span class="n">outliers_df</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="nb">print</span><span class="p">(</span>
+        <span class="s2">&quot;Number of outliers:&quot;</span><span class="p">,</span>
+        <span class="n">outliers_df</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+        <span class="sa">f</span><span class="s2">&quot;(</span><span class="si">{</span><span class="s1">&#39;</span><span class="si">{:.2f}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">((</span><span class="n">outliers_df</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">df</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">*</span><span class="mi">100</span><span class="p">)</span><span class="si">}</span><span class="s2">%)&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Outliers Range:&quot;</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">feature</span> <span class="ow">in</span> <span class="n">feature_thresholds</span><span class="p">:</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">feature</span><span class="si">}</span><span class="s2"> Min:&quot;</span><span class="p">,</span> <span class="n">outliers_df</span><span class="p">[</span><span class="n">feature</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">())</span>
