@@ -79,3 +79,19 @@ references:
     identifiers:
     - type: doi
       value: 10.6084/m9.figshare.22233700.v4
+  - authors:
+      - name: "Way Lab and Alexander Lab Nuclear Speckles Collaboration"
+    date-accessed: "2024-09-04"
+    title: Way Lab and Alexander Lab Nuclear Speckles Collaboration Data
+    type: data
+    repository-code: https://github.com/WayScience/nuclear_speckle_image_profiling
+    notes: >-
+      Data from a collaborative project focusing on nuclear speckles
+      with the Way Lab and Alexander Lab s used to help validate 
+      expected results. Parquet data is generated from CellProfiler
+      and CytoTable. Images courtesy of Katherine Alexander
+      and the Alexander Lab.
+    identifiers:
+      - description: "Github Link with Contributors"
+        type: url
+        value: "https://github.com/WayScience/nuclear_speckle_image_profiling/graphs/contributors"
