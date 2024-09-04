@@ -87,7 +87,7 @@ references:
     repository-code: https://github.com/WayScience/nuclear_speckle_image_profiling
     notes: >-
       Data from a collaborative project focusing on nuclear speckles
-      with the Way Lab and Alexander Lab s used to help validate 
+      with the Way Lab and Alexander Lab s used to help validate
       expected results. Parquet data is generated from CellProfiler
       and CytoTable. Images courtesy of Katherine Alexander
       and the Alexander Lab.
