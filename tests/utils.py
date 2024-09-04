@@ -33,6 +33,29 @@ def run_cli_command(command: str) -> Tuple[str, str, int]:
 def cytodataframe_image_display_contains_green_pixels(
     frame: CytoDataFrame, image_cols: List[str]
 ) -> bool:
+    """
+    Determines if relevant image from the CytoDataFrame HTML
+    contains green pixels.
+
+    Args:
+        frame (CytoDataFrame):
+            A custom `CytoDataFrame` object which includes image paths.
+        image_cols (List[str]):
+            A list of column names in the `CytoDataFrame`
+            that contain images paths.
+
+    Returns:
+        bool:
+            True if any greenish pixels are found in relevant
+            image within the HTML, otherwise False.
+
+    Raises:
+        ValueError:
+            If no base64-encoded image data is found in the
+            HTML representation of the given columns.
+    """
+
+    # gather HTML output from CytoDataFrame
     html_output = frame[image_cols]._repr_html_()
 
     # Extract all base64 image data from the HTML
