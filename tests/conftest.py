@@ -11,6 +11,7 @@ import numpy as np
 import pandas as pd
 import plotly.colors as pc
 import pytest
+import skimage
 from PIL import Image
 
 
@@ -33,6 +34,14 @@ def fixture_cytotable_NF1_data_parquet_shrunken():
         "tests/data/cytotable/NF1_cellpainting_data_shrunken/"
         "Plate_2_with_image_data_shrunken.parquet"
     )
+
+
+@pytest.fixture(name="cytotable_nuclear_speckles_data_parquet")
+def fixture_cytotable_nuclear_speckle_data_parquet():
+    """
+    Return df to test CytoTable nuclear speckles data through shrunken parquet file
+    """
+    return "tests/data/cytotable/nuclear_speckles/test_slide1_converted.parquet"
 
 
 @pytest.fixture(name="basic_outlier_dataframe")
@@ -150,3 +159,17 @@ def fixture_bright_image():
     # Create a bright image (50x50 pixels, almost white)
     bright_img_array = np.full((50, 50, 3), 255, dtype=np.uint8)
     return Image.fromarray(bright_img_array)
+
+
+@pytest.fixture
+def fixture_nuclear_speckle_example_image():
+    # create an image array from example nuclear speckle data
+
+    return Image.fromarray(
+        (
+            skimage.io.imread(
+                "tests/data/cytotable/nuclear_speckles/images/plate1/slide1_A1_M10_CH0_Z09_illumcorrect.tiff"
+            )
+            / 256
+        ).astype(np.uint8)
+    ).convert("RGBA")

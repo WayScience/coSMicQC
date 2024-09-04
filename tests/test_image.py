@@ -40,3 +40,13 @@ def test_adjust_image_brightness_with_mid_brightness_image(
     adjusted_image = adjust_image_brightness(fixture_mid_brightness_image)
     # The image should still not be too dark after adjustment
     assert not is_image_too_dark(adjusted_image, pixel_brightness_threshold=10.0)
+
+
+def test_adjust_nuclear_speckle_image_brightness(
+    fixture_nuclear_speckle_example_image: Image,
+):
+    assert is_image_too_dark(fixture_nuclear_speckle_example_image)
+    assert not is_image_too_dark(
+        adjust_image_brightness(fixture_nuclear_speckle_example_image),
+        pixel_brightness_threshold=3.0,
+    )

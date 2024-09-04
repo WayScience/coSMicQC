@@ -631,13 +631,13 @@ class CytoDataFrame(pd.DataFrame):
         """
         # Load the TIFF image
         tiff_image_array = skimage.io.imread(actual_image_path)
-        # Convert to PIL Image and then to 'RGBA'
 
         # Check if the image is 16-bit and grayscale
         if tiff_image_array.dtype == np.uint16:
             # Normalize the image to 8-bit for display purposes
             tiff_image_array = (tiff_image_array / 256).astype(np.uint8)
 
+        # Convert to PIL Image and then to 'RGBA'
         tiff_image = Image.fromarray(tiff_image_array).convert("RGBA")
 
         # Check if the image is too dark and adjust brightness if needed
