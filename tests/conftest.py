@@ -164,7 +164,6 @@ def fixture_bright_image():
 @pytest.fixture
 def fixture_nuclear_speckle_example_image():
     # create an image array from example nuclear speckle data
-
     return Image.fromarray(
         (
             skimage.io.imread(
