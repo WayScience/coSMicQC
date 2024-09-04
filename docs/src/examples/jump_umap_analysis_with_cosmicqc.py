@@ -24,7 +24,7 @@
 # Afterwards, we use UMAP to demonstrate patterns within the data.
 #
 
-# +
+# + editable=true slideshow={"slide_type": ""}
 import pathlib
 import shutil
 from typing import List, Union
@@ -69,8 +69,8 @@ else:
 
 # read only the metadata from parquet file
 parquet.ParquetFile(merged_single_cells).metadata
-# -
 
+# + editable=true slideshow={"slide_type": ""}
 schema = parquet.read_schema(merged_single_cells)
 print("\n".join(str(schema).split("\n")[:12]))
 
