@@ -25,6 +25,7 @@
 #
 
 # + editable=true slideshow={"slide_type": ""}
+import doctest
 import pathlib
 import shutil
 from typing import List, Union
@@ -149,8 +150,6 @@ df_pycytominer_feature_selected = pycytominer.feature_select(
 )
 df_pycytominer_feature_selected
 
-pd.read_parquet("./BR00117012_feature_select.parquet").columns.tolist()[-1:]
-
 # join feature selected data with outlier data
 # note: we do this to help ascertain outlier data for
 # objects which may no longer include cosmicqc-checked columns
@@ -198,6 +197,17 @@ def generate_umap_embeddings(
         np.ndarray:
             A dataframe containing the UMAP embeddings
             with 2 components for each row in the input.
+
+    Doctests:
+        >>> df = pd.DataFrame({
+                'feature1': [1.0, 2.0, 3.0],
+                'feature2': [4.0, 5.0, 6.0],
+                'Metadata_Plate': ['plate1', 'plate2', 'plate3']
+            })
+        >>> metadata_cols = ['Metadata_Plate']
+        >>> umap_embeddings = generate_umap(df, metadata_cols)
+        >>> type(umap_embeddings)
+        np.ndarray
     """
 
     # Set constants
@@ -230,7 +240,9 @@ all_embeddings = generate_umap(
 all_embeddings
 # -
 
-type(embeddings)
+all_embeddings.shape
+
+doctest.testmod()
 
 
 # +
