@@ -33,12 +33,13 @@ pywavelets = [
   {version = ">1.4.1", python = ">=3.9"}
 ] # dependency of scikit-image
 opencv-python = "^4.10.0.84" # used for image modifications in cytodataframe
+pycytominer = "^1.1.0"
 
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.2.0" # provides testing capabilities for project
 html2image = "^2.0.4.3" # used for report html export to image for tests
-sqlalchemy = "^2.0.31" # used for test data generation
+sqlalchemy = ">=1.3.6,<2" # used for test data generation
 jupyterlab = "^4.2.3" # used for example notebook work
 jupytext = "^1.16.2" # used for example notebook formatting
 jupyterlab-code-formatter = "^2.2.1" # used for example notebook formatting
