@@ -33,8 +33,6 @@ pywavelets = [
   {version = ">1.4.1", python = ">=3.9"}
 ] # dependency of scikit-image
 opencv-python = "^4.10.0.84" # used for image modifications in cytodataframe
-pycytominer = "^1.1.0"
-
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.2.0" # provides testing capabilities for project
@@ -52,6 +50,8 @@ hvplot = "^0.10.0" # used for visualizing large plot data
 datashader = "^0.16.3" # used for visualization options with hvplot
 umap-learn = "^0.5.6" # added for demonstrating results after using cosmicqc
 ipywidgets = "^8.1.5" # added for compatibility in notebooks with umap-learn dependency tqdm
+pycytominer = "^1.1.0" # added for demonstrating results with cosmicqc
+dask = {version="^2024.8.0", extras=["dataframe"]} # added to avoid warnings from datashader implementation
 
 [tool.poetry.group.docs.dependencies]
 sphinx = "^7.0.0" # used for rendering docs into docsite
