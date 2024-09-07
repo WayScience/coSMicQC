@@ -205,7 +205,7 @@ def generate_umap_embeddings(
                 'Metadata_Plate': ['plate1', 'plate2', 'plate3']
             })
         >>> metadata_cols = ['Metadata_Plate']
-        >>> umap_embeddings = generate_umap(df, metadata_cols)
+        >>> generate_umap_embeddings = generate_umap(df, metadata_cols)
         >>> type(umap_embeddings)
         np.ndarray
     """
@@ -234,15 +234,10 @@ def generate_umap_embeddings(
     return embeddings
 
 
-all_embeddings = generate_umap(
+all_embeddings = generate_umap_embeddings(
     df_input=df_feature_selected_with_cqc_outlier_data, cols_metadata=metadata_cols
 )
 all_embeddings
-# -
-
-all_embeddings.shape
-
-doctest.testmod()
 
 
 # +
@@ -348,7 +343,7 @@ with duckdb.connect() as ddb:
     ).df()
 df_feature_selected_without_cqc_outlier_data
 
-embeddings_outliers_removed = generate_umap(
+embeddings_outliers_removed = generate_umap_embeddings(
     df_input=df_feature_selected_without_cqc_outlier_data, cols_metadata=metadata_cols
 )
 embeddings_outliers_removed
