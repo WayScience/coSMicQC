@@ -2,18 +2,15 @@
 Tests cosmicqc CytoDataFrame module
 """
 
-import base64
 import pathlib
-import re
-from io import BytesIO
 
 import cosmicqc
-import numpy as np
 import pandas as pd
 import plotly
 from cosmicqc.frame import CytoDataFrame
-from PIL import Image
 from pyarrow import parquet
+
+from tests.utils import cytodataframe_image_display_contains_green_pixels
 
 
 def test_CytoDataFrame_with_dataframe(
@@ -135,51 +132,32 @@ def test_show_report(cytotable_CFReT_data_df: pd.DataFrame):
     assert report_path.is_file()
 
 
-def test_repr_html(cytotable_NF1_data_parquet_shrunken: str):
+def test_repr_html(
+    cytotable_NF1_data_parquet_shrunken: str,
+    cytotable_nuclear_speckles_data_parquet: str,
+):
     """
     Tests how images are rendered through customized repr_html in CytoDataFrame.
     """
 
-    # create cytodataframe with context and mask dirs
-    scdf = CytoDataFrame(
-        data=cytotable_NF1_data_parquet_shrunken,
-        data_context_dir=f"{pathlib.Path(cytotable_NF1_data_parquet_shrunken).parent}/Plate_2_images",
-        data_mask_context_dir=f"{pathlib.Path(cytotable_NF1_data_parquet_shrunken).parent}/Plate_2_masks",
-    )
-
-    # Collect HTML output from repr_html
-    html_output = scdf[
-        ["Image_FileName_DAPI", "Image_FileName_GFP", "Image_FileName_RFP"]
-    ]._repr_html_()
-
-    # Extract all base64 image data from the HTML
-    matches = re.findall(r'data:image/png;base64,([^"]+)', html_output)
-    assert len(matches) > 0, "No base64 image data found in HTML"
-
-    # Select the third base64 image data (indexing starts from 0)
-    # (we expect the first ones to not contain outlines based on the
-    # html and example data)
-    base64_data = matches[2]
-
-    # Decode the base64 image data
-    image_data = base64.b64decode(base64_data)
-    image = Image.open(BytesIO(image_data)).convert("RGB")
-
-    # Check for the presence of green pixels in the image
-    image_array = np.array(image)
-
-    # gather color channels from image
-    red_channel = image_array[:, :, 0]
-    green_channel = image_array[:, :, 1]
-    blue_channel = image_array[:, :, 2]
-
-    # Define a threshold to identify greenish pixels
-    green_threshold = 50
-    green_pixels = (
-        (green_channel > green_threshold)
-        & (green_channel > red_channel)
-        & (green_channel > blue_channel)
-    )
-
     # Ensure there's at least one greenish pixel in the image
-    assert np.any(green_pixels), "The image does not contain green outlines."
+    assert cytodataframe_image_display_contains_green_pixels(
+        frame=CytoDataFrame(
+            data=cytotable_NF1_data_parquet_shrunken,
+            data_context_dir=f"{pathlib.Path(cytotable_NF1_data_parquet_shrunken).parent}/Plate_2_images",
+            data_mask_context_dir=f"{pathlib.Path(cytotable_NF1_data_parquet_shrunken).parent}/Plate_2_masks",
+        ),
+        image_cols=["Image_FileName_DAPI", "Image_FileName_GFP", "Image_FileName_RFP"],
+    ), "The NF1 images do not contain green outlines."
+    assert cytodataframe_image_display_contains_green_pixels(
+        frame=CytoDataFrame(
+            data=cytotable_nuclear_speckles_data_parquet,
+            data_context_dir=f"{pathlib.Path(cytotable_nuclear_speckles_data_parquet).parent}/images",
+            data_mask_context_dir=f"{pathlib.Path(cytotable_nuclear_speckles_data_parquet).parent}/masks",
+        ),
+        image_cols=[
+            "Image_FileName_A647",
+            "Image_FileName_DAPI",
+            "Image_FileName_GOLD",
+        ],
+    ), "The nuclear speckles images do not contain green outlines."
