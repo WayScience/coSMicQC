@@ -80,10 +80,12 @@ else:
 parquet.ParquetFile(merged_single_cells).metadata
 
 # + editable=true slideshow={"slide_type": ""}
+# show the first few columns for metadata column names
 schema = parquet.read_schema(merged_single_cells)
 print("\n".join(str(schema).split("\n")[:12]))
 
 # +
+# set a list of metadata columns for use throughout
 metadata_cols = [
     "Metadata_ImageNumber",
     "Image_Metadata_Row",
@@ -94,6 +96,7 @@ metadata_cols = [
     "Image_TableNumber",
 ]
 
+# read only metadata columns with outlier-specific columns
 df_merged_single_cells = pd.read_parquet(
     path=merged_single_cells,
     columns=metadata_cols
@@ -140,14 +143,20 @@ df_labeled_outliers[
     [col for col in df_labeled_outliers.columns.tolist() if "cqc." in col]
 ].head()
 
+# +
+# create a column which indicates at least one outlier being found
 df_labeled_outliers["analysis.included_at_least_one_outlier"] = df_labeled_outliers[
     [col for col in df_labeled_outliers.columns.tolist() if ".is_outlier" in col]
 ].any(axis=1)
+
+# show value counts for all outliers
 outliers_counts = df_labeled_outliers[
     "analysis.included_at_least_one_outlier"
 ].value_counts()
 outliers_counts
+# -
 
+# show the percentage of total dataset
 print(
     (outliers_counts.iloc[1] / outliers_counts.iloc[0]) * 100,
     "%",
@@ -160,8 +169,10 @@ print(
 df_labeled_outliers.show_report();
 
 # +
+# set a fraction for sampling
 sample_fraction = 0.44
 
+# read the dataset
 df_features = pa.Table.from_batches(
     [next(parquet.ParquetFile("./BR00117012.parquet").iter_batches(batch_size=10000))]
 ).to_pandas()
@@ -327,7 +338,7 @@ def plot_hvplot_scatter_general(
             A dynamic holoviews scatter plot which may be
             displayed in a Jupyter notebook.
     """
-    
+
     # build a scatter plot through hvplot
     plot = pd.DataFrame(embeddings).hvplot.scatter(
         title="UMAP of JUMP dataset BR00117012.sqlite",
@@ -342,11 +353,13 @@ def plot_hvplot_scatter_general(
 
     # export the plot
     hvplot.save(obj=plot, filename=filename)
-    
+
     return plot
 
-
-plot_hvplot_scatter_general(embeddings=embeddings_with_outliers, filename="./images/umap_BR00117012.png")
+# show a general UMAP for the data
+plot_hvplot_scatter_general(
+    embeddings=embeddings_with_outliers, filename="./images/umap_BR00117012.png"
+)
 
 
 # +
@@ -403,7 +416,7 @@ def plot_hvplot_scatter_outliers(
 
     return plot
 
-
+# show a UMAP for all outliers within the data
 plot_hvplot_scatter_outliers(
     embeddings=embeddings_with_outliers,
     cosmicqc_outlier_labels=df_feature_selected_with_cqc_outlier_data,
@@ -413,7 +426,8 @@ plot_hvplot_scatter_outliers(
 )
 # -
 
-plot = plot_hvplot_scatter_outliers(
+# show small and low formfactor nuclei outliers within the data
+plot_hvplot_scatter_outliers(
     embeddings=embeddings_with_outliers,
     cosmicqc_outlier_labels=df_feature_selected_with_cqc_outlier_data,
     color_column="cqc.small_and_low_formfactor_nuclei.is_outlier",
@@ -421,7 +435,8 @@ plot = plot_hvplot_scatter_outliers(
     filename="./images/umap_small_and_low_formfactor_nuclei_outliers_BR00117012.png",
 )
 
-plot = plot_hvplot_scatter_outliers(
+# show elongated nuclei outliers within the data
+plot_hvplot_scatter_outliers(
     embeddings=embeddings_with_outliers,
     cosmicqc_outlier_labels=df_feature_selected_with_cqc_outlier_data,
     color_column="cqc.elongated_nuclei.is_outlier",
@@ -429,6 +444,7 @@ plot = plot_hvplot_scatter_outliers(
     filename="./images/umap_elongated_nuclei_outliers_BR00117012.png",
 )
 
+# show small and large nuclei outliers within the data
 plot_hvplot_scatter_outliers(
     embeddings=embeddings_with_outliers,
     cosmicqc_outlier_labels=df_feature_selected_with_cqc_outlier_data,
