@@ -46,6 +46,10 @@ from pyarrow import parquet
 
 import cosmicqc
 
+# set bokeh for visualizations with hvplot
+hvplot.extension("bokeh")
+
+# +
 # check if we already have prepared data
 if not pathlib.Path("./BR00117012.parquet").is_file():
     # process BR00117012.sqlite using CytoTable to prepare data
@@ -72,6 +76,9 @@ else:
 
 # read only the metadata from parquet file
 parquet.ParquetFile(merged_single_cells).metadata
+# -
+
+
 
 # + editable=true slideshow={"slide_type": ""}
 schema = parquet.read_schema(merged_single_cells)
@@ -134,6 +141,22 @@ df_labeled_outliers[
     [col for col in df_labeled_outliers.columns.tolist() if "cqc." in col]
 ].head()
 
+df_labeled_outliers["analysis.included_at_least_one_outlier"] = df_labeled_outliers[
+    [col for col in df_labeled_outliers.columns.tolist() if ".is_outlier" in col]
+].any(axis=1)
+outliers_counts = df_labeled_outliers[
+    "analysis.included_at_least_one_outlier"
+].value_counts()
+outliers_counts
+
+print(
+    (outliers_counts.iloc[1] / outliers_counts.iloc[0]) * 100,
+    "%",
+    "of",
+    outliers_counts.iloc[0],
+    "include erroneous outliers of some kind.",
+)
+
 # show histograms to help visualize the data
 df_labeled_outliers.show_report();
 
@@ -143,45 +166,65 @@ df_full_data = pa.Table.from_batches(
 ).to_pandas()
 df_full_data
 
-df_labeled_outliers["cqc.included_at_least_one_outlier"] = df_labeled_outliers[
-    [col for col in df_labeled_outliers.columns.tolist() if ".is_outlier" in col]
-].any(axis=1)
-df_labeled_outliers["cqc.included_at_least_one_outlier"].value_counts()
-
 # +
-number_of_samples_per_group = 140000 // 2
+sample_row_count_for_inliers = 60000
 
-# join feature selected data with outlier data
-# using a sample based on outliers
-# note: we do this to help ascertain outlier data for
-# objects which may no longer include cosmicqc-checked columns
-# (such as Nuclei_AreaShape_Area)
+# create a sampled and joined dataset which includes cosmicqc outlier
+# data alongside the full table of single-cell features.
+# Note: we join all outlier data along with a sample of non-outlier
+# data (single-cell data which had no outliers).
 with duckdb.connect() as ddb:
     df_feature_selected_with_cqc_outlier_data = ddb.execute(
         f"""
-        WITH sample_includes_outliers AS (
-            SELECT feat_select.*, COLUMNS('cqc\..*')
-            FROM read_parquet('./BR00117012.parquet') AS feat_select
-            LEFT JOIN df_labeled_outliers AS cqc_outlier_data
-            ON feat_select.Metadata_ImageNumber = cqc_outlier_data.Metadata_ImageNumber
-            AND feat_select.Metadata_ObjectNumber = cqc_outlier_data.Metadata_ObjectNumber
-            AND feat_select.Metadata_Plate = cqc_outlier_data.Metadata_Plate
-            AND feat_select.Metadata_Well = cqc_outlier_data.Metadata_Well
-            WHERE cqc_outlier_data."cqc.included_at_least_one_outlier" = TRUE
-            USING SAMPLE {number_of_samples_per_group} ROWS
+        /* isolate outliers */
+        WITH id_outliers AS (
+            SELECT *
+            FROM df_labeled_outliers AS cqc_outlier_data
+            WHERE 
+                cqc_outlier_data."analysis.included_at_least_one_outlier" = TRUE
         ),
-        sample_excludes_outliers AS (
-            SELECT feat_select.*, COLUMNS('cqc\..*')
-            FROM read_parquet('./BR00117012.parquet') AS feat_select
-            LEFT JOIN df_labeled_outliers AS cqc_outlier_data
-            ON feat_select.Metadata_ImageNumber = cqc_outlier_data.Metadata_ImageNumber
-            AND feat_select.Metadata_ObjectNumber = cqc_outlier_data.Metadata_ObjectNumber
-            AND feat_select.Metadata_Plate = cqc_outlier_data.Metadata_Plate
-            AND feat_select.Metadata_Well = cqc_outlier_data.Metadata_Well
-            WHERE cqc_outlier_data."cqc.included_at_least_one_outlier" = FALSE
-            USING SAMPLE {number_of_samples_per_group} ROWS;
-        )
         
+        /* isolate inliers */
+        id_inliers AS (
+            SELECT *
+            /* subquery to help isolate where clause with sample */
+            FROM (SELECT * 
+                    FROM df_labeled_outliers AS cqc_outlier_data
+                    WHERE 
+                        cqc_outlier_data."analysis.included_at_least_one_outlier" = FALSE
+            )
+            USING SAMPLE {sample_row_count_for_inliers} ROWS
+        ),
+        
+        /* gather joined outlier data */
+        sample_includes_outliers AS (
+            SELECT
+                feat_select.*,
+                COLUMNS('cqc\..*'),
+                COLUMNS('analysis\..*')
+            FROM read_parquet("./BR00117012.parquet") AS feat_select
+            INNER JOIN id_outliers AS cqc_outlier_data ON
+                feat_select.Metadata_ImageNumber = cqc_outlier_data.Metadata_ImageNumber
+                AND feat_select.Metadata_ObjectNumber = cqc_outlier_data.Metadata_ObjectNumber
+                AND feat_select.Metadata_Plate = cqc_outlier_data.Metadata_Plate
+                AND feat_select.Metadata_Well = cqc_outlier_data.Metadata_Well
+        ),
+        
+        /* gather joined inlier data */
+        sample_excludes_outliers AS (
+            SELECT
+                feat_select.*,
+                COLUMNS('cqc\..*'),
+                COLUMNS('analysis\..*')
+            FROM read_parquet("./BR00117012.parquet") AS feat_select
+            INNER JOIN id_inliers AS cqc_outlier_data ON
+                feat_select.Metadata_ImageNumber = cqc_outlier_data.Metadata_ImageNumber
+                AND feat_select.Metadata_ObjectNumber = cqc_outlier_data.Metadata_ObjectNumber
+                AND feat_select.Metadata_Plate = cqc_outlier_data.Metadata_Plate
+                AND feat_select.Metadata_Well = cqc_outlier_data.Metadata_Well
+        )
+
+        /* union all data from both outlier and inlier queries */
         SELECT * FROM sample_includes_outliers
         
         UNION ALL
@@ -192,19 +235,36 @@ with duckdb.connect() as ddb:
 df_feature_selected_with_cqc_outlier_data
 # -
 
+# show our data value counts regarding outliers vs inliers
+df_feature_selected_with_cqc_outlier_data[
+    "analysis.included_at_least_one_outlier"
+].value_counts()
+
+# show column count
+len(df_feature_selected_with_cqc_outlier_data.columns)
+
+# prepare data for normalization and feature selection
+# by removing cosmicqc and analaysis focused columns.
+df_for_normalize_and_feature_select = df_feature_selected_with_cqc_outlier_data[
+    [
+        col
+        for col in df_feature_selected_with_cqc_outlier_data.columns.tolist()
+        if "cqc." not in col and "analysis." not in col
+    ]
+]
+# show the modified column count
+len(df_for_normalize_and_feature_select.columns)
+
 # normalize the data using pcytominer
 df_pycytominer_normalized = pycytominer.normalize(
-    profiles=df_full_data,
+    profiles=df_for_normalize_and_feature_select,
     features="infer",
     image_features=False,
     meta_features="infer",
-    # samples="Metadata_control_type == 'negcon'",
-    # should this be filled out?
     method="standardize",
     output_file=(parquet_pycytominer_normalized := "./BR00117012_normalized.parquet"),
     output_type="parquet",
 )
-df_pycytominer_normalized
 
 # feature select normalized data using pycytominer
 df_pycytominer_feature_selected = pycytominer.feature_select(
@@ -221,7 +281,6 @@ df_pycytominer_feature_selected = pycytominer.feature_select(
     ),
     output_type="parquet",
 )
-df_pycytominer_feature_selected
 
 
 # +
@@ -283,10 +342,11 @@ def generate_umap_embeddings(
     return embeddings
 
 
-all_embeddings = generate_umap_embeddings(
-    df_input=df_feature_selected_with_cqc_outlier_data, cols_metadata=metadata_cols
+embeddings_with_outliers = generate_umap_embeddings(
+    df_input=pd.read_parquet(parquet_pycytominer_feature_selected),
+    cols_metadata=metadata_cols,
 )
-all_embeddings
+embeddings_with_outliers
 
 
 # +
@@ -319,7 +379,7 @@ def plot_hvplot_scatter_general(
     )
 
 
-plot_hvplot_scatter_general(embeddings=embeddings)
+plot_hvplot_scatter_general(embeddings=embeddings_with_outliers)
 
 
 # +
@@ -362,20 +422,26 @@ def plot_hvplot_scatter_outliers(
 
 
 plot_hvplot_scatter_outliers(
-    embeddings=embeddings,
+    embeddings=embeddings_with_outliers,
     cosmicqc_outlier_labels=df_feature_selected_with_cqc_outlier_data,
-    color_column="cqc.small_and_low_formfactor_nuclei.is_outlier",
+    color_column="analysis.included_at_least_one_outlier",
 )
 # -
 
 plot_hvplot_scatter_outliers(
-    embeddings=embeddings,
+    embeddings=embeddings_with_outliers,
+    cosmicqc_outlier_labels=df_feature_selected_with_cqc_outlier_data,
+    color_column="cqc.small_and_low_formfactor_nuclei.is_outlier",
+)
+
+plot_hvplot_scatter_outliers(
+    embeddings=embeddings_with_outliers,
     cosmicqc_outlier_labels=df_feature_selected_with_cqc_outlier_data,
     color_column="cqc.elongated_nuclei.is_outlier",
 )
 
 plot_hvplot_scatter_outliers(
-    embeddings=embeddings,
+    embeddings=embeddings_with_outliers,
     cosmicqc_outlier_labels=df_feature_selected_with_cqc_outlier_data,
     color_column="cqc.large_nuclei.is_outlier",
 )
@@ -383,11 +449,16 @@ plot_hvplot_scatter_outliers(
 with duckdb.connect() as ddb:
     df_feature_selected_without_cqc_outlier_data = ddb.execute(
         """
-        SELECT *
-        FROM df_feature_selected_with_cqc_outlier_data AS feat_select_ouliers
-        WHERE feat_select_ouliers."cqc.small_and_low_formfactor_nuclei.is_outlier" = False
-        AND feat_select_ouliers."cqc.large_nuclei.is_outlier" = False
-        AND feat_select_ouliers."cqc.elongated_nuclei.is_outlier" = False
+        SELECT
+            feat_select.*
+        FROM read_parquet("./BR00117012_feature_select.parquet") AS feat_select
+        INNER JOIN df_labeled_outliers AS cqc_outlier_data
+            ON feat_select.Metadata_ImageNumber = cqc_outlier_data.Metadata_ImageNumber
+            AND feat_select.Metadata_ObjectNumber = cqc_outlier_data.Metadata_ObjectNumber
+            AND feat_select.Metadata_Plate = cqc_outlier_data.Metadata_Plate
+            AND feat_select.Metadata_Well = cqc_outlier_data.Metadata_Well
+        WHERE 
+            cqc_outlier_data."analysis.included_at_least_one_outlier" = FALSE
         """
     ).df()
 df_feature_selected_without_cqc_outlier_data
@@ -398,5 +469,36 @@ embeddings_outliers_removed = generate_umap_embeddings(
 embeddings_outliers_removed
 
 plot_hvplot_scatter_general(embeddings=embeddings_outliers_removed)
+
+# +
+# concatenate embeddings for display together as a comparison
+combined_embeddings = np.vstack((embeddings_outliers_removed, embeddings_with_outliers))
+
+# create a labels array to help color and
+# differentiate the two sets of embeddings
+combined_labels = np.concatenate(
+    [np.zeros(len(embeddings_outliers_removed)), np.ones(len(embeddings_with_outliers))]
+)
+
+# show the length of the new combined array of embeddings
+len(combined_embeddings)
+
+# +
+umap_plot = pd.DataFrame(combined_embeddings).hvplot.scatter(
+    title="Comparison of UMAP points for JUMP",
+    x="0",
+    y="1",
+    alpha=0.1,
+    rasterize=True,
+    c=combined_labels,
+    cnorm="linear",
+    cmap="cool",
+    height=500,
+    width=800,
+    datashade=True,
+)
+
+hvplot.save(umap_plot, "example.png")
+# -
 
 
