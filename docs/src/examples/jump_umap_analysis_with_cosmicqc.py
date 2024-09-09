@@ -25,17 +25,14 @@
 #
 
 # + editable=true slideshow={"slide_type": ""}
-import doctest
 import pathlib
-import shutil
-from typing import List, Union
+from typing import List
 
-import duckdb
+import cosmicqc
 import holoviews
 import hvplot.pandas
 import numpy as np
 import pandas as pd
-import parsl
 import pyarrow as pa
 import pycytominer
 import umap
@@ -44,11 +41,10 @@ from parsl.config import Config
 from parsl.executors import ThreadPoolExecutor
 from pyarrow import parquet
 
-import cosmicqc
-
 # set bokeh for visualizations with hvplot
 hvplot.extension("bokeh")
 
+# create a dir for images
 pathlib.Path("./images").mkdir(exist_ok=True)
 
 # +
@@ -99,8 +95,8 @@ metadata_cols = [
 # read only metadata columns with outlier-specific columns
 df_merged_single_cells = pd.read_parquet(
     path=merged_single_cells,
-    columns=metadata_cols
-    + [
+    columns=[
+        *metadata_cols,
         "Nuclei_AreaShape_Area",
         "Nuclei_AreaShape_FormFactor",
         "Nuclei_AreaShape_Eccentricity",
@@ -166,8 +162,7 @@ print(
 )
 
 # show histograms to help visualize the data
-df_labeled_outliers.show_report();
-
+df_labeled_outliers.show_report()
 # +
 # set a fraction for sampling
 sample_fraction = 0.44
@@ -273,28 +268,13 @@ def generate_umap_embeddings(
         np.ndarray:
             A dataframe containing the UMAP embeddings
             with 2 components for each row in the input.
-
-    Doctests:
-        >>> df = pd.DataFrame({
-                'feature1': [1.0, 2.0, 3.0],
-                'feature2': [4.0, 5.0, 6.0],
-                'Metadata_Plate': ['plate1', 'plate2', 'plate3']
-            })
-        >>> metadata_cols = ['Metadata_Plate']
-        >>> generate_umap_embeddings = generate_umap(df, metadata_cols)
-        >>> type(umap_embeddings)
-        np.ndarray
     """
 
     # Set constants
-    umap_random_seed = 0
     umap_n_components = 2
 
     # Make sure to reinitialize UMAP instance per plate
-    umap_fit = umap.UMAP(
-        # random_state=umap_random_seed,
-        n_components=umap_n_components
-    )
+    umap_fit = umap.UMAP(n_components=umap_n_components)
 
     # Fit UMAP and convert to pandas DataFrame
     embeddings = umap_fit.fit_transform(
@@ -356,6 +336,7 @@ def plot_hvplot_scatter_general(
 
     return plot
 
+
 # show a general UMAP for the data
 plot_hvplot_scatter_general(
     embeddings=embeddings_with_outliers, filename="./images/umap_BR00117012.png"
@@ -369,7 +350,7 @@ def plot_hvplot_scatter_outliers(
     color_column: str,
     title: str,
     filename: str,
-):
+) -> holoviews.core.spaces.DynamicMap:
     """
     Creates an outlier-focused scatter hvplot for viewing
     UMAP embedding data with cosmicqc outliers coloration.
@@ -415,6 +396,7 @@ def plot_hvplot_scatter_outliers(
     hvplot.save(obj=plot, filename=filename)
 
     return plot
+
 
 # show a UMAP for all outliers within the data
 plot_hvplot_scatter_outliers(

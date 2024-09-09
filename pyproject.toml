@@ -105,6 +105,9 @@ select = [
 "__init__.py" = ["E402", "F401"]
 # ignore typing rules for tests
 "tests/*" = ["ANN201", "PLR0913"]
+# ignore long line warnings with notebooks
+"docs/src/examples/*.ipynb" = ["E501"]
+"docs/src/examples/*.py" = ["E501"]
 
 [tool.jupytext]
 formats = "ipynb,py:light"
