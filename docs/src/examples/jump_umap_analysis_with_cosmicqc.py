@@ -101,6 +101,30 @@ df_merged_single_cells.head()
 # -
 
 # label outliers within the dataset
+print("Large nuclei outliers:")
+df_labeled_outliers = cosmicqc.analyze.find_outliers(
+    df=df_merged_single_cells,
+    metadata_columns=metadata_cols,
+    feature_thresholds="large_nuclei",
+)
+
+# label outliers within the dataset
+print("Elongated nuclei outliers:")
+df_labeled_outliers = cosmicqc.analyze.find_outliers(
+    df=df_merged_single_cells,
+    metadata_columns=metadata_cols,
+    feature_thresholds="elongated_nuclei",
+)
+
+# label outliers within the dataset
+print("Small and low formfactor nuclei outliers:")
+df_labeled_outliers = cosmicqc.analyze.find_outliers(
+    df=df_merged_single_cells,
+    metadata_columns=metadata_cols,
+    feature_thresholds="small_and_low_formfactor_nuclei",
+)
+
+# label outliers within the dataset
 df_labeled_outliers = cosmicqc.analyze.label_outliers(
     df=df_merged_single_cells,
     include_threshold_scores=True,
@@ -118,6 +142,55 @@ df_full_data = pa.Table.from_batches(
     [next(parquet.ParquetFile("./BR00117012.parquet").iter_batches(batch_size=60000))]
 ).to_pandas()
 df_full_data
+
+df_labeled_outliers["cqc.included_at_least_one_outlier"] = df_labeled_outliers[
+    [col for col in df_labeled_outliers.columns.tolist() if ".is_outlier" in col]
+].any(axis=1)
+df_labeled_outliers["cqc.included_at_least_one_outlier"].value_counts()
+
+# +
+number_of_samples_per_group = 140000 // 2
+
+# join feature selected data with outlier data
+# using a sample based on outliers
+# note: we do this to help ascertain outlier data for
+# objects which may no longer include cosmicqc-checked columns
+# (such as Nuclei_AreaShape_Area)
+with duckdb.connect() as ddb:
+    df_feature_selected_with_cqc_outlier_data = ddb.execute(
+        f"""
+        WITH sample_includes_outliers AS (
+            SELECT feat_select.*, COLUMNS('cqc\..*')
+            FROM read_parquet('./BR00117012.parquet') AS feat_select
+            LEFT JOIN df_labeled_outliers AS cqc_outlier_data
+            ON feat_select.Metadata_ImageNumber = cqc_outlier_data.Metadata_ImageNumber
+            AND feat_select.Metadata_ObjectNumber = cqc_outlier_data.Metadata_ObjectNumber
+            AND feat_select.Metadata_Plate = cqc_outlier_data.Metadata_Plate
+            AND feat_select.Metadata_Well = cqc_outlier_data.Metadata_Well
+            WHERE cqc_outlier_data."cqc.included_at_least_one_outlier" = TRUE
+            USING SAMPLE {number_of_samples_per_group} ROWS
+        ),
+        sample_excludes_outliers AS (
+            SELECT feat_select.*, COLUMNS('cqc\..*')
+            FROM read_parquet('./BR00117012.parquet') AS feat_select
+            LEFT JOIN df_labeled_outliers AS cqc_outlier_data
+            ON feat_select.Metadata_ImageNumber = cqc_outlier_data.Metadata_ImageNumber
+            AND feat_select.Metadata_ObjectNumber = cqc_outlier_data.Metadata_ObjectNumber
+            AND feat_select.Metadata_Plate = cqc_outlier_data.Metadata_Plate
+            AND feat_select.Metadata_Well = cqc_outlier_data.Metadata_Well
+            WHERE cqc_outlier_data."cqc.included_at_least_one_outlier" = FALSE
+            USING SAMPLE {number_of_samples_per_group} ROWS;
+        )
+        
+        SELECT * FROM sample_includes_outliers
+        
+        UNION ALL
+
+        SELECT * FROM sample_excludes_outliers
+        """
+    ).df()
+df_feature_selected_with_cqc_outlier_data
+# -
 
 # normalize the data using pcytominer
 df_pycytominer_normalized = pycytominer.normalize(
@@ -149,30 +222,6 @@ df_pycytominer_feature_selected = pycytominer.feature_select(
     output_type="parquet",
 )
 df_pycytominer_feature_selected
-
-# join feature selected data with outlier data
-# note: we do this to help ascertain outlier data for
-# objects which may no longer include cosmicqc-checked columns
-# (such as Nuclei_AreaShape_Area)
-with duckdb.connect() as ddb:
-    df_feature_selected_with_cqc_outlier_data = ddb.execute(
-        """
-        SELECT
-            feat_select.*,
-            /* select cosmicqc-specific columns */
-            COLUMNS('cqc\..*')
-        
-        FROM read_parquet('./BR00117012_feature_select.parquet') AS feat_select
-        
-        /* join on the cosmicqc labeled dataframe using metadata columns */
-        LEFT JOIN df_labeled_outliers as cqc_outlier_data ON
-            feat_select.Metadata_ImageNumber = cqc_outlier_data.Metadata_ImageNumber
-            AND feat_select.Metadata_ObjectNumber = cqc_outlier_data.Metadata_ObjectNumber
-            AND feat_select.Metadata_Plate = cqc_outlier_data.Metadata_Plate
-            AND feat_select.Metadata_Well =cqc_outlier_data.Metadata_Well
-        """
-    ).df()
-df_feature_selected_with_cqc_outlier_data
 
 
 # +
