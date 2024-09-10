@@ -167,39 +167,56 @@ print(
 df_labeled_outliers.show_report();
 
 # +
-# set a fraction for sampling
-sample_fraction = 0.44
+parquet_sampled_with_outliers = "./BR00117012_sampled_with_outliers.parquet"
 
-# read the dataset
-df_features = pa.Table.from_batches(
-    [next(parquet.ParquetFile("./BR00117012.parquet").iter_batches(batch_size=10000))]
-).to_pandas()
+# check if we already have normalized data
+if not pathlib.Path(parquet_sampled_with_outliers).is_file():
+    # set a fraction for sampling
+    sample_fraction = 0.44
 
-# group by metadata_well for all features then sample
-# the dataset by a fraction.
-df_features = (
-    df_features.groupby(["Metadata_Well"])[df_features.columns]
-    .apply(lambda x: x.sample(frac=sample_fraction))
-    .reset_index(drop=True)
-)
+    # read the dataset
+    df_features = pa.Table.from_batches(
+        [
+            next(
+                parquet.ParquetFile("./BR00117012.parquet").iter_batches(
+                    batch_size=10000
+                )
+            )
+        ]
+    ).to_pandas()
 
-# join the sampled feature data with the cosmicqc outlier data
-df_feature_selected_with_cqc_outlier_data = df_features.merge(
-    df_labeled_outliers,
-    how="inner",
-    left_on=[
-        "Metadata_ImageNumber",
-        "Metadata_ObjectNumber",
-        "Metadata_Plate",
-        "Metadata_Well",
-    ],
-    right_on=[
-        "Metadata_ImageNumber",
-        "Metadata_ObjectNumber",
-        "Metadata_Plate",
-        "Metadata_Well",
-    ],
-)
+    # group by metadata_well for all features then sample
+    # the dataset by a fraction.
+    df_features = (
+        df_features.groupby(["Metadata_Well"])[df_features.columns]
+        .apply(lambda x: x.sample(frac=sample_fraction))
+        .reset_index(drop=True)
+    )
+
+    # join the sampled feature data with the cosmicqc outlier data
+    df_feature_selected_with_cqc_outlier_data = df_features.merge(
+        df_labeled_outliers,
+        how="inner",
+        left_on=[
+            "Metadata_ImageNumber",
+            "Metadata_ObjectNumber",
+            "Metadata_Plate",
+            "Metadata_Well",
+        ],
+        right_on=[
+            "Metadata_ImageNumber",
+            "Metadata_ObjectNumber",
+            "Metadata_Plate",
+            "Metadata_Well",
+        ],
+    )
+
+    df_feature_selected_with_cqc_outlier_data.to_parquet(parquet_sampled_with_outliers)
+
+else:
+    df_feature_selected_with_cqc_outlier_data = pd.read_parquet(
+        parquet_sampled_with_outliers
+    )
 
 df_feature_selected_with_cqc_outlier_data
 # -
