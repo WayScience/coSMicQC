@@ -61,7 +61,7 @@ example_plate = "BR00117012"
 
 def generate_umap_embeddings(
     df_input: pd.DataFrame,
-    cols_metadata: List[str],
+    cols_metadata_to_exclude: List[str],
     umap_n_components: int = 2,
     random_state: Optional[int] = None,
 ) -> np.ndarray:
@@ -74,7 +74,7 @@ def generate_umap_embeddings(
         df_input (pd.DataFrame]):
             A dataframe which is expected to contain
             numeric columns to be used for UMAP fitting.
-        cols_metadata (List[str]):
+        cols_metadata_to_exclude (List[str]):
             A list of column names representing
             metadata columns that should be excluded
             from the UMAP transformation.
@@ -104,7 +104,7 @@ def generate_umap_embeddings(
             [
                 col
                 for col in df_input.columns.tolist()
-                if col not in metadata_cols and "cqc." not in col
+                if col not in cols_metadata_to_exclude and "cqc." not in col
             ]
         ].select_dtypes(include=[np.number])
     )
@@ -371,6 +371,42 @@ df_for_normalize_and_feature_select = df_features_with_cqc_outlier_data[
 # show the modified column count
 len(df_for_normalize_and_feature_select.columns)
 
+# join JUMP metadata with platemap data to prepare for annotation
+df_platemap_and_metadata = pd.read_csv(
+    filepath_or_buffer=(
+        "s3://cellpainting-gallery/cpg0000-jump-pilot/source_4"
+        "/workspace/metadata/platemaps/2020_11_04_CPJUMP1/"
+        "platemap/JUMP-Target-1_compound_platemap.txt"
+    ),
+    sep="\t",
+).merge(
+    right=pd.read_csv(
+        filepath_or_buffer=(
+            "s3://cellpainting-gallery/cpg0000-jump-pilot/source_4"
+            "/workspace/metadata/external_metadata/"
+            "JUMP-Target-1_compound_metadata.tsv"
+        ),
+        sep="\t",
+    ),
+    left_on="broad_sample",
+    right_on="broad_sample",
+)
+
+# +
+parquet_pycytominer_annotated = f"./{example_plate}_annotated.parquet"
+
+# check if we already have annoted data
+if not pathlib.Path(parquet_pycytominer_annotated).is_file():
+    # annotate the data using pycytominer
+    pycytominer.annotate(
+        profiles=df_for_normalize_and_feature_select,
+        # read the platemap directly from AWS S3 related location
+        platemap=df_platemap_and_metadata,
+        join_on=["Metadata_well_position", "Metadata_Well"],
+        output_file=parquet_pycytominer_annotated,
+        output_type="parquet",
+    )
+
 # +
 parquet_pycytominer_normalized = f"./{example_plate}_normalized.parquet"
 
@@ -378,11 +414,12 @@ parquet_pycytominer_normalized = f"./{example_plate}_normalized.parquet"
 if not pathlib.Path(parquet_pycytominer_normalized).is_file():
     # normalize the data using pcytominer
     df_pycytominer_normalized = pycytominer.normalize(
-        profiles=df_for_normalize_and_feature_select,
+        profiles=parquet_pycytominer_annotated,
         features="infer",
         image_features=False,
         meta_features="infer",
         method="standardize",
+        samples="Metadata_control_type == 'negcon'",
         output_file=parquet_pycytominer_normalized,
         output_type="parquet",
     )
@@ -407,11 +444,19 @@ if not pathlib.Path(parquet_pycytominer_feature_selected).is_file():
     )
 # -
 
+# regather metadata columns to account for new additions
+all_metadata_cols = [
+    col
+    for col in parquet.read_schema(parquet_pycytominer_feature_selected).names
+    if col.startswith("Metadata_")
+]
+all_metadata_cols
+
 # calculate UMAP embeddings from the data
 # which was prepared by pycytominer.
 embeddings_with_outliers = generate_umap_embeddings(
     df_input=pd.read_parquet(parquet_pycytominer_feature_selected),
-    cols_metadata=metadata_cols,
+    cols_metadata_to_exclude=all_metadata_cols,
 )
 # show the shape and top values from the embeddings array
 print(embeddings_with_outliers.shape)
