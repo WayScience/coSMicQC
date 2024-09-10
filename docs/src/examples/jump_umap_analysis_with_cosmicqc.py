@@ -29,6 +29,7 @@ import logging
 import pathlib
 from typing import List, Optional
 
+import cosmicqc
 import holoviews
 import hvplot.pandas
 import numpy as np
@@ -40,8 +41,6 @@ from cytotable.convert import convert
 from parsl.config import Config
 from parsl.executors import ThreadPoolExecutor
 from pyarrow import parquet
-
-import cosmicqc
 
 # set bokeh for visualizations with hvplot
 hvplot.extension("bokeh")
@@ -58,6 +57,7 @@ example_plate = "BR00117012"
 # -
 
 # ## Define utility functions for use within this notebook
+
 
 def generate_umap_embeddings(
     df_input: pd.DataFrame,
@@ -294,7 +294,7 @@ print(
 )
 
 # show histograms to help visualize the data
-df_labeled_outliers.show_report();
+df_labeled_outliers.show_report()
 # ## Prepare data for analysis with pycytominer
 
 # +
@@ -395,7 +395,7 @@ df_platemap_and_metadata = pd.read_csv(
 # +
 parquet_pycytominer_annotated = f"./{example_plate}_annotated.parquet"
 
-# check if we already have annoted data
+# check if we already have annotated data
 if not pathlib.Path(parquet_pycytominer_annotated).is_file():
     # annotate the data using pycytominer
     pycytominer.annotate(
