@@ -26,13 +26,13 @@
 
 # + editable=true slideshow={"slide_type": ""}
 import pathlib
-from typing import List
+from typing import List, Optional, Union
 
-import cosmicqc
 import holoviews
 import hvplot.pandas
 import numpy as np
 import pandas as pd
+import parsl
 import pyarrow as pa
 import pycytominer
 import umap
@@ -40,6 +40,8 @@ from cytotable.convert import convert
 from parsl.config import Config
 from parsl.executors import ThreadPoolExecutor
 from pyarrow import parquet
+
+import cosmicqc
 
 # set bokeh for visualizations with hvplot
 hvplot.extension("bokeh")
@@ -162,7 +164,8 @@ print(
 )
 
 # show histograms to help visualize the data
-df_labeled_outliers.show_report()
+df_labeled_outliers.show_report();
+
 # +
 # set a fraction for sampling
 sample_fraction = 0.44
@@ -218,32 +221,40 @@ df_for_normalize_and_feature_select = df_feature_selected_with_cqc_outlier_data[
 # show the modified column count
 len(df_for_normalize_and_feature_select.columns)
 
-# normalize the data using pcytominer
-df_pycytominer_normalized = pycytominer.normalize(
-    profiles=df_for_normalize_and_feature_select,
-    features="infer",
-    image_features=False,
-    meta_features="infer",
-    method="standardize",
-    output_file=(parquet_pycytominer_normalized := "./BR00117012_normalized.parquet"),
-    output_type="parquet",
-)
+# +
+parquet_pycytominer_normalized = "./BR00117012_normalized.parquet"
 
-# feature select normalized data using pycytominer
-df_pycytominer_feature_selected = pycytominer.feature_select(
-    profiles=parquet_pycytominer_normalized,
-    operation=[
-        "variance_threshold",
-        "correlation_threshold",
-        "blocklist",
-        "drop_na_columns",
-    ],
-    na_cutoff=0,
-    output_file=(
-        parquet_pycytominer_feature_selected := "./BR00117012_feature_select.parquet"
-    ),
-    output_type="parquet",
-)
+# check if we already have normalized data
+if not pathlib.Path(parquet_pycytominer_normalized).is_file():
+    # normalize the data using pcytominer
+    df_pycytominer_normalized = pycytominer.normalize(
+        profiles=df_for_normalize_and_feature_select,
+        features="infer",
+        image_features=False,
+        meta_features="infer",
+        method="standardize",
+        output_file=parquet_pycytominer_normalized,
+        output_type="parquet",
+    )
+
+# +
+parquet_pycytominer_feature_selected = "./BR00117012_feature_select.parquet"
+
+# check if we already have feature selected data
+if not pathlib.Path(parquet_pycytominer_feature_selected).is_file():
+    # feature select normalized data using pycytominer
+    df_pycytominer_feature_selected = pycytominer.feature_select(
+        profiles=parquet_pycytominer_normalized,
+        operation=[
+            "variance_threshold",
+            "correlation_threshold",
+            "blocklist",
+            "drop_na_columns",
+        ],
+        na_cutoff=0,
+        output_file=parquet_pycytominer_feature_selected,
+        output_type="parquet",
+    )
 
 
 # +
@@ -298,58 +309,12 @@ embeddings_with_outliers
 
 
 # +
-def plot_hvplot_scatter_general(
-    embeddings: np.ndarray, filename: str
-) -> holoviews.core.spaces.DynamicMap:
-    """
-    Creates a generalized scatter hvplot for viewing
-    UMAP embedding data.
-
-    Args:
-        embeddings (np.ndarray]):
-            A numpy ndarray which includes
-            embedding data to display.
-        filename (str):
-            Filename which indicates where to export the
-            plot.
-
-    Returns:
-        holoviews.core.spaces.DynamicMap:
-            A dynamic holoviews scatter plot which may be
-            displayed in a Jupyter notebook.
-    """
-
-    # build a scatter plot through hvplot
-    plot = pd.DataFrame(embeddings).hvplot.scatter(
-        title="UMAP of JUMP dataset BR00117012.sqlite",
-        x="0",
-        y="1",
-        alpha=0.1,
-        rasterize=True,
-        cnorm="linear",
-        height=500,
-        width=800,
-    )
-
-    # export the plot
-    hvplot.save(obj=plot, filename=filename)
-
-    return plot
-
-
-# show a general UMAP for the data
-plot_hvplot_scatter_general(
-    embeddings=embeddings_with_outliers, filename="./images/umap_BR00117012.png"
-)
-
-
-# +
-def plot_hvplot_scatter_outliers(
+def plot_hvplot_scatter(
     embeddings: np.ndarray,
-    cosmicqc_outlier_labels: pd.DataFrame,
-    color_column: str,
     title: str,
     filename: str,
+    cosmicqc_outlier_labels: Optional[pd.DataFrame] = None,
+    color_column: Optional[str] = None,
 ) -> holoviews.core.spaces.DynamicMap:
     """
     Creates an outlier-focused scatter hvplot for viewing
@@ -359,17 +324,17 @@ def plot_hvplot_scatter_outliers(
         embeddings (np.ndarray]):
             A numpy ndarray which includes
             embedding data to display.
+        title (str):
+            Title for the UMAP scatter plot.
+        filename (str):
+            Filename which indicates where to export the
+            plot.
         cosmicqc_outlier_labels (pd.DataFrame):
             A dataframe which includes cosmicqc outlier
             data labels for use in coloration of plot.
         color_column (str):
             Column name from cosmicqc_outlier_labels to use
             for coloring the scatter plot.
-        title (str):
-            Title for the UMAP scatter plot.
-        filename (str):
-            Filename which indicates where to export the
-            plot.
 
     Returns:
         holoviews.core.spaces.DynamicMap:
@@ -384,7 +349,11 @@ def plot_hvplot_scatter_outliers(
         y="1",
         alpha=0.1,
         rasterize=True,
-        c=cosmicqc_outlier_labels[color_column].astype(int).values,
+        c=(
+            cosmicqc_outlier_labels[color_column].astype(int).values
+            if cosmicqc_outlier_labels is not None
+            else None
+        ),
         cnorm="linear",
         cmap="plasma",
         bgcolor="black",
@@ -398,39 +367,46 @@ def plot_hvplot_scatter_outliers(
     return plot
 
 
-# show a UMAP for all outliers within the data
-plot_hvplot_scatter_outliers(
+# show a general UMAP for the data
+plot_hvplot_scatter(
     embeddings=embeddings_with_outliers,
-    cosmicqc_outlier_labels=df_feature_selected_with_cqc_outlier_data,
-    color_column="analysis.included_at_least_one_outlier",
-    title="UMAP of JUMP erroneous outliers within BR00117012.sqlite",
-    filename="./images/umap_erroneous_outliers_BR00117012.png",
+    title="UMAP of JUMP erroneous outliers",
+    filename="./images/umap_BR00117012.png",
 )
 # -
 
-# show small and low formfactor nuclei outliers within the data
-plot_hvplot_scatter_outliers(
+# show a UMAP for all outliers within the data
+plot_hvplot_scatter(
     embeddings=embeddings_with_outliers,
+    title="UMAP of JUMP erroneous outliers within BR00117012",
+    filename="./images/umap_erroneous_outliers_BR00117012.png",
+    cosmicqc_outlier_labels=df_feature_selected_with_cqc_outlier_data,
+    color_column="analysis.included_at_least_one_outlier",
+)
+
+# show small and low formfactor nuclei outliers within the data
+plot_hvplot_scatter(
+    embeddings=embeddings_with_outliers,
+    title="UMAP of JUMP small and low formfactor nuclei outliers within BR00117012",
+    filename="./images/umap_small_and_low_formfactor_nuclei_outliers_BR00117012.png",
     cosmicqc_outlier_labels=df_feature_selected_with_cqc_outlier_data,
     color_column="cqc.small_and_low_formfactor_nuclei.is_outlier",
-    title="UMAP of JUMP small and low formfactor nuclei outliers within BR00117012.sqlite",
-    filename="./images/umap_small_and_low_formfactor_nuclei_outliers_BR00117012.png",
 )
 
 # show elongated nuclei outliers within the data
-plot_hvplot_scatter_outliers(
+plot_hvplot_scatter(
     embeddings=embeddings_with_outliers,
+    title="UMAP of JUMP elongated nuclei outliers within BR00117012",
+    filename="./images/umap_elongated_nuclei_outliers_BR00117012.png",
     cosmicqc_outlier_labels=df_feature_selected_with_cqc_outlier_data,
     color_column="cqc.elongated_nuclei.is_outlier",
-    title="UMAP of JUMP elongated nuclei outliers within BR00117012.sqlite",
-    filename="./images/umap_elongated_nuclei_outliers_BR00117012.png",
 )
 
 # show small and large nuclei outliers within the data
-plot_hvplot_scatter_outliers(
+plot_hvplot_scatter(
     embeddings=embeddings_with_outliers,
+    title="UMAP of JUMP large nuclei outliers within BR00117012",
+    filename="./images/umap_large_nuclei_outliers_BR00117012.png",
     cosmicqc_outlier_labels=df_feature_selected_with_cqc_outlier_data,
     color_column="cqc.large_nuclei.is_outlier",
-    title="UMAP of JUMP large nuclei outliers within BR00117012.sqlite",
-    filename="./images/umap_large_nuclei_outliers_BR00117012.png",
 )
