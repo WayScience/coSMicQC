@@ -95,7 +95,7 @@ references:
       - description: "Github Link with Contributors"
         type: url
         value: "https://github.com/WayScience/nuclear_speckle_image_profiling/graphs/contributors"
-  - authors: 
+  - authors:
       - family-names: Chandrasekaran
         given-names: Srinivas Niranj
       - family-names: Cimini
@@ -145,7 +145,7 @@ references:
     date-accessed: "2024-08-21"
     title: >-
       Three million images and morphological profiles of cells treated with matched chemical and genetic perturbations
-    type: journalArticle
+    type: article
     issn: 1548-7105
     issue: 6
     journal: Nature Methods
@@ -153,10 +153,10 @@ references:
     volume: 21
     url: https://doi.org/10.1038/s41592-024-02241-6
     date-published: "2024-06-01"
-    identifiers: 
+    identifiers:
       - type: doi
         value: 10.1038/s41592-024-02241-6
     notes: >-
       JUMP (cpg0000-jump-pilot) was used to help demonstrate coSMicQC performance
-      with large data. See here for more information: 
+      with large data. See here for more information:
       https://github.com/broadinstitute/cellpainting-gallery
