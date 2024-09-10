@@ -95,3 +95,68 @@ references:
       - description: "Github Link with Contributors"
         type: url
         value: "https://github.com/WayScience/nuclear_speckle_image_profiling/graphs/contributors"
+  - authors: 
+      - family-names: Chandrasekaran
+        given-names: Srinivas Niranj
+      - family-names: Cimini
+        given-names: Beth A.
+      - family-names: Goodale
+        given-names: Amy
+      - family-names: Miller
+        given-names: Lisa
+      - family-names: Kost-Alimova
+        given-names: Maria
+      - family-names: Jamali
+        given-names: Nasim
+      - family-names: Doench
+        given-names: John G.
+      - family-names: Fritchman
+        given-names: Briana
+      - family-names: Skepner
+        given-names: Adam
+      - family-names: Melanson
+        given-names: Michelle
+      - family-names: Kalinin
+        given-names: Alexandr A.
+      - family-names: Arevalo
+        given-names: John
+      - family-names: Haghighi
+        given-names: Marzieh
+      - family-names: Caicedo
+        given-names: Juan C.
+      - family-names: Kuhn
+        given-names: Daniel
+      - family-names: Hernandez
+        given-names: Desiree
+      - family-names: Berstler
+        given-names: James
+      - family-names: Shafqat-Abbasi
+        given-names: Hamdah
+      - family-names: Root
+        given-names: David E.
+      - family-names: Swalley
+        given-names: Susanne E.
+      - family-names: Garg
+        given-names: Sakshi
+      - family-names: Singh
+        given-names: Shantanu
+      - family-names: Carpenter
+        given-names: Anne E.
+    date-accessed: "2024-08-21"
+    title: >-
+      Three million images and morphological profiles of cells treated with matched chemical and genetic perturbations
+    type: journalArticle
+    issn: 1548-7105
+    issue: 6
+    journal: Nature Methods
+    pages: 1114-1121
+    volume: 21
+    url: https://doi.org/10.1038/s41592-024-02241-6
+    date-published: "2024-06-01"
+    identifiers: 
+      - type: doi
+        value: 10.1038/s41592-024-02241-6
+    notes: >-
+      JUMP (cpg0000-jump-pilot) was used to help demonstrate coSMicQC performance
+      with large data. See here for more information: 
+      https://github.com/broadinstitute/cellpainting-gallery
