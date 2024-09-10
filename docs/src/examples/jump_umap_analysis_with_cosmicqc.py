@@ -27,23 +27,19 @@
 # + editable=true slideshow={"slide_type": ""}
 import logging
 import pathlib
-from typing import List, Optional, Union
+from typing import List, Optional
 
+import cosmicqc
 import holoviews
 import hvplot.pandas
 import numpy as np
 import pandas as pd
-import parsl
-import pyarrow as pa
 import pycytominer
 import umap
-from bokeh.io import export
 from cytotable.convert import convert
 from parsl.config import Config
 from parsl.executors import ThreadPoolExecutor
 from pyarrow import parquet
-
-import cosmicqc
 
 # set bokeh for visualizations with hvplot
 hvplot.extension("bokeh")
@@ -169,8 +165,7 @@ print(
 )
 
 # show histograms to help visualize the data
-df_labeled_outliers.show_report();
-
+df_labeled_outliers.show_report()
 # +
 parquet_sampled_with_outliers = "./BR00117012_sampled_with_outliers.parquet"
 
