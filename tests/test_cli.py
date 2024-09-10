@@ -33,7 +33,6 @@ def test_cli_identify_outliers(tmp_path: pathlib.Path, basic_outlier_csv: str):
         )
     )
 
-    print(stderr)
     assert returncode == 0
     assert (
         stdout.strip()
