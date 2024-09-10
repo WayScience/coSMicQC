@@ -19,8 +19,9 @@
 # +
 import pathlib
 
-import cosmicqc
 import pandas as pd
+
+import cosmicqc
 
 # set a path for the parquet-based dataset
 # (in this case, CellProfiler SQLite data processed by CytoTable)
@@ -76,7 +77,8 @@ labeled_scdf.iloc[:, -8:]
 
 # show histogram reports on the outliers and inliers
 # for each threshold set in the new columns
-labeled_scdf.show_report()
+labeled_scdf.show_report();
+
 # show cropped images through CytoDataFrame from the dataset to help analyze outliers
 labeled_scdf.sort_values(by="cqc.large_nuclei.is_outlier", ascending=False)[
     [
