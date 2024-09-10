@@ -25,6 +25,7 @@
 #
 
 # + editable=true slideshow={"slide_type": ""}
+import logging
 import pathlib
 from typing import List, Optional, Union
 
@@ -36,6 +37,7 @@ import parsl
 import pyarrow as pa
 import pycytominer
 import umap
+from bokeh.io import export
 from cytotable.convert import convert
 from parsl.config import Config
 from parsl.executors import ThreadPoolExecutor
@@ -48,6 +50,9 @@ hvplot.extension("bokeh")
 
 # create a dir for images
 pathlib.Path("./images").mkdir(exist_ok=True)
+
+# avoid displaying plot export warnings
+logging.getLogger("bokeh.io.export").setLevel(logging.ERROR)
 
 # +
 # check if we already have prepared data
@@ -175,15 +180,7 @@ if not pathlib.Path(parquet_sampled_with_outliers).is_file():
     sample_fraction = 0.44
 
     # read the dataset
-    df_features = pa.Table.from_batches(
-        [
-            next(
-                parquet.ParquetFile("./BR00117012.parquet").iter_batches(
-                    batch_size=10000
-                )
-            )
-        ]
-    ).to_pandas()
+    df_features = pd.read_parquet("./BR00117012.parquet")
 
     # group by metadata_well for all features then sample
     # the dataset by a fraction.
