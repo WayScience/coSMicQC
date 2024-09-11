@@ -34,6 +34,7 @@ import holoviews
 import hvplot.pandas
 import numpy as np
 import pandas as pd
+import panel as pn
 import pyarrow as pa
 import pycytominer
 import umap
@@ -165,7 +166,7 @@ def plot_hvplot_scatter(
     )
 
     # export the plot
-    hvplot.save(obj=plot, filename=filename)
+    pn.pane.HoloViews(plot).save(filename)
 
     return plot
 
@@ -496,7 +497,7 @@ plot_hvplot_scatter(
     color_column="cqc.elongated_nuclei.is_outlier",
 )
 
-{}  # show small and large nuclei outliers within the data
+# show small and large nuclei outliers within the data
 plot_hvplot_scatter(
     embeddings=embeddings_with_outliers,
     title=f"UMAP of JUMP large nuclei outliers within {example_plate}",
