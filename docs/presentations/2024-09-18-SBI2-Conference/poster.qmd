@@ -139,5 +139,8 @@ cosmicqc.CytoDataFrame(
 
 Special thanks goes to the following for their help in contributing to the __coSMicQC__ inspiration, development, or related work.
 
-- ___CU Anschutz___: Timothy A. McKinsey, Josh Travers
+- ___CU Anschutz CFReT___: Timothy A. McKinsey, Josh Travers
 - ___iNFixion___: Michelle Mattson-Hoss, Herb Sarnoff
+- ___Cold Spring Harbor Laboratory___: Katherine Alexander
+- ___JUMP-Cell Painting Consortium___: Chandrasekaran et al., 2024 (cpg0000)
+- ___St. Jude Children’s Research Hospital___: Adam D. Durbin, Ha Won Lee, Taosheng Chen, and Noha Shendy
