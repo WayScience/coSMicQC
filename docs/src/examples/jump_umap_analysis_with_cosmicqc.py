@@ -37,7 +37,7 @@ import pyarrow as pa
 import pycytominer
 import umap
 from cytotable.convert import convert
-from IPython.display import Image
+from IPython.display import HTML, Image
 from parsl.config import Config
 from parsl.executors import ThreadPoolExecutor
 from pyarrow import parquet
@@ -118,7 +118,7 @@ def plot_hvplot_scatter(
     embeddings: np.ndarray,
     title: str,
     filename: str,
-    cosmicqc_outlier_labels: Optional[pd.DataFrame] = None,
+    color_dataframe: Optional[pd.DataFrame] = None,
     color_column: Optional[str] = None,
     bgcolor: str = "black",
     cmap: str = "plasma",
@@ -136,11 +136,12 @@ def plot_hvplot_scatter(
         filename (str):
             Filename which indicates where to export the
             plot.
-        cosmicqc_outlier_labels (pd.DataFrame):
-            A dataframe which includes cosmicqc outlier
-            data labels for use in coloration of plot.
+        color_dataframe (pd.DataFrame):
+            A dataframe which includes data used for
+            color mapping within the plot. For example,
+            coSMicQC .is_outlier columns.
         color_column (str):
-            Column name from cosmicqc_outlier_labels to use
+            Column name from color_dataframe to use
             for coloring the scatter plot.
         bgcolor (str):
             Sets the background color of the plot.
@@ -163,8 +164,8 @@ def plot_hvplot_scatter(
         alpha=0.1,
         rasterize=True,
         c=(
-            cosmicqc_outlier_labels[color_column].astype(int).values
-            if cosmicqc_outlier_labels is not None
+            color_dataframe[color_column].astype(int).values
+            if color_dataframe is not None
             else None
         ),
         cnorm="linear",
@@ -475,7 +476,9 @@ embeddings_with_outliers[:3]
 plot_hvplot_scatter(
     embeddings=embeddings_with_outliers,
     title=f"UMAP of JUMP embeddings from {example_plate} (with erroneous outliers)",
-    filename=f"./images/umap_with_all_outliers_{example_plate}.png",
+    filename=(
+        image_with_all_outliers := f"./images/umap_with_all_outliers_{example_plate}.png"
+    ),
     bgcolor="white",
     cmap="RdYlGn",
 )
@@ -485,7 +488,7 @@ plot_hvplot_scatter(
     embeddings=embeddings_with_outliers,
     title=f"UMAP of JUMP all coSMicQC erroneous outliers within {example_plate}",
     filename=f"./images/umap_erroneous_outliers_{example_plate}.png",
-    cosmicqc_outlier_labels=df_features_with_cqc_outlier_data,
+    color_dataframe=df_features_with_cqc_outlier_data,
     color_column="analysis.included_at_least_one_outlier",
 )
 
@@ -496,7 +499,7 @@ plot_hvplot_scatter(
     filename=(
         plot_image := f"./images/umap_small_and_low_formfactor_nuclei_outliers_{example_plate}.png"
     ),
-    cosmicqc_outlier_labels=df_features_with_cqc_outlier_data,
+    color_dataframe=df_features_with_cqc_outlier_data,
     color_column="cqc.small_and_low_formfactor_nuclei.is_outlier",
 )
 # conserve filespace by displaying export instead of dynamic plot
@@ -509,7 +512,7 @@ plot_hvplot_scatter(
     filename=(
         plot_image := f"./images/umap_elongated_nuclei_outliers_{example_plate}.png"
     ),
-    cosmicqc_outlier_labels=df_features_with_cqc_outlier_data,
+    color_dataframe=df_features_with_cqc_outlier_data,
     color_column="cqc.elongated_nuclei.is_outlier",
 )
 # conserve filespace by displaying export instead of dynamic plot
@@ -520,7 +523,7 @@ plot_hvplot_scatter(
     embeddings=embeddings_with_outliers,
     title=f"UMAP of JUMP large nuclei outliers within {example_plate}",
     filename=(plot_image := f"./images/umap_large_nuclei_outliers_{example_plate}.png"),
-    cosmicqc_outlier_labels=df_features_with_cqc_outlier_data,
+    color_dataframe=df_features_with_cqc_outlier_data,
     color_column="cqc.large_nuclei.is_outlier",
 )
 # conserve filespace by displaying export instead of dynamic plot
@@ -546,9 +549,21 @@ embeddings_without_outliers[:3]
 plot_hvplot_scatter(
     embeddings=embeddings_without_outliers,
     title=f"UMAP of JUMP embeddings from {example_plate} (without erroneous outliers)",
-    filename=f"./images/umap_without_outliers_{example_plate}.png",
+    filename=(
+        image_without_all_outliers := f"./images/umap_without_outliers_{example_plate}.png"
+    ),
     bgcolor="white",
     cmap="RdYlGn",
+)
+
+# compare the UMAP images with and without outliers side by side
+HTML(
+    f"""
+    <div style="display: flex;">
+      <img src="{image_with_all_outliers}" alt="UMAP which includes erroneous outliers" style="width: 50%;"/>
+      <img src="{image_without_all_outliers}" alt="UMAP which includes no erroneous outliers" style="width: 50%;"/>
+    </div>
+    """
 )
 
 # +
@@ -560,10 +575,15 @@ combined_labels = np.concatenate(
     [np.zeros(len(embeddings_with_outliers)), np.ones(len(embeddings_without_outliers))]
 )
 
+# visualize UMAP embeddings both with and without outliers together for comparison
 plot_hvplot_scatter(
-    embeddings=embeddings_without_outliers,
+    embeddings=combined_embeddings,
     title=f"UMAP comparing JUMP embeddings from {example_plate} with and without erroneous outliers",
     filename=f"./images/umap_comparison_with_and_without_erroneous_outliers_{example_plate}.png",
+    color_dataframe=pd.DataFrame(
+        combined_labels, columns=["combined_embedding_color_label"]
+    ),
+    color_column="combined_embedding_color_label",
     bgcolor="white",
     cmap="RdYlGn",
 )
