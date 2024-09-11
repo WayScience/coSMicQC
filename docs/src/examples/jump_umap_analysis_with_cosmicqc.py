@@ -29,7 +29,6 @@ import logging
 import pathlib
 from typing import List, Optional
 
-import cosmicqc
 import holoviews
 import hvplot.pandas
 import numpy as np
@@ -42,6 +41,8 @@ from cytotable.convert import convert
 from parsl.config import Config
 from parsl.executors import ThreadPoolExecutor
 from pyarrow import parquet
+
+import cosmicqc
 
 # set bokeh for visualizations with hvplot
 hvplot.extension("bokeh")
@@ -58,7 +59,6 @@ example_plate = "BR00117012"
 # -
 
 # ## Define utility functions for use within this notebook
-
 
 def generate_umap_embeddings(
     df_input: pd.DataFrame,
@@ -166,7 +166,7 @@ def plot_hvplot_scatter(
     )
 
     # export the plot
-    pn.pane.HoloViews(plot).save(filename)
+    hvplot.save(obj=plot, filename=filename, center=False)
 
     return plot
 
@@ -295,7 +295,7 @@ print(
 )
 
 # show histograms to help visualize the data
-df_labeled_outliers.show_report()
+df_labeled_outliers.show_report();
 # ## Prepare data for analysis with pycytominer
 
 # +
