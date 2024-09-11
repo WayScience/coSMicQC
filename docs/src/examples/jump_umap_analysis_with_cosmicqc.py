@@ -29,7 +29,6 @@ import logging
 import pathlib
 from typing import List, Optional
 
-import cosmicqc
 import holoviews
 import hvplot.pandas
 import numpy as np
@@ -38,9 +37,12 @@ import pyarrow as pa
 import pycytominer
 import umap
 from cytotable.convert import convert
+from IPython.display import Image
 from parsl.config import Config
 from parsl.executors import ThreadPoolExecutor
 from pyarrow import parquet
+
+import cosmicqc
 
 # set bokeh for visualizations with hvplot
 hvplot.extension("bokeh")
@@ -57,7 +59,6 @@ example_plate = "BR00117012"
 # -
 
 # ## Define utility functions for use within this notebook
-
 
 def generate_umap_embeddings(
     df_input: pd.DataFrame,
@@ -106,6 +107,7 @@ def generate_umap_embeddings(
                 for col in df_input.columns.tolist()
                 if col not in cols_metadata_to_exclude and "cqc." not in col
             ]
+            # select only numeric types from the dataframe
         ].select_dtypes(include=[np.number])
     )
 
@@ -118,6 +120,8 @@ def plot_hvplot_scatter(
     filename: str,
     cosmicqc_outlier_labels: Optional[pd.DataFrame] = None,
     color_column: Optional[str] = None,
+    bgcolor: str = "black",
+    cmap: str = "plasma",
 ) -> holoviews.core.spaces.DynamicMap:
     """
     Creates an outlier-focused scatter hvplot for viewing
@@ -138,6 +142,12 @@ def plot_hvplot_scatter(
         color_column (str):
             Column name from cosmicqc_outlier_labels to use
             for coloring the scatter plot.
+        bgcolor (str):
+            Sets the background color of the plot.
+        cmap (str):
+            Sets the colormap used for the plot.
+            See here for more:
+            https://holoviews.org/user_guide/Colormaps.html
 
     Returns:
         holoviews.core.spaces.DynamicMap:
@@ -158,8 +168,8 @@ def plot_hvplot_scatter(
             else None
         ),
         cnorm="linear",
-        cmap="plasma",
-        bgcolor="black",
+        cmap=cmap,
+        bgcolor=bgcolor,
         height=700,
         width=800,
     )
@@ -294,7 +304,7 @@ print(
 )
 
 # show histograms to help visualize the data
-df_labeled_outliers.show_report()
+df_labeled_outliers.show_report();
 # ## Prepare data for analysis with pycytominer
 
 # +
@@ -462,17 +472,18 @@ embeddings_with_outliers = generate_umap_embeddings(
 print(embeddings_with_outliers.shape)
 embeddings_with_outliers[:3]
 
-# show a general UMAP for the data
 plot_hvplot_scatter(
     embeddings=embeddings_with_outliers,
-    title="UMAP of JUMP erroneous outliers",
-    filename=f"./images/umap_{example_plate}.png",
+    title=f"UMAP of JUMP embeddings from {example_plate} (with erroneous outliers)",
+    filename=f"./images/umap_with_all_outliers_{example_plate}.png",
+    bgcolor="white",
+    cmap="RdYlGn",
 )
 
 # show a UMAP for all outliers within the data
 plot_hvplot_scatter(
     embeddings=embeddings_with_outliers,
-    title=f"UMAP of JUMP erroneous outliers within {example_plate}",
+    title=f"UMAP of JUMP all coSMicQC erroneous outliers within {example_plate}",
     filename=f"./images/umap_erroneous_outliers_{example_plate}.png",
     cosmicqc_outlier_labels=df_features_with_cqc_outlier_data,
     color_column="analysis.included_at_least_one_outlier",
@@ -482,25 +493,77 @@ plot_hvplot_scatter(
 plot_hvplot_scatter(
     embeddings=embeddings_with_outliers,
     title=f"UMAP of JUMP small and low formfactor nuclei outliers within {example_plate}",
-    filename=f"./images/umap_small_and_low_formfactor_nuclei_outliers_{example_plate}.png",
+    filename=(
+        plot_image := f"./images/umap_small_and_low_formfactor_nuclei_outliers_{example_plate}.png"
+    ),
     cosmicqc_outlier_labels=df_features_with_cqc_outlier_data,
     color_column="cqc.small_and_low_formfactor_nuclei.is_outlier",
 )
+# conserve filespace by displaying export instead of dynamic plot
+Image(plot_image)
 
 # show elongated nuclei outliers within the data
 plot_hvplot_scatter(
     embeddings=embeddings_with_outliers,
     title=f"UMAP of JUMP elongated nuclei outliers within {example_plate}",
-    filename=f"./images/umap_elongated_nuclei_outliers_{example_plate}.png",
+    filename=(
+        plot_image := f"./images/umap_elongated_nuclei_outliers_{example_plate}.png"
+    ),
     cosmicqc_outlier_labels=df_features_with_cqc_outlier_data,
     color_column="cqc.elongated_nuclei.is_outlier",
 )
+# conserve filespace by displaying export instead of dynamic plot
+Image(plot_image)
 
 # show small and large nuclei outliers within the data
 plot_hvplot_scatter(
     embeddings=embeddings_with_outliers,
     title=f"UMAP of JUMP large nuclei outliers within {example_plate}",
-    filename=f"./images/umap_large_nuclei_outliers_{example_plate}.png",
+    filename=(plot_image := f"./images/umap_large_nuclei_outliers_{example_plate}.png"),
     cosmicqc_outlier_labels=df_features_with_cqc_outlier_data,
     color_column="cqc.large_nuclei.is_outlier",
+)
+# conserve filespace by displaying export instead of dynamic plot
+Image(plot_image)
+
+# calculate UMAP embeddings from data without coSMicQC-detected outliers
+embeddings_without_outliers = generate_umap_embeddings(
+    df_input=pd.read_parquet(
+        parquet_pycytominer_feature_selected,
+        columns=[
+            col
+            for col in parquet.read_schema(parquet_pycytominer_feature_selected).names
+            if not col.startswith("cqc.") or not col.startswith("analysis.")
+        ],
+    ),
+    cols_metadata_to_exclude=all_metadata_cols,
+)
+# show the shape and top values from the embeddings array
+print(embeddings_without_outliers.shape)
+embeddings_without_outliers[:3]
+
+# plot UMAP for embeddings without outliers
+plot_hvplot_scatter(
+    embeddings=embeddings_without_outliers,
+    title=f"UMAP of JUMP embeddings from {example_plate} (without erroneous outliers)",
+    filename=f"./images/umap_without_outliers_{example_plate}.png",
+    bgcolor="white",
+    cmap="RdYlGn",
+)
+
+# +
+# concatenate embeddings together
+combined_embeddings = np.vstack((embeddings_with_outliers, embeddings_without_outliers))
+
+# Step 2: Create the labels array
+combined_labels = np.concatenate(
+    [np.zeros(len(embeddings_with_outliers)), np.ones(len(embeddings_without_outliers))]
+)
+
+plot_hvplot_scatter(
+    embeddings=embeddings_without_outliers,
+    title=f"UMAP comparing JUMP embeddings from {example_plate} with and without erroneous outliers",
+    filename=f"./images/umap_comparison_with_and_without_erroneous_outliers_{example_plate}.png",
+    bgcolor="white",
+    cmap="RdYlGn",
 )
