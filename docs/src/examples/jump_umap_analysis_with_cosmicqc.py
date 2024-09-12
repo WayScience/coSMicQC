@@ -335,15 +335,7 @@ if not pathlib.Path(parquet_sampled_with_outliers).is_file():
     sample_fraction = 0.44
 
     # read the dataset
-    df_features = pa.Table.from_batches(
-        [
-            next(
-                parquet.ParquetFile(f"./{example_plate}.parquet").iter_batches(
-                    batch_size=5000
-                )
-            )
-        ]
-    ).to_pandas()
+    df_features = pd.read_parquet(f"./{example_plate}.parquet")
 
     # group by metadata_well for all features then sample
     # the dataset by a fraction.
@@ -683,12 +675,12 @@ plot_hvplot_scatter(
     color_column="combined_embedding_color_label",
     bgcolor="white",
     cmap=[
+        "#e76f51",  # Darkest Orange
+        "#f4a261",  # Darker Orange
         "#ffbb78",  # Light Orange
-        "#f4a261",  # Gradient Orange
-        "#e76f51",  # Dark Orange
         "#aec7e8",  # Light Blue
-        "#6baed6",  # Gradient Blue
-        "#1f77b4",  # Dark Blue
+        "#6baed6",  # Darker Blue
+        "#1f77b4",  # Darkest Blue
     ],
-    clabel="density of single cells with (color) and without outliers (color)",
+    clabel="density of single cells with (orange) and without outliers (blue)",
 )
