@@ -481,7 +481,7 @@ plot_hvplot_scatter(
         image_with_all_outliers := f"./images/umap_with_all_outliers_{example_plate}.png"
     ),
     bgcolor="white",
-    cmap="BuGn",
+    cmap="coolwarm",
 )
 
 # show a UMAP for all outliers within the data
@@ -530,16 +530,91 @@ plot_hvplot_scatter(
 # conserve filespace by displaying export instead of dynamic plot
 Image(plot_image)
 
+# +
+df_without_outliers = df_features_with_cqc_outlier_data[
+    df_features_with_cqc_outlier_data["analysis.included_at_least_one_outlier"] == False
+]
+
+# prepare data for normalization and feature selection
+# by removing cosmicqc and analaysis focused columns.
+df_for_normalize_and_feature_select_without_outliers = df_without_outliers[
+    # read feature names from cytotable output, which excludes
+    # cosmicqc-added columns.
+    parquet.read_schema(merged_single_cells).names
+]
+# show the modified column count
+len(df_for_normalize_and_feature_select_without_outliers.columns)
+
+df_for_normalize_and_feature_select_without_outliers
+# -
+
+print("Length of dataset with outliers: ", len(df_for_normalize_and_feature_select))
+print(
+    "Length of dataset without outliers: ",
+    len(df_for_normalize_and_feature_select_without_outliers),
+)
+
+# +
+parquet_pycytominer_annotated_wo_outliers = (
+    f"./{example_plate}_annotated_wo_outliers.parquet"
+)
+
+# check if we already have annotated data
+if not pathlib.Path(parquet_pycytominer_annotated_wo_outliers).is_file():
+    # annotate the data using pycytominer
+    pycytominer.annotate(
+        profiles=df_for_normalize_and_feature_select_without_outliers,
+        # read the platemap directly from AWS S3 related location
+        platemap=df_platemap_and_metadata,
+        join_on=["Metadata_well_position", "Metadata_Well"],
+        output_file=parquet_pycytominer_annotated_wo_outliers,
+        output_type="parquet",
+    )
+
+# +
+parquet_pycytominer_normalized_wo_outliers = (
+    f"./{example_plate}_normalized_wo_outliers.parquet"
+)
+
+# check if we already have normalized data
+if not pathlib.Path(parquet_pycytominer_normalized_wo_outliers).is_file():
+    # normalize the data using pcytominer
+    df_pycytominer_normalized = pycytominer.normalize(
+        profiles=parquet_pycytominer_annotated_wo_outliers,
+        features="infer",
+        image_features=False,
+        meta_features="infer",
+        method="standardize",
+        samples="Metadata_control_type == 'negcon'",
+        output_file=parquet_pycytominer_normalized_wo_outliers,
+        output_type="parquet",
+    )
+
+# +
+parquet_pycytominer_feature_selected_wo_outliers = (
+    f"./{example_plate}_feature_select_wo_outliers.parquet"
+)
+
+# check if we already have feature selected data
+if not pathlib.Path(parquet_pycytominer_feature_selected_wo_outliers).is_file():
+    # feature select normalized data using pycytominer
+    df_pycytominer_feature_selected = pycytominer.feature_select(
+        profiles=parquet_pycytominer_normalized_wo_outliers,
+        operation=[
+            "variance_threshold",
+            "correlation_threshold",
+            "blocklist",
+            "drop_na_columns",
+        ],
+        na_cutoff=0,
+        output_file=parquet_pycytominer_feature_selected_wo_outliers,
+        output_type="parquet",
+    )
+# -
+
 # calculate UMAP embeddings from data without coSMicQC-detected outliers
 embeddings_without_outliers = generate_umap_embeddings(
-    df_input=pd.read_parquet(
-        parquet_pycytominer_feature_selected,
-        columns=[
-            col
-            for col in parquet.read_schema(parquet_pycytominer_feature_selected).names
-            if not col.startswith("cqc.") or not col.startswith("analysis.")
-        ],
-    ),
+    df_input=pd.read_parquet(parquet_pycytominer_feature_selected_wo_outliers),
     cols_metadata_to_exclude=all_metadata_cols,
 )
 # show the shape and top values from the embeddings array
@@ -554,7 +629,7 @@ plot_hvplot_scatter(
         image_without_all_outliers := f"./images/umap_without_outliers_{example_plate}.png"
     ),
     bgcolor="white",
-    cmap="BuGn",
+    cmap="coolwarm",
 )
 
 # compare the UMAP images with and without outliers side by side
