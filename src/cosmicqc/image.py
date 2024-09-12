@@ -29,7 +29,6 @@ def is_image_too_dark(image: Image, pixel_brightness_threshold: float = 10.0) ->
     # Calculate the mean brightness
     mean_brightness = np.mean(gray_image)
 
-    print(mean_brightness)
     return mean_brightness < pixel_brightness_threshold
 
 
