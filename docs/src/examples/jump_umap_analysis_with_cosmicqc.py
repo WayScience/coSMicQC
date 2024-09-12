@@ -28,12 +28,12 @@ import logging
 import pathlib
 from typing import List, Optional
 
+import cosmicqc
 import holoviews
 import hvplot.pandas
 import numpy as np
 import pandas as pd
 import plotly.express as px
-import pyarrow as pa
 import pycytominer
 import umap
 from cytotable.convert import convert
@@ -41,8 +41,6 @@ from IPython.display import HTML, Image
 from parsl.config import Config
 from parsl.executors import ThreadPoolExecutor
 from pyarrow import parquet
-
-import cosmicqc
 
 # set bokeh for visualizations with hvplot
 hvplot.extension("bokeh")
@@ -320,8 +318,7 @@ print(
 )
 
 # show histograms to help visualize the data
-df_labeled_outliers.show_report();
-
+df_labeled_outliers.show_report()
 # ## Prepare data for analysis with pycytominer
 
 # +
@@ -486,7 +483,8 @@ plot_hvplot_scatter(
     embeddings=embeddings_with_outliers,
     title=f"UMAP of JUMP embeddings from {example_plate} (with erroneous outliers)",
     filename=(
-        image_with_all_outliers := f"./images/umap_with_all_outliers_{example_plate}.png"
+        image_with_all_outliers
+        := f"./images/umap_with_all_outliers_{example_plate}.png"
     ),
     bgcolor="white",
     cmap=px.colors.sequential.Greens[4:],
@@ -508,7 +506,8 @@ plot_hvplot_scatter(
     embeddings=embeddings_with_outliers,
     title=f"UMAP of JUMP small and low formfactor nuclei outliers within {example_plate}",
     filename=(
-        plot_image := f"./images/umap_small_and_low_formfactor_nuclei_outliers_{example_plate}.png"
+        plot_image
+        := f"./images/umap_small_and_low_formfactor_nuclei_outliers_{example_plate}.png"
     ),
     color_dataframe=df_features_with_cqc_outlier_data,
     color_column="cqc.small_and_low_formfactor_nuclei.is_outlier",
@@ -546,13 +545,16 @@ Image(plot_image)
 # +
 # prepare data for normalization and feature selection
 # by removing cosmicqc and analaysis focused columns.
-df_for_normalize_and_feature_select_without_outliers = df_features_with_cqc_outlier_data[
-    df_features_with_cqc_outlier_data["analysis.included_at_least_one_outlier"] == False
-][
-    # read feature names from cytotable output, which excludes
-    # cosmicqc-added columns.
-    parquet.read_schema(merged_single_cells).names
-]
+df_for_normalize_and_feature_select_without_outliers = (
+    df_features_with_cqc_outlier_data[
+        # seek values which are false (not considered an outlier)
+        ~df_features_with_cqc_outlier_data["analysis.included_at_least_one_outlier"]
+    ][
+        # read feature names from cytotable output, which excludes
+        # cosmicqc-added columns.
+        parquet.read_schema(merged_single_cells).names
+    ]
+)
 # show the modified column count
 len(df_for_normalize_and_feature_select_without_outliers.columns)
 
@@ -638,7 +640,8 @@ plot_hvplot_scatter(
     embeddings=embeddings_without_outliers,
     title=f"UMAP of JUMP embeddings from {example_plate} (without erroneous outliers)",
     filename=(
-        image_without_all_outliers := f"./images/umap_without_outliers_{example_plate}.png"
+        image_without_all_outliers
+        := f"./images/umap_without_outliers_{example_plate}.png"
     ),
     bgcolor="white",
     cmap=px.colors.sequential.Greens[4:],
