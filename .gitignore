@@ -143,8 +143,5 @@ cython_debug/
 
 .DS_Store
 
-# data used for testing but not yet ready to be checked in
-tests/data/cytotable/Nuclear_speckles
-
 # jupyter notebook build files from myst-nb
 docs/jupyter_execute

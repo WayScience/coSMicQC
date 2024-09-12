@@ -196,7 +196,11 @@ def find_outliers(
     ]
 
     # Print outliers count and range for each feature
-    print("Number of outliers:", outliers_df.shape[0])
+    print(
+        "Number of outliers:",
+        outliers_df.shape[0],
+        f"({'{:.2f}'.format((outliers_df.shape[0] / df.shape[0])*100)}%)",
+    )
     print("Outliers Range:")
     for feature in feature_thresholds:
         print(f"{feature} Min:", outliers_df[feature].min())
