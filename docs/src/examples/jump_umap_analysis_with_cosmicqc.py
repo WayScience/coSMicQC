@@ -552,13 +552,11 @@ plot_hvplot_scatter(
 Image(plot_image)
 
 # +
-df_without_outliers = df_features_with_cqc_outlier_data[
-    df_features_with_cqc_outlier_data["analysis.included_at_least_one_outlier"] == False
-]
-
 # prepare data for normalization and feature selection
 # by removing cosmicqc and analaysis focused columns.
-df_for_normalize_and_feature_select_without_outliers = df_without_outliers[
+df_for_normalize_and_feature_select_without_outliers = df_features_with_cqc_outlier_data[
+    df_features_with_cqc_outlier_data["analysis.included_at_least_one_outlier"] == False
+][
     # read feature names from cytotable output, which excludes
     # cosmicqc-added columns.
     parquet.read_schema(merged_single_cells).names
