@@ -128,7 +128,7 @@ omit = [
 
 # set dynamic versioning capabilities for project
 [tool.poetry-dynamic-versioning]
-enable = false
+enable = true
 style = "pep440"
 vcs = "git"
 

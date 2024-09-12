@@ -32,6 +32,7 @@ import holoviews
 import hvplot.pandas
 import numpy as np
 import pandas as pd
+import plotly.express as px
 import pyarrow as pa
 import pycytominer
 import umap
@@ -52,6 +53,7 @@ pathlib.Path("./images").mkdir(exist_ok=True)
 # avoid displaying plot export warnings
 logging.getLogger("bokeh.io.export").setLevel(logging.ERROR)
 
+# set the plate name for use throughout the notebook
 example_plate = "BR00117012"
 
 
@@ -97,7 +99,15 @@ def generate_umap_embeddings(
     """
 
     # Make sure to reinitialize UMAP instance per plate
-    umap_fit = umap.UMAP(n_components=umap_n_components, random_state=random_state)
+    umap_fit = umap.UMAP(
+        n_components=umap_n_components,
+        random_state=random_state,
+        # set the default value if we didn't set a random_state
+        # otherwise set to 1 (umap-learn will override anyways).
+        # this is set to avoid warnings from umap-learn during
+        # processing.
+        n_jobs=-1 if random_state is None else 1,
+    )
 
     # Fit UMAP and convert to pandas DataFrame
     embeddings = umap_fit.fit_transform(
@@ -122,6 +132,7 @@ def plot_hvplot_scatter(
     color_column: Optional[str] = None,
     bgcolor: str = "black",
     cmap: str = "plasma",
+    clabel: Optional[str] = None,
 ) -> holoviews.core.spaces.DynamicMap:
     """
     Creates an outlier-focused scatter hvplot for viewing
@@ -149,6 +160,9 @@ def plot_hvplot_scatter(
             Sets the colormap used for the plot.
             See here for more:
             https://holoviews.org/user_guide/Colormaps.html
+        clabel (str):
+            Sets a label on the color map key displayed
+            horizontally. Defaults to None (no label).
 
     Returns:
         holoviews.core.spaces.DynamicMap:
@@ -173,6 +187,7 @@ def plot_hvplot_scatter(
         bgcolor=bgcolor,
         height=700,
         width=800,
+        clabel=clabel,
     )
 
     # export the plot
@@ -469,6 +484,7 @@ all_metadata_cols
 embeddings_with_outliers = generate_umap_embeddings(
     df_input=pd.read_parquet(parquet_pycytominer_feature_selected),
     cols_metadata_to_exclude=all_metadata_cols,
+    random_state=0,
 )
 # show the shape and top values from the embeddings array
 print(embeddings_with_outliers.shape)
@@ -481,7 +497,8 @@ plot_hvplot_scatter(
         image_with_all_outliers := f"./images/umap_with_all_outliers_{example_plate}.png"
     ),
     bgcolor="white",
-    cmap="coolwarm",
+    cmap=px.colors.sequential.Greens[4:],
+    clabel="density of single cells",
 )
 
 # show a UMAP for all outliers within the data
@@ -491,6 +508,7 @@ plot_hvplot_scatter(
     filename=f"./images/umap_erroneous_outliers_{example_plate}.png",
     color_dataframe=df_features_with_cqc_outlier_data,
     color_column="analysis.included_at_least_one_outlier",
+    clabel="density of single cells classified as outliers",
 )
 
 # show small and low formfactor nuclei outliers within the data
@@ -502,6 +520,7 @@ plot_hvplot_scatter(
     ),
     color_dataframe=df_features_with_cqc_outlier_data,
     color_column="cqc.small_and_low_formfactor_nuclei.is_outlier",
+    clabel="density of single cells classified as outliers",
 )
 # conserve filespace by displaying export instead of dynamic plot
 Image(plot_image)
@@ -515,6 +534,7 @@ plot_hvplot_scatter(
     ),
     color_dataframe=df_features_with_cqc_outlier_data,
     color_column="cqc.elongated_nuclei.is_outlier",
+    clabel="density of single cells classified as outliers",
 )
 # conserve filespace by displaying export instead of dynamic plot
 Image(plot_image)
@@ -526,6 +546,7 @@ plot_hvplot_scatter(
     filename=(plot_image := f"./images/umap_large_nuclei_outliers_{example_plate}.png"),
     color_dataframe=df_features_with_cqc_outlier_data,
     color_column="cqc.large_nuclei.is_outlier",
+    clabel="density of single cells classified as outliers",
 )
 # conserve filespace by displaying export instead of dynamic plot
 Image(plot_image)
@@ -616,6 +637,7 @@ if not pathlib.Path(parquet_pycytominer_feature_selected_wo_outliers).is_file():
 embeddings_without_outliers = generate_umap_embeddings(
     df_input=pd.read_parquet(parquet_pycytominer_feature_selected_wo_outliers),
     cols_metadata_to_exclude=all_metadata_cols,
+    random_state=0,
 )
 # show the shape and top values from the embeddings array
 print(embeddings_without_outliers.shape)
@@ -629,7 +651,8 @@ plot_hvplot_scatter(
         image_without_all_outliers := f"./images/umap_without_outliers_{example_plate}.png"
     ),
     bgcolor="white",
-    cmap="coolwarm",
+    cmap=px.colors.sequential.Greens[4:],
+    clabel="density of single cells",
 )
 
 # compare the UMAP images with and without outliers side by side
@@ -661,5 +684,13 @@ plot_hvplot_scatter(
     ),
     color_column="combined_embedding_color_label",
     bgcolor="white",
-    cmap="RdYlGn",
+    cmap=[
+        "#ffbb78",  # Light Orange
+        "#f4a261",  # Gradient Orange
+        "#e76f51",  # Dark Orange
+        "#aec7e8",  # Light Blue
+        "#6baed6",  # Gradient Blue
+        "#1f77b4",  # Dark Blue
+    ],
+    clabel="density of single cells with (color) and without outliers (color)",
 )
