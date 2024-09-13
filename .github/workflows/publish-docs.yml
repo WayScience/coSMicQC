@@ -32,6 +32,8 @@ jobs:
           touch pages/.nojekyll
           cd docs
           poetry run sphinx-multiversion src build
+          # remove any doctrees dirs which aren't needed for publishing
+          find docs/build -type d -name '.doctrees' -exec rm -rf {} +
           cp -r build/* ../pages/
       - name: Add index redirector to latest docs
         run: |
