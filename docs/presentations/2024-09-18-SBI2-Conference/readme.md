@@ -55,6 +55,16 @@ magick -size 100x460 xc:transparent images/spacer.png
 # combine the images together as one using the spacer for separation
 magick -background none images/cosmicqc-qr-text.png images/spacer.png images/waylab.png images/spacer.png images/dbmi.png +append images/header_combined_images.png
 
+# add circles to highlight umap clusters for jump analysis
+magick ../../src/examples/images/umap_comparison_with_and_without_erroneous_outliers_BR00117012.png -fill none -stroke purple -strokewidth 2 \
+-draw "circle 634,317 684,317" \
+-draw "circle 665,64 695,64" \
+-draw "circle 612,465 662,465" \
+images/jump_umap_comparison_with_highlights.png
+
+# combine jump umaps together
+magick +append ../../src/examples/images/umap_erroneous_outliers_BR00117012.png ./images/jump_umap_comparison_with_highlights.png images/jump_umap_analyses.png
+
 # convert the poster pdf to png and jpg with 150 dpi and a white background
 magick -antialias -density 300 -background white -flatten poster.pdf poster.png
 magick -antialias -density 300 -background white -flatten poster.pdf poster.jpg
