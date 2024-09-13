@@ -91,7 +91,7 @@ $ cosmicqc find_outliers \
   --metadata_columns \[Metadata_ImageNumber\] \
   --feature_thresholds '{"Nuclei_AreaShape_Area": -1}'
 
-Number of outliers: 328
+Number of outliers: 328 (19.14%)
 Outliers Range:
 Nuclei_AreaShape_Area Min: 734.0
 ...
@@ -131,7 +131,7 @@ cosmicqc.CytoDataFrame(
 
 ![_This figure displays the Receiver Operating Characteristic (ROC) Area Under the Curve (AUC) scores for multiple random samples from a holdout dataset that has undergone quality control (QC). The ROC AUC scores are compared between models trained with QC (QC model) and those trained without QC (no-QC model). The QC model demonstrates superior performance, with consistently higher average ROC AUC scores compared to the no-QC model. Statistical analysis reveals a significant difference in performance, with a t-statistic of -72.1 and a p-value of 0.0, indicating that the QC model's enhancement is statistically robust. This highlights the effectiveness of applying QC to improve model accuracy and reliability._](./images/bootstrap_plot_resized.png){width=100%}
 
-![_Single-cell segmentations were evaluated with ___coSMicQC___, identifying which passed (green) or failed (red) quality control (QC) criteria. The left panel showcases field-of-view (FOV) images displaying nuclei from a more standard phenotype while the right panel shows nuclei from a sample with an unusual phenotype. These results illustrate how ___coSMicQC___ effectively distinguishes between high- and low-quality segmentations, aiding in the accurate identification of outliers and ensuring the reliability of downstream analysis for complex biological datasets._](./images/durbin_phenotypes_combined.png){width=100%}
+![_Single-cell segmentations (nuclei) were evaluated with ___coSMicQC___, identifying which passed (green) or failed (red) quality control (QC) criteria. The left panel showcases field-of-view (FOV) images displaying nuclei from a more standard phenotype while the right panel shows nuclei from a sample with an unusual phenotype. These results illustrate how ___coSMicQC___ effectively distinguishes between high- and low-quality segmentations, aiding in the accurate identification of outliers and ensuring the reliability of downstream analysis for complex biological datasets._](./images/durbin_phenotypes_combined.png){width=100%}
 
 ![_Applying ___coSMicQC___ to the JUMP dataset BR00117012 (cpg0000) reveals erroneous outliers, which are highlighted in yellow in the left panel. These outliers significantly impact the UMAP embeddings by altering the spatial distribution of data points. Specifically, the presence of outliers causes shifts in cluster locations or even their removal from the embeddings. In the right panel, orange points represent UMAP embeddings that include these outliers, while blue points denote embeddings generated after removing outliers. Some exemplary areas of significant change are circled in purple within the right panel._](./images/jump_umap_analyses.png){width=100%}
 
