@@ -14,10 +14,10 @@ format:
 
 ## Erroneous outliers and analysis
 
-![_Extra clustering islands can be seen when looking at morphologyical profiles linked to poor segmentation, which when removed, better reveal patterns in the data._](./images/CFReT_UMAP_combined.png){width=100%}
+![_Extra clustering islands can be seen when looking at morphological profiles linked to poor segmentation, which when removed, better reveal patterns in the data._](./images/CFReT_UMAP_combined.png){width=100%}
 
-___Segmentation errors___ during single-cell morphology image analysis such as misidentifying cell compartments or artifacts as cells can lead to inaccurate single-cell measurements and ___erroneous anomalies___ within the data.
-Researchers often resort to ___error-prone, bespoke filtering methods___ or aggregate data into bulk profiles to avoid discrepancies caused by anomaly outliers.
+___Segmentation errors___ during single-cell morphology image analysis such as misidentifying cell compartments or artifacts as cells can lead to inaccurate single-cell measurements and ___erroneous anomalies___ within the data (Figure 1).
+___If single-cell quality control is performed, it often uses bespoke methods___ or aggregate data into bulk profiles to avoid discrepancies caused by anomaly outliers.
 These techniques make it challenging to perform ___quality control___ on the data, impeding the potential for meaningful discoveries.
 
 
@@ -60,7 +60,7 @@ __`coSMicQC`__ offers default and customizable thresholds for quality control, i
 # pip install from pypi
 pip install coSMicQC
 
-# install directly from source
+# or install directly from source
 pip install git+https://github.com/WayScience/coSMicQC.git
 ```
 
@@ -108,7 +108,7 @@ scdf = cosmicqc.analyze.label_outliers(
 ).show_report()
 ```
 
-![_Deep erroneous anomaly analysis is enabled within __coSMicQC__ through the `label_outliers` function, which appends z-score data for features, and the `CytoDataFrame.show_report` method to visualize where outliers are detected within the dataset._](./images/cosmicqc-example-histogram.png){width=100%}
+![_ ___coSMicQC___ enables erroneous anomaly analysis through the `label_outliers` function, which appends z-score data for features, and the `CytoDataFrame.show_report` method to visualize where outliers are detected within the dataset._](./images/cosmicqc-example-histogram.png){width=100%}
 
 &nbsp;
 
