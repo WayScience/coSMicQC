@@ -318,7 +318,7 @@ print(
 )
 
 # show histograms to help visualize the data
-df_labeled_outliers.show_report();
+df_labeled_outliers.show_report();  # fmt: skip
 
 # ## Prepare data for analysis with pycytominer
 
