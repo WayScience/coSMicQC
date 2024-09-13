@@ -108,7 +108,7 @@ scdf = cosmicqc.analyze.label_outliers(
 ).show_report()
 ```
 
-![_ ___coSMicQC___ enables erroneous anomaly analysis through the `label_outliers` function, which appends z-score data for features, and the `CytoDataFrame.show_report` method to visualize where outliers are detected within the dataset._](./images/cosmicqc-example-histogram.png){width=100%}
+![*__coSMicQC__ enables erroneous anomaly analysis through the `label_outliers` function, which appends z-score data for features, and the `CytoDataFrame.show_report` method to visualize where outliers are detected within the dataset.*](./images/cosmicqc-example-histogram.png){width=100%}
 
 &nbsp;
 
