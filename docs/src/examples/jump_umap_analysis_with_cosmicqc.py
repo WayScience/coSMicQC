@@ -318,7 +318,8 @@ print(
 )
 
 # show histograms to help visualize the data
-df_labeled_outliers.show_report()
+df_labeled_outliers.show_report();  # fmt: skip
+
 # ## Prepare data for analysis with pycytominer
 
 # +
@@ -490,6 +491,8 @@ plot_hvplot_scatter(
     cmap=px.colors.sequential.Greens[4:],
     clabel="density of single cells",
 )
+# conserve filespace by displaying export instead of dynamic plot
+Image(image_with_all_outliers)
 
 # show a UMAP for all outliers within the data
 plot_hvplot_scatter(
@@ -647,6 +650,8 @@ plot_hvplot_scatter(
     cmap=px.colors.sequential.Greens[4:],
     clabel="density of single cells",
 )
+# conserve filespace by displaying export instead of dynamic plot
+Image(image_without_all_outliers)
 
 # compare the UMAP images with and without outliers side by side
 HTML(
