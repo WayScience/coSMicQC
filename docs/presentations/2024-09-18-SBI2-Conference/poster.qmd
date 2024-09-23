@@ -47,7 +47,7 @@ graph LR
     class pycytominer pycytominer;
 ```
 -->
-![](./images/cosmicqc_flow.png)
+![](./images/cosmicqc_flow.png){width=85% fig-align="center"}
 
 To address these challenges, we introduce ___`coSMicQC` (Single-cell Morphology Quality Control)___, an open source Python package designed to enhance the accuracy of single-cell morphology analysis.
 __`coSMicQC`__ offers default and customizable thresholds for quality control, integrating seamlessly into both command line and Python API workflows.
