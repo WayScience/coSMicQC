@@ -10,6 +10,8 @@ format:
     footer-url: "https://github.com/WayScience/coSMicQC"
     footer-emails: "https://www.waysciencelab.com"
     footer-color: "ADA7FF"
+citation:
+  doi: 10.5281/zenodo.13829960
 ---
 
 ## Erroneous outliers and analysis
