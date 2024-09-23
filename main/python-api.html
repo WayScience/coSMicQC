@@ -1,0 +1,867 @@
+<!-- extends sphinx page to include docs version warnings if not viewing latest released documentation -->
+<!-- referenced from: https://github.com/wagtail/sphinx-wagtail-theme/blob/main/sphinx_wagtail_theme/layout.html
+ in order to preload plotly javascript dependency for rendering --><!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+    <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
+        <title>Python API &mdash; coSMicQC  documentation</title>
+    
+    <link rel="stylesheet" type="text/css" href="_static/dist/fontawesome.css" />
+      <link rel="stylesheet" type="text/css" href="_static/dist/theme.css?v=ea6a6c20" />
+      <link rel="stylesheet" type="text/css" href="_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+      <link rel="stylesheet" type="text/css" href="_static/custom.css?v=76a74e97" />
+            <link rel="index" title="Index" href="genindex.html" />
+            <link rel="search" title="Search" href="search.html" />
+            <link rel="top" title="coSMicQC  documentation" href="#" />
+            <link rel="next" title="Contributing" href="contributing.html" />
+            <link rel="prev" title="JUMP UMAP analysis with coSMicQC" href="examples/jump_umap_analysis_with_cosmicqc.html" />
+    <!-- line added for plotly compatibility in cosmicqc -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+</head>
+<body>
+    <script type="text/javascript" src="_static/dist/blocking.js"></script>
+    <header class="container-fluid bg-primary">
+        <a class="btn btn-sm btn-light skip-to-content-link" href="#main">Skip to content</a>
+        <div class="container-fluid">
+            <div class="navbar navbar-expand-lg navbar-dark font-weight-bold">
+                    <a href="https://wayscience.github.io/coSMicQC"
+                        title="coSMicQC logo"
+                        class="logo navbar-brand"
+                    >
+                        <img src="_static/just-icon.png" width="45" height="59" alt="coSMicQC logo"
+                            class="logo-img"
+                        />
+                        coSMicQC
+                    </a>
+                
+                
+                    <div class="collapse navbar-collapse justify-content-end">
+                        <ul class="navbar-nav">
+                            
+                                
+                                
+                                <li class="nav-item"><a class="nav-link"  href="https://github.com/WayScience/coSMicQC"><span class='fab fa-github'></span> GitHub Repository</a></li>
+                            
+                        </ul>
+                    </div>
+                
+                <button class="navbar-toggler btn btn-primary d-lg-none" type="button" data-toggle="collapse" data-target="#collapseSidebar" aria-expanded="false" aria-controls="collapseExample">
+                    <span class="navbar-toggler-icon"></span>
+                    <span class="sr-only">menu</span>
+                </button>
+            </div>
+        </div>
+    </header>
+    <div class="container-fluid">
+        <div class="row">
+            <aside class="col-12 col-lg-3 sidebar-container">
+                <div id="collapseSidebar" class="collapse sticky-top d-lg-block pt-5 pr-lg-4">
+<div id="searchbox" class="searchbox mb-6 px-1" role="search">
+    <form id="search-form" action="search.html" autocomplete="off" method="get" role="search">
+        <div class="input-group">
+            <div class="input-group-prepend">
+                <div class="input-group-text border-right-0 bg-white py-3 pl-3 pr-2"><span class="fas fa-search"></span></div>
+            </div>
+            <input class="form-control py-3 pr-3 pl-1 h-100 border-left-0" type="search" name="q" placeholder="Search documentation" aria-label="Search documentation" id="searchinput" />
+        </div>
+        <input type="hidden" name="check_keywords" value="yes" />
+        <input type="hidden" name="area" value="default" />
+    </form>
+</div><div class="site-toc">
+    <nav class="toc mt-3" aria-label="Main menu">
+        <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="examples/cosmicqc_in_a_nutshell.html"><code class="docutils literal notranslate"><span class="pre">coSMicQC</span></code> in a nutshell</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/jump_umap_analysis_with_cosmicqc.html">JUMP UMAP analysis with coSMicQC</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="code_of_conduct.html">Contributor Covenant Code of Conduct</a></li>
+</ul>
+
+    </nav>
+    <template data-toggle-item-template>
+        <button class="btn btn-sm btn-link toctree-expand" type="button">
+            <span class="sr-only">Toggle menu contents</span>
+        </button>
+    </template>
+</div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="examples/jump_umap_analysis_with_cosmicqc.html"
+                          title="previous chapter">JUMP UMAP analysis with coSMicQC</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="contributing.html"
+                          title="next chapter">Contributing</a></p>
+  </div><!-- displays and adds docs version selection functionality in sidebar within rendered docs -->
+
+<h4>Versions</h4>
+<select name="versions" id="versions" onchange="redirectToPage()">
+    <option value="../v0.0.11/index.html">v0.0.11</option>
+    <option value="python-api.html">main</option>
+</select>
+<script>
+/**
+ * Redirects the browser to the URL corresponding to the selected option in the dropdown.
+ *
+ * This function is triggered when the user changes the selection in the dropdown menu. It
+ * retrieves the selected option's value (which is a URL) and sets `window.location.href`
+ * to that URL, causing the browser to navigate to the new page.
+ */
+function redirectToPage() {
+    // Get the <select> element by its ID
+    var selectElement = document.getElementById("versions");
+    // Get the value of the selected option (the URL to redirect to)
+    var selectedValue = selectElement.value;
+
+    // If a valid option is selected (non-empty), redirect the browser to the URL
+    if (selectedValue) {
+        window.location.href = selectedValue;
+    }
+}
+
+/**
+ * Sets the default selection of the dropdown menu based on the current URL.
+ *
+ * This function checks the current page URL and compares it with the values (URLs) of the
+ * options in the dropdown menu. If the current URL contains "index.html" and matches an
+ * option's value, that option is selected as the default.
+ * This function runs automatically when the page loads.
+ */
+ function setDefaultSelection() {
+    // Get the <select> element by its ID
+    var selectElement = document.getElementById("versions");
+    // Get the current page URL
+    var currentUrl = window.location.href;
+
+    // Loop through all options in the dropdown
+    for (var i = 0; i < selectElement.options.length; i++) {
+        var option = selectElement.options[i];
+        var optionUrl = option.value;
+
+        // If the current URL includes "index.html" and matches the option's value, select that option
+        if (optionUrl == "index.html") {
+            selectElement.selectedIndex = i;  // Set the selected index to the matching option
+            break;  // Exit the loop after finding the match
+        }
+    }
+}
+
+// Automatically call setDefaultSelection() when the page finishes loading
+window.onload = setDefaultSelection;
+
+</script>
+
+                    <div class="d-lg-none border-bottom">
+                        
+                    </div>
+                </div>
+            </aside>
+            <div class="col-12 col-lg-9 pt-5">
+                <header class="row align-items-baseline">
+                    <div class="col">
+                        <nav aria-label="breadcrumb">
+    <ol class="breadcrumb m-0 p-0 bg-transparent">
+        <li class="breadcrumb-item"><a href="index.html">Docs</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Python API</li>
+    </ol>
+</nav>
+                    </div>
+                    <div class="col-sm-12 col-lg-auto mt-3 mt-lg-3">
+                        <noscript>
+                            <p>JavaScript is required to toggle light/dark mode..</p>
+                        </noscript>
+                        <button id="wagtail-theme" class="btn btn-sm btn-light text-decoration-none" type="button">
+                            <span class="dark-only"><i class="fas fa-sun"></i> Light mode</span>
+                            <span class="light-only"><i class="fas fa-moon"></i> Dark mode</span>
+                        </button>
+    <a class="btn btn-sm btn-light text-decoration-none" href="https://github.com/WayScience/coSMicQC/tree/main/docs/srcpython-api.md" rel="nofollow">
+        <span class="btn-icon"><span class="fab fa-github"></span></span>
+        <span class="btn-text">Edit on GitHub</span>
+    </a>
+    <a class="btn btn-sm btn-light text-decoration-none" href="_sources/python-api.md.txt" rel="nofollow">
+        <span class="btn-icon"><span class="fas fa-code"></span></span>
+        <span class="btn-text">View source</span>
+    </a>
+                        
+                    </div>
+                </header>
+                <div class="row" >
+                    <div class="col-12">
+                        <hr class="w-100 my-4">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12 col-lg-9 order-last order-lg-first rst-content">
+                        <main role="main" id="main">
+
+<p style="background:#E7C3EB;padding:5px 10px;">
+
+You're reading the documentation for a development version.
+For the latest released version, please have a look at <a href="../v0.0.11/index.html">v0.0.11</a>.
+
+</p>
+</span>
+
+
+    <section id="python-api">
+<h1>Python API<a class="headerlink" href="#python-api" title="Link to this heading">¶</a></h1>
+<section id="module-src.cosmicqc.analyze">
+<span id="cosmicqc-analyze"></span><h2>cosmicqc.analyze<a class="headerlink" href="#module-src.cosmicqc.analyze" title="Link to this heading">¶</a></h2>
+<p>Module for detecting various quality control aspects from source data.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="src.cosmicqc.analyze.find_outliers">
+<span class="sig-prename descclassname"><span class="pre">src.cosmicqc.analyze.</span></span><span class="sig-name descname"><span class="pre">find_outliers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#src.cosmicqc.frame.CytoDataFrame" title="src.cosmicqc.frame.CytoDataFrame"><span class="pre">CytoDataFrame</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">DataFrame</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata_columns</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">feature_thresholds</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">feature_thresholds_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">DEFAULT_QC_THRESHOLD_FILE</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">export_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="reference internal" href="_modules/src/cosmicqc/analyze.html#find_outliers"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.cosmicqc.analyze.find_outliers" title="Link to this definition">¶</a></dt>
+<dd><p>This function uses identify_outliers to return a dataframe
+with only the outliers and provided metadata columns.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>df</strong> – Union[CytoDataFrame, pd.DataFrame, str]
+DataFrame or file string-based filepath of a
+Parquet, CSV, or TSV file with CytoTable output or similar data.</p></li>
+<li><p><strong>metadata_columns</strong> – List[str]
+List of metadata columns that should be outputted with the outlier data.</p></li>
+<li><p><strong>feature_thresholds</strong> – Dict[str, float]
+One of two options:
+A dictionary with the feature name(s) as the key(s) and their assigned
+threshold for identifying outliers. Positive int for the threshold
+will detect outliers “above” than the mean, negative int will detect
+outliers “below” the mean.
+Or a string which is a named key reference found within
+the feature_thresholds_file yaml file.</p></li>
+<li><p><strong>feature_thresholds_file</strong> – Optional[str] = DEFAULT_QC_THRESHOLD_FILE,
+An optional feature thresholds file where thresholds may be
+defined within a file.</p></li>
+<li><p><strong>export_path</strong> – Optional[str] = None
+An optional path to export the data using CytoDataFrame export
+capabilities. If None no export is performed.
+Note: compatible exports are CSV’s, TSV’s, and parquet.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Outlier data frame for the given conditions.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.cosmicqc.analyze.identify_outliers">
+<span class="sig-prename descclassname"><span class="pre">src.cosmicqc.analyze.</span></span><span class="sig-name descname"><span class="pre">identify_outliers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#src.cosmicqc.frame.CytoDataFrame" title="src.cosmicqc.frame.CytoDataFrame"><span class="pre">CytoDataFrame</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">DataFrame</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">feature_thresholds</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">feature_thresholds_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">DEFAULT_QC_THRESHOLD_FILE</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_threshold_scores</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">export_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Series</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#src.cosmicqc.frame.CytoDataFrame" title="src.cosmicqc.frame.CytoDataFrame"><span class="pre">CytoDataFrame</span></a></span></span><a class="reference internal" href="_modules/src/cosmicqc/analyze.html#identify_outliers"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.cosmicqc.analyze.identify_outliers" title="Link to this definition">¶</a></dt>
+<dd><p>This function uses z-scoring to format the data for detecting outlier
+nuclei or cells using specific CellProfiler features. Thresholds are
+the number of standard deviations away from the mean, either above
+(positive) or below (negative). We recommend making sure to not use a
+threshold of 0 as that would represent the whole dataset.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>df</strong> – Union[CytoDataFrame, pd.DataFrame, str]
+DataFrame or file string-based filepath of a
+Parquet, CSV, or TSV file with CytoTable output or similar data.</p></li>
+<li><p><strong>feature_thresholds</strong> – Dict[str, float]
+One of two options:
+A dictionary with the feature name(s) as the key(s) and their assigned
+threshold for identifying outliers. Positive int for the threshold
+will detect outliers “above” than the mean, negative int will detect
+outliers “below” the mean.
+Or a string which is a named key reference found within
+the feature_thresholds_file yaml file.</p></li>
+<li><p><strong>feature_thresholds_file</strong> – Optional[str] = DEFAULT_QC_THRESHOLD_FILE,
+An optional feature thresholds file where thresholds may be
+defined within a file.</p></li>
+<li><p><strong>include_threshold_scores</strong> – bool
+Whether to include the threshold scores in addition to whether
+the threshold set passes per row.</p></li>
+<li><p><strong>export_path</strong> – Optional[str] = None
+An optional path to export the data using CytoDataFrame export
+capabilities. If None no export is performed.
+Note: compatible exports are CSV’s, TSV’s, and parquet.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Outlier series with booleans based on whether outliers were detected
+or not for use within other functions.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Union[pd.Series, <a class="reference internal" href="#src.cosmicqc.frame.CytoDataFrame" title="src.cosmicqc.frame.CytoDataFrame">CytoDataFrame</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.cosmicqc.analyze.label_outliers">
+<span class="sig-prename descclassname"><span class="pre">src.cosmicqc.analyze.</span></span><span class="sig-name descname"><span class="pre">label_outliers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#src.cosmicqc.frame.CytoDataFrame" title="src.cosmicqc.frame.CytoDataFrame"><span class="pre">CytoDataFrame</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">DataFrame</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">feature_thresholds</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">feature_thresholds_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">DEFAULT_QC_THRESHOLD_FILE</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_threshold_scores</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">export_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">report_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#src.cosmicqc.frame.CytoDataFrame" title="src.cosmicqc.frame.CytoDataFrame"><span class="pre">CytoDataFrame</span></a></span></span><a class="reference internal" href="_modules/src/cosmicqc/analyze.html#label_outliers"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.cosmicqc.analyze.label_outliers" title="Link to this definition">¶</a></dt>
+<dd><p>Use identify_outliers to label the original dataset for
+where a cell passed or failed the quality control condition(s).</p>
+<blockquote>
+<div><dl class="simple">
+<dt>Args:</dt><dd><dl class="simple">
+<dt>df: Union[CytoDataFrame, pd.DataFrame, str]</dt><dd><p>DataFrame or file string-based filepath of a
+Parquet, CSV, or TSV file with CytoTable output or similar data.</p>
+</dd>
+<dt>feature_thresholds: Dict[str, float]</dt><dd><p>One of two options:
+A dictionary with the feature name(s) as the key(s) and their assigned
+threshold for identifying outliers. Positive int for the threshold
+will detect outliers “above” than the mean, negative int will detect
+outliers “below” the mean.
+Or a string which is a named key reference found within
+the feature_thresholds_file yaml file.</p>
+</dd>
+<dt>feature_thresholds_file: Optional[str] = DEFAULT_QC_THRESHOLD_FILE,</dt><dd><p>An optional feature thresholds file where thresholds may be
+defined within a file.</p>
+</dd>
+<dt>include_threshold_scores: bool = False</dt><dd><p>Whether to include the scores in addition to whether an outlier
+was detected or not.</p>
+</dd>
+<dt>export_path: Optional[str] = None</dt><dd><p>An optional path to export the data using CytoDataFrame export
+capabilities. If None no export is performed.
+Note: compatible exports are CSV’s, TSV’s, and parquet.</p>
+</dd>
+</dl>
+</dd>
+<dt>Returns:</dt><dd><dl class="simple">
+<dt>CytoDataFrame:</dt><dd><p>Full dataframe with optional scores and outlier boolean column.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.cosmicqc.analyze.read_thresholds_set_from_file">
+<span class="sig-prename descclassname"><span class="pre">src.cosmicqc.analyze.</span></span><span class="sig-name descname"><span class="pre">read_thresholds_set_from_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">feature_thresholds_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">feature_thresholds</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/src/cosmicqc/analyze.html#read_thresholds_set_from_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.cosmicqc.analyze.read_thresholds_set_from_file" title="Link to this definition">¶</a></dt>
+<dd><p>Reads a set of feature thresholds from a specified file.</p>
+<p>This function takes the path to a feature thresholds file and a
+specific feature threshold string, reads the file, and returns
+the thresholds set from the file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>feature_thresholds_file</strong> (<em>str</em>) – The path to the file containing feature thresholds.</p></li>
+<li><p><strong>feature_thresholds</strong> (<em>Optional str</em><em>, </em><em>default None</em>) – A string specifying the feature thresholds.
+If we have None, return all thresholds.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A dictionary containing the processed feature thresholds.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>LookupError</strong> – If the file does not contain the specified feature_thresholds key.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-src.cosmicqc.cli">
+<span id="cosmicqc-cli"></span><h2>cosmicqc.cli<a class="headerlink" href="#module-src.cosmicqc.cli" title="Link to this heading">¶</a></h2>
+<p>Setup coSMicQC CLI through python-fire</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="src.cosmicqc.cli.HasCustomRepr">
+<span class="sig-prename descclassname"><span class="pre">src.cosmicqc.cli.</span></span><span class="sig-name descname"><span class="pre">HasCustomRepr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">component</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="_modules/src/cosmicqc/cli.html#HasCustomRepr"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.cosmicqc.cli.HasCustomRepr" title="Link to this definition">¶</a></dt>
+<dd><p>Reproduces above HasCustomStr function to determine if component has a
+custom __repr__ method.</p>
+<p>…</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>component</strong> – The object to check for a custom __repr__ method.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Whether <cite>component</cite> has a custom __repr__ method.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.cosmicqc.cli._PrintResult">
+<span class="sig-prename descclassname"><span class="pre">src.cosmicqc.cli.</span></span><span class="sig-name descname"><span class="pre">_PrintResult</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">component_trace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">FireTrace</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">serialize</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/src/cosmicqc/cli.html#_PrintResult"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.cosmicqc.cli._PrintResult" title="Link to this definition">¶</a></dt>
+<dd><p>Prints the result of the Fire call to stdout in a human readable way.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.cosmicqc.cli.cli_analyze">
+<span class="sig-prename descclassname"><span class="pre">src.cosmicqc.cli.</span></span><span class="sig-name descname"><span class="pre">cli_analyze</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/src/cosmicqc/cli.html#cli_analyze"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.cosmicqc.cli.cli_analyze" title="Link to this definition">¶</a></dt>
+<dd><p>Run the analyze module functions through python-fire CLI</p>
+<p>This function serves as the CLI entry point for functions
+within the analyze module.</p>
+</dd></dl>
+
+</section>
+<section id="module-src.cosmicqc.frame">
+<span id="cosmicqc-frame"></span><h2>cosmicqc.frame<a class="headerlink" href="#module-src.cosmicqc.frame" title="Link to this heading">¶</a></h2>
+<p>Defines a CytoDataFrame class for use in coSMicQC.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="src.cosmicqc.frame.CytoDataFrame">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.cosmicqc.frame.</span></span><span class="sig-name descname"><span class="pre">CytoDataFrame</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">CytoDataFrame_type</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">DataFrame</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_context_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_bounding_box</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_mask_context_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/cosmicqc/frame.html#CytoDataFrame"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.cosmicqc.frame.CytoDataFrame" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">DataFrame</span></code></p>
+<p>A class designed to enhance single-cell data handling by wrapping
+pandas DataFrame capabilities, providing advanced methods for quality control,
+comprehensive analysis, and image-based data processing.</p>
+<p>This class can initialize with either a pandas DataFrame or a file path (CSV, TSV,
+TXT, or Parquet). When initialized with a file path, it reads the data into a
+pandas DataFrame. It also includes capabilities to export data.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.cosmicqc.frame.CytoDataFrame._metadata">
+<span class="sig-name descname"><span class="pre">_metadata</span></span><a class="headerlink" href="#src.cosmicqc.frame.CytoDataFrame._metadata" title="Link to this definition">¶</a></dt>
+<dd><p>A class-level attribute that includes custom attributes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ClassVar[list[str]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.cosmicqc.frame.CytoDataFrame._custom_attrs">
+<span class="sig-name descname"><span class="pre">_custom_attrs</span></span><a class="headerlink" href="#src.cosmicqc.frame.CytoDataFrame._custom_attrs" title="Link to this definition">¶</a></dt>
+<dd><p>A dictionary to store custom attributes, such as data source,
+context directory, and bounding box information.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id0">
+<span class="sig-name descname"><span class="pre">_metadata</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['_custom_attrs']</span></em><a class="headerlink" href="#id0" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.cosmicqc.frame.CytoDataFrame._repr_html_">
+<span class="sig-name descname"><span class="pre">_repr_html_</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="_modules/src/cosmicqc/frame.html#CytoDataFrame._repr_html_"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.cosmicqc.frame.CytoDataFrame._repr_html_" title="Link to this definition">¶</a></dt>
+<dd><p>Returns HTML representation of the underlying pandas DataFrame
+for use within Juypyter notebook environments and similar.</p>
+<p>Referenced with modifications from:
+<a class="reference external" href="https://github.com/pandas-dev/pandas/blob/v2.2.2/pandas/core/frame.py#L1216">https://github.com/pandas-dev/pandas/blob/v2.2.2/pandas/core/frame.py#L1216</a></p>
+<p>Modifications added to help achieve image-based output for single-cell data
+within the context of CytoDataFrame and coSMicQC.</p>
+<p>Mainly for Jupyter notebooks.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The data in a pandas DataFrame.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.cosmicqc.frame.CytoDataFrame._wrap_method">
+<span class="sig-name descname"><span class="pre">_wrap_method</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="reference internal" href="_modules/src/cosmicqc/frame.html#CytoDataFrame._wrap_method"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.cosmicqc.frame.CytoDataFrame._wrap_method" title="Link to this definition">¶</a></dt>
+<dd><p>Wraps a given method to ensure that the returned result
+is an CytoDataFrame if applicable.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>method</strong> (<em>Callable</em>) – The method to be called and wrapped.</p></li>
+<li><p><strong>*args</strong> (<em>List</em><em>[</em><em>Any</em><em>]</em>) – Positional arguments to be passed to the method.</p></li>
+<li><p><strong>**kwargs</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em>) – Keyword arguments to be passed to the method.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The result of the method call. If the result is a pandas DataFrame,
+it is wrapped in an CytoDataFrame instance with additional context
+information (data context directory and data bounding box).</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Any</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.cosmicqc.frame.CytoDataFrame.create_figure_group_html">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">create_figure_group_html</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">figures</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Figure</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">report_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="_modules/src/cosmicqc/frame.html#CytoDataFrame.create_figure_group_html"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.cosmicqc.frame.CytoDataFrame.create_figure_group_html" title="Link to this definition">¶</a></dt>
+<dd><p>Generates an HTML file containing multiple Plotly figures.</p>
+<p>This method takes a list of Plotly figure objects, converts them to HTML,
+and embeds them into a template HTML file. The resulting HTML file is then
+saved to the specified path.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>figures</strong> (<em>List</em><em>[</em><em>plotly.graph_objs._figure.Figure</em><em>]</em>) – A list of Plotly figure objects to be included in the HTML report.</p></li>
+<li><p><strong>report_path</strong> (<em>str</em>) – The file path where the HTML report will be saved.
+Defaults to “cosmicqc_outlier_report.html” when None.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The path to the saved HTML report.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.cosmicqc.frame.CytoDataFrame.create_threshold_set_outlier_visualization">
+<span class="sig-name descname"><span class="pre">create_threshold_set_outlier_visualization</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold_set_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">col_outlier</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cols_threshold_scores</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color_palette</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Figure</span></span></span><a class="reference internal" href="_modules/src/cosmicqc/frame.html#CytoDataFrame.create_threshold_set_outlier_visualization"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.cosmicqc.frame.CytoDataFrame.create_threshold_set_outlier_visualization" title="Link to this definition">¶</a></dt>
+<dd><p>Creates a Plotly figure visualizing the Z-score distributions and outliers
+for a given threshold set.</p>
+<p>This method generates histograms for each Z-score column in the given DataFrame,
+colors them based on outlier status, and overlays them into a single figure.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>df</strong> (<em>pd.DataFrame</em>) – The DataFrame containing the data to be visualized.</p></li>
+<li><p><strong>threshold_set_name</strong> (<em>str</em>) – The name of the threshold set being visualized.</p></li>
+<li><p><strong>col_outlier</strong> (<em>str</em>) – The column name indicating outlier status.</p></li>
+<li><p><strong>cols_threshold_scores</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – A list of column names representing the Z-scores to be visualized.</p></li>
+<li><p><strong>Optional</strong> (<em>color_palette</em>) – Optional list for color palette to use.
+Defaults to use Dark24 color palette from Plotly.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A Plotly figure object containing the visualization.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>plotly.graph_objs._figure.Figure</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.cosmicqc.frame.CytoDataFrame.draw_outline_on_image">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">draw_outline_on_image</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">actual_image_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mask_image_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">&lt;module</span> <span class="pre">'PIL.Image'</span> <span class="pre">from</span> <span class="pre">'/home/runner/.cache/pypoetry/virtualenvs/cosmicqc-_xpxio4a-py3.11/lib/python3.11/site-packages/PIL/Image.py'&gt;</span></span></span><a class="reference internal" href="_modules/src/cosmicqc/frame.html#CytoDataFrame.draw_outline_on_image"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.cosmicqc.frame.CytoDataFrame.draw_outline_on_image" title="Link to this definition">¶</a></dt>
+<dd><p>Draws outlines on a TIFF image based on a mask image and returns
+the combined result.</p>
+<p>This method takes the path to a TIFF image and a mask image, creates
+an outline from the mask, and overlays it on the TIFF image. The resulting
+image, which combines the TIFF image with the mask outline, is returned.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>actual_image_path</strong> (<em>str</em>) – Path to the TIFF image file.</p></li>
+<li><p><strong>mask_image_path</strong> (<em>str</em>) – Path to the mask image file.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A PIL Image object that is the result of
+combining the TIFF image with the mask outline.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>PIL.Image.Image</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>FileNotFoundError</strong> – If the specified image or mask file does not exist.</p></li>
+<li><p><strong>ValueError</strong> – If the images are not in compatible formats or sizes.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.cosmicqc.frame.CytoDataFrame.export">
+<span class="sig-name descname"><span class="pre">export</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/src/cosmicqc/frame.html#CytoDataFrame.export"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.cosmicqc.frame.CytoDataFrame.export" title="Link to this definition">¶</a></dt>
+<dd><p>Exports the underlying pandas DataFrame to a file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>file_path</strong> (<em>str</em>) – The path where the DataFrame should be saved.</p></li>
+<li><p><strong>**kwargs</strong> – Additional keyword arguments to pass to the pandas to_* methods.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.cosmicqc.frame.CytoDataFrame.find_image_columns">
+<span class="sig-name descname"><span class="pre">find_image_columns</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="_modules/src/cosmicqc/frame.html#CytoDataFrame.find_image_columns"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.cosmicqc.frame.CytoDataFrame.find_image_columns" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.cosmicqc.frame.CytoDataFrame.get_bounding_box_from_data">
+<span class="sig-name descname"><span class="pre">get_bounding_box_from_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">CytoDataFrame_type</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="reference internal" href="_modules/src/cosmicqc/frame.html#CytoDataFrame.get_bounding_box_from_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.cosmicqc.frame.CytoDataFrame.get_bounding_box_from_data" title="Link to this definition">¶</a></dt>
+<dd><p>Retrieves bounding box data from the DataFrame based
+on predefined column groups.</p>
+<p>This method identifies specific groups of columns representing bounding box
+coordinates for different cellular components (cytoplasm, nuclei, cells) and
+checks for their presence in the DataFrame. If all required columns are present,
+it filters and returns a new CytoDataFrame instance containing only these
+columns.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A new instance of CytoDataFrame containing the bounding box columns if
+they exist in the DataFrame. Returns None if the required columns
+are not found.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>Optional[CytoDataFrame_type]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.cosmicqc.frame.CytoDataFrame.get_displayed_rows">
+<span class="sig-name descname"><span class="pre">get_displayed_rows</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/src/cosmicqc/frame.html#CytoDataFrame.get_displayed_rows"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.cosmicqc.frame.CytoDataFrame.get_displayed_rows" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.cosmicqc.frame.CytoDataFrame.is_notebook_or_lab">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_notebook_or_lab</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="_modules/src/cosmicqc/frame.html#CytoDataFrame.is_notebook_or_lab"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.cosmicqc.frame.CytoDataFrame.is_notebook_or_lab" title="Link to this definition">¶</a></dt>
+<dd><p>Determines if the code is being executed in a Jupyter notebook (.ipynb)
+returning false if it is not.</p>
+<p>This method attempts to detect the interactive shell environment
+using IPython’s <cite>get_ipython</cite> function. It checks the class name of the current
+IPython shell to distinguish between different execution environments.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><ul class="simple">
+<li><dl class="simple">
+<dt><cite>True</cite></dt><dd><p>if the code is being executed in a Jupyter notebook (.ipynb).</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><cite>False</cite></dt><dd><p>otherwise (e.g., standard Python shell, terminal IPython shell,
+or scripts).</p>
+</dd>
+</dl>
+</li>
+</ul>
+</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.cosmicqc.frame.CytoDataFrame.process_image_data_as_html_display">
+<span class="sig-name descname"><span class="pre">process_image_data_as_html_display</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bounding_box</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="_modules/src/cosmicqc/frame.html#CytoDataFrame.process_image_data_as_html_display"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.cosmicqc.frame.CytoDataFrame.process_image_data_as_html_display" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.cosmicqc.frame.CytoDataFrame.show_report">
+<span class="sig-name descname"><span class="pre">show_report</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">report_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">auto_open</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color_palette</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/src/cosmicqc/frame.html#CytoDataFrame.show_report"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.cosmicqc.frame.CytoDataFrame.show_report" title="Link to this definition">¶</a></dt>
+<dd><p>Generates and displays a report based on the current DataFrame’s data
+quality control (DQC) columns.</p>
+<p>This method organizes the DQC columns from the DataFrame, creates
+visualizations for each threshold set, and then either displays the
+visualizations inline (if running in a Jupyter notebook or lab) or
+opens an HTML report in the default web browser.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>report_path</strong> (<em>Optional</em><em>[</em><em>str</em><em>]</em>) – The file path where the HTML report should be saved and displayed.
+If <cite>None</cite>, the report will be displayed inline if in a notebook
+or lab environment.</p></li>
+<li><p><strong>auto_open</strong> – bool:
+Whether to automatically open the report.</p></li>
+<li><p><strong>Optional</strong> (<em>color_palette</em>) – Optional list for color palette to use.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If the DataFrame does not contain any DQC columns.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.cosmicqc.frame.CytoDataFrame.sort_values">
+<span class="sig-name descname"><span class="pre">sort_values</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">CytoDataFrame_type</span></span></span><a class="reference internal" href="_modules/src/cosmicqc/frame.html#CytoDataFrame.sort_values"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.cosmicqc.frame.CytoDataFrame.sort_values" title="Link to this definition">¶</a></dt>
+<dd><p>Sorts the DataFrame by the specified column(s) and returns a
+new CytoDataFrame instance.</p>
+<p>Note: we wrap this method within CytoDataFrame to help ensure the consistent
+return of CytoDataFrames in the context of pd.Series (which are
+treated separately but have specialized processing within the
+context of sort_values).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>*args</strong> (<em>List</em><em>[</em><em>Any</em><em>]</em>) – Positional arguments to be passed to the pandas
+DataFrame’s <cite>sort_values</cite> method.</p></li>
+<li><p><strong>**kwargs</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em>) – Keyword arguments to be passed to the pandas
+DataFrame’s <cite>sort_values</cite> method.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A new instance of CytoDataFrame sorted by the specified column(s).</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>CytoDataFrame_type</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-src.cosmicqc.image">
+<span id="cosmicqc-image"></span><h2>cosmicqc.image<a class="headerlink" href="#module-src.cosmicqc.image" title="Link to this heading">¶</a></h2>
+<p>Helper functions for working with images in the context of coSMicQC.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="src.cosmicqc.image.adjust_image_brightness">
+<span class="sig-prename descclassname"><span class="pre">src.cosmicqc.image.</span></span><span class="sig-name descname"><span class="pre">adjust_image_brightness</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">image:</span> <span class="pre">&lt;module</span> <span class="pre">'PIL.Image'</span> <span class="pre">from</span> <span class="pre">'/home/runner/.cache/pypoetry/virtualenvs/cosmicqc-_xpxio4a-py3.11/lib/python3.11/site-packages/PIL/Image.py'&gt;</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">&lt;module</span> <span class="pre">'PIL.Image'</span> <span class="pre">from</span> <span class="pre">'/home/runner/.cache/pypoetry/virtualenvs/cosmicqc-_xpxio4a-py3.11/lib/python3.11/site-packages/PIL/Image.py'&gt;</span></span></span><a class="reference internal" href="_modules/src/cosmicqc/image.html#adjust_image_brightness"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.cosmicqc.image.adjust_image_brightness" title="Link to this definition">¶</a></dt>
+<dd><p>Adjust the brightness of an image using histogram equalization.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>image</strong> (<em>Image</em>) – The input PIL Image.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The brightness-adjusted PIL Image.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Image</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.cosmicqc.image.is_image_too_dark">
+<span class="sig-prename descclassname"><span class="pre">src.cosmicqc.image.</span></span><span class="sig-name descname"><span class="pre">is_image_too_dark</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">image:</span> <span class="pre">&lt;module</span> <span class="pre">'PIL.Image'</span> <span class="pre">from</span> <span class="pre">'/home/runner/.cache/pypoetry/virtualenvs/cosmicqc-_xpxio4a-py3.11/lib/python3.11/site-packages/PIL/Image.py'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pixel_brightness_threshold:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">10.0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="_modules/src/cosmicqc/image.html#is_image_too_dark"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.cosmicqc.image.is_image_too_dark" title="Link to this definition">¶</a></dt>
+<dd><p>Check if the image is too dark based on the mean brightness.
+By “too dark” we mean not as visible to the human eye.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>image</strong> (<em>Image</em>) – The input PIL Image.</p></li>
+<li><p><strong>threshold</strong> (<em>float</em>) – The brightness threshold below which the image is considered too dark.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if the image is too dark, False otherwise.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+
+
+</main>
+                        <nav aria-label="Page navigation" class="py-4 my-5 clearfix font-weight-bold border-top">
+    <a class="float-left" href="examples/jump_umap_analysis_with_cosmicqc.html" title="Previous">
+        <span aria-hidden="true">←&nbsp;</span>JUMP UMAP analysis with coSMicQC
+    </a>
+    <a class="float-right" href="contributing.html" title="Next">
+        Contributing <span aria-hidden="true">&nbsp;→</span>
+    </a>
+</nav>
+                    </div>
+                    
+                    <nav class="col-12 col-lg-3 pb-4">
+                        <div class="sticky-top toc page-toc" aria-labelledby="page-toc-heading">
+                            <p class="font-weight-bold" id="page-toc-heading">Page contents</p>
+                            <ul>
+<li><a class="reference internal" href="#">Python API</a><ul>
+<li><a class="reference internal" href="#module-src.cosmicqc.analyze">cosmicqc.analyze</a><ul>
+<li><a class="reference internal" href="#src.cosmicqc.analyze.find_outliers"><code class="docutils literal notranslate"><span class="pre">find_outliers()</span></code></a></li>
+<li><a class="reference internal" href="#src.cosmicqc.analyze.identify_outliers"><code class="docutils literal notranslate"><span class="pre">identify_outliers()</span></code></a></li>
+<li><a class="reference internal" href="#src.cosmicqc.analyze.label_outliers"><code class="docutils literal notranslate"><span class="pre">label_outliers()</span></code></a></li>
+<li><a class="reference internal" href="#src.cosmicqc.analyze.read_thresholds_set_from_file"><code class="docutils literal notranslate"><span class="pre">read_thresholds_set_from_file()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-src.cosmicqc.cli">cosmicqc.cli</a><ul>
+<li><a class="reference internal" href="#src.cosmicqc.cli.HasCustomRepr"><code class="docutils literal notranslate"><span class="pre">HasCustomRepr()</span></code></a></li>
+<li><a class="reference internal" href="#src.cosmicqc.cli._PrintResult"><code class="docutils literal notranslate"><span class="pre">_PrintResult()</span></code></a></li>
+<li><a class="reference internal" href="#src.cosmicqc.cli.cli_analyze"><code class="docutils literal notranslate"><span class="pre">cli_analyze()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-src.cosmicqc.frame">cosmicqc.frame</a><ul>
+<li><a class="reference internal" href="#src.cosmicqc.frame.CytoDataFrame"><code class="docutils literal notranslate"><span class="pre">CytoDataFrame</span></code></a><ul>
+<li><a class="reference internal" href="#src.cosmicqc.frame.CytoDataFrame._metadata"><code class="docutils literal notranslate"><span class="pre">CytoDataFrame._metadata</span></code></a></li>
+<li><a class="reference internal" href="#src.cosmicqc.frame.CytoDataFrame._custom_attrs"><code class="docutils literal notranslate"><span class="pre">CytoDataFrame._custom_attrs</span></code></a></li>
+<li><a class="reference internal" href="#id0"><code class="docutils literal notranslate"><span class="pre">CytoDataFrame._metadata</span></code></a></li>
+<li><a class="reference internal" href="#src.cosmicqc.frame.CytoDataFrame._repr_html_"><code class="docutils literal notranslate"><span class="pre">CytoDataFrame._repr_html_()</span></code></a></li>
+<li><a class="reference internal" href="#src.cosmicqc.frame.CytoDataFrame._wrap_method"><code class="docutils literal notranslate"><span class="pre">CytoDataFrame._wrap_method()</span></code></a></li>
+<li><a class="reference internal" href="#src.cosmicqc.frame.CytoDataFrame.create_figure_group_html"><code class="docutils literal notranslate"><span class="pre">CytoDataFrame.create_figure_group_html()</span></code></a></li>
+<li><a class="reference internal" href="#src.cosmicqc.frame.CytoDataFrame.create_threshold_set_outlier_visualization"><code class="docutils literal notranslate"><span class="pre">CytoDataFrame.create_threshold_set_outlier_visualization()</span></code></a></li>
+<li><a class="reference internal" href="#src.cosmicqc.frame.CytoDataFrame.draw_outline_on_image"><code class="docutils literal notranslate"><span class="pre">CytoDataFrame.draw_outline_on_image()</span></code></a></li>
+<li><a class="reference internal" href="#src.cosmicqc.frame.CytoDataFrame.export"><code class="docutils literal notranslate"><span class="pre">CytoDataFrame.export()</span></code></a></li>
+<li><a class="reference internal" href="#src.cosmicqc.frame.CytoDataFrame.find_image_columns"><code class="docutils literal notranslate"><span class="pre">CytoDataFrame.find_image_columns()</span></code></a></li>
+<li><a class="reference internal" href="#src.cosmicqc.frame.CytoDataFrame.get_bounding_box_from_data"><code class="docutils literal notranslate"><span class="pre">CytoDataFrame.get_bounding_box_from_data()</span></code></a></li>
+<li><a class="reference internal" href="#src.cosmicqc.frame.CytoDataFrame.get_displayed_rows"><code class="docutils literal notranslate"><span class="pre">CytoDataFrame.get_displayed_rows()</span></code></a></li>
+<li><a class="reference internal" href="#src.cosmicqc.frame.CytoDataFrame.is_notebook_or_lab"><code class="docutils literal notranslate"><span class="pre">CytoDataFrame.is_notebook_or_lab()</span></code></a></li>
+<li><a class="reference internal" href="#src.cosmicqc.frame.CytoDataFrame.process_image_data_as_html_display"><code class="docutils literal notranslate"><span class="pre">CytoDataFrame.process_image_data_as_html_display()</span></code></a></li>
+<li><a class="reference internal" href="#src.cosmicqc.frame.CytoDataFrame.show_report"><code class="docutils literal notranslate"><span class="pre">CytoDataFrame.show_report()</span></code></a></li>
+<li><a class="reference internal" href="#src.cosmicqc.frame.CytoDataFrame.sort_values"><code class="docutils literal notranslate"><span class="pre">CytoDataFrame.sort_values()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-src.cosmicqc.image">cosmicqc.image</a><ul>
+<li><a class="reference internal" href="#src.cosmicqc.image.adjust_image_brightness"><code class="docutils literal notranslate"><span class="pre">adjust_image_brightness()</span></code></a></li>
+<li><a class="reference internal" href="#src.cosmicqc.image.is_image_too_dark"><code class="docutils literal notranslate"><span class="pre">is_image_too_dark()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+                        </div>
+                    </nav>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+    <footer class="container-fluid bg-primary text-light">
+        <div class="container">
+            <div class="row">
+        <div class="col p-4">
+            
+                <nav aria-label="Footer">
+                    <ul class="nav justify-content-center mb-2">
+                        
+                            
+                            
+                            <li class="nav-item"><a class="nav-link text-light"  href="https://www.waysciencelab.com/">Way Lab</a></li>
+                        
+                            
+                            
+                            <li class="nav-item"><a class="nav-link text-light"  href="https://github.com/WayScience/coSMicQC">coSMicQC GitHub Repository</a></li>
+                        
+                    </ul>
+                </nav>
+            
+            <div class="text-center">
+                <p style="display: none">
+                    <a class="text-light" href="https://github.com/wagtail/sphinx_wagtail_theme" rel="nofollow" target="_blank">
+                        Wagtail Sphinx Theme 6.3.0
+                    </a>
+                </p>
+            </div>
+            <div class="text-center">
+                    &copy; Copyright 2024, WayScience Community
+            </div>
+        </div>
+    </div>
+        </div>
+    </footer>
+        <script src="_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="_static/doctools.js?v=9a2dae69"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script type="text/javascript" src="_static/dist/theme.js"></script>
+        <script type="text/javascript" src="_static/dist/vendor.js"></script>
+        <script type="text/javascript" src="_static/searchtools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script type="text/javascript">
+            document.addEventListener('DOMContentLoaded', function() { Search.loadIndex("searchindex.js"); });
+        </script>
+        <script type="text/javascript" id="searchindexloader"></script>
+    </body>
+</html>
