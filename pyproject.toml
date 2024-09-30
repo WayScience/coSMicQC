@@ -21,22 +21,32 @@ scipy = [
   { version = "<1.13.0", python = "<3.9" },
   { version = "^1.13.0", python = ">=3.9" },
 ] # used for calculations
-pyarrow = "^16.0.0" # used for data ingest and export
-pyyaml = "^6.0.1" # used for reading yaml configuration files
-fire = "^0.6.0" # used for CLI generation
-jinja2 = "^3.1.4" # used for template capabilities
-plotly = "^5.22.0" # used for report generation capabilities
-kaleido = "0.2.1" # used for plotly dependencies
-ipython = "^8.12.3" # used for environment detection
+# used for data ingest and export
+pyarrow = "^16.0.0"
+# used for reading yaml configuration files
+pyyaml = "^6.0.1"
+# used for CLI generation
+fire = "^0.6.0"
+# used for template capabilities
+jinja2 = "^3.1.4"
+# used for report generation capabilities
+plotly = "^5.22.0"
+# used for plotly dependencies
+kaleido = "0.2.1"
+# used for environment detection
+ipython = "^8.12.3"
+# used for image processing
 scikit-image = [
   { version = "^0.19.3", python = "<3.9" },
   { version = ">0.19.3", python = ">=3.9" },
-] # used for image processing
+]
+# dependency of scikit-image
 pywavelets = [
   { version = "^1.4.1", python = "<3.9" },
   { version = ">1.4.1", python = ">=3.9" },
-] # dependency of scikit-image
-opencv-python = "^4.10.0.84" # used for image modifications in cytodataframe
+]
+# used for image modifications in cytodataframe
+opencv-python = "^4.10.0.84"
 
 [tool.poetry.group.dev.dependencies]
 # provides testing capabilities for project
