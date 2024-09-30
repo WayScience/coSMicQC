@@ -88,7 +88,10 @@ html_theme_options = {
 }
 
 # Options for myst-nb
-nb_execution_mode = "auto"
+# turn off notebook execution for docs builds
+# (we rely on the notebook already being processed
+# prior to the publish to help navigate compute needs)
+nb_execution_mode = "off"
 
 # set option to avoid rendering default variables
 autodoc_preserve_defaults = True
