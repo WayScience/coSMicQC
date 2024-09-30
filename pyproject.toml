@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "coSMicQC"
-version = "0.0.10.post7.dev0+d8d16e9"
+version = "0.0.0"
 description = "coSMicQC is a software tool for single-cell quality control of morphology datasets."
 authors = ["Way Science Community"]
 license = "BSD-3-Clause"
