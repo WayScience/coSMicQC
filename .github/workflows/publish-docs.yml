@@ -38,6 +38,9 @@ jobs:
       - name: Add index redirector to latest docs
         run: |
           cp docs/redirector.html pages/index.html
+      - name: Add media folder to latest docs
+        run: |
+          cp -r docs/src/media pages/media
       - name: Deploy documentation
         uses: JamesIves/github-pages-deploy-action@v4
         with:

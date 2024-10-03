@@ -10,6 +10,7 @@ format:
     footer-url: "https://github.com/WayScience/coSMicQC"
     footer-emails: "https://www.waysciencelab.com"
     footer-color: "ADA7FF"
+output-file: "sbi2-2024-cosmicqc-poster.pdf"
 citation:
   doi: 10.5281/zenodo.13829960
 ---
