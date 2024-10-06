@@ -13,6 +13,7 @@ caption: 'Contents:'
 maxdepth: 3
 ---
 examples
+presentations
 python-api
 contributing
 code_of_conduct
