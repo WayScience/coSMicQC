@@ -60,7 +60,7 @@ jupyterlab = "^4.2.3"
 # used for example notebook formatting
 jupytext = "^1.16.2"
 # used for example notebook formatting
-jupyterlab-code-formatter = "^2.2.1"
+jupyterlab-code-formatter = ">=2.2.1,<4.0.0"
 # used for example notebook formatting
 black = "^24.4.2"
 # used for example notebook formatting
