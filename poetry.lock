@@ -1858,37 +1858,37 @@ socks = ["socksio (==1.*)"]
 
 [[package]]
 name = "hvplot"
-version = "0.10.0"
+version = "0.11.1"
 description = "A high-level plotting API for the PyData ecosystem built on HoloViews."
 optional = false
-python-versions = ">=3.8"
+python-versions = ">=3.9"
 files = [
-    {file = "hvplot-0.10.0-py3-none-any.whl", hash = "sha256:fe90ccb48163a6a62ae5bd6b008c2cb15cbf5b276f6ad6839ef5470b1c480d16"},
-    {file = "hvplot-0.10.0.tar.gz", hash = "sha256:e87486a95bfe151ab52ef163a5e93d9cbd043992cf0b755ccadd2bf36fedd376"},
+    {file = "hvplot-0.11.1-py3-none-any.whl", hash = "sha256:1cef5bf1ab4157c50b5ee265da760a8034b8dbb7fc81867d6050962a2eab9b35"},
+    {file = "hvplot-0.11.1.tar.gz", hash = "sha256:989ed0389189adc47edcd2601d2eab18bf366e74b07f5e2873e021323c4a14bb"},
 ]
 
 [package.dependencies]
-bokeh = ">=1.0.0"
+bokeh = ">=3.1"
 colorcet = ">=2"
-holoviews = ">=1.11.0"
-numpy = ">=1.15"
+holoviews = ">=1.19.0"
+numpy = ">=1.21"
 packaging = "*"
-pandas = "*"
-panel = ">=0.11.0"
+pandas = ">=1.3"
+panel = ">=1.0"
 param = ">=1.12.0,<3.0"
 
 [package.extras]
 dev-extras = ["setuptools-scm (>=6)"]
-doc = ["hvplot[examples]", "nbsite (>=0.8.4)", "sphinxext-rediraffe"]
-examples = ["dask[dataframe] (>=2021.3.0)", "datashader (>=0.6.5)", "fugue[sql]", "geodatasets (>=2023.12.0)", "hvplot[fugue-sql]", "ibis-framework[duckdb]", "intake (>=0.6.5,<2.0.0)", "intake-parquet (>=0.2.3)", "intake-xarray (>=0.5.0)", "ipywidgets", "matplotlib", "networkx (>=2.6.3)", "notebook (>=5.4)", "numba (>=0.51.0)", "pillow (>=8.2.0)", "plotly", "polars", "pooch (>=1.6.0)", "s3fs (>=2022.1.0)", "scikit-image (>=0.17.2)", "scipy (>=1.5.3)", "selenium (>=3.141.0)", "streamz (>=0.3.0)", "xarray (>=0.18.2)", "xyzservices (>=2022.9.0)"]
+doc = ["hvplot[examples]", "nbsite (>=0.8.6)", "sphinxext-rediraffe"]
+examples = ["bokeh-sampledata", "dask[dataframe] (>=2021.3.0)", "datashader (>=0.6.5)", "duckdb", "fugue[sql]", "geodatasets (>=2023.12.0)", "hvplot[fugue-sql]", "ibis-framework[duckdb]", "intake (>=0.6.5,<2.0.0)", "intake-parquet (>=0.2.3)", "intake-xarray (>=0.5.0)", "ipywidgets", "matplotlib", "networkx (>=2.6.3)", "notebook (>=5.4)", "numba (>=0.51.0)", "pillow (>=8.2.0)", "plotly", "polars", "pooch (>=1.6.0)", "s3fs (>=2022.1.0)", "scikit-image (>=0.17.2)", "scipy (>=1.5.3)", "selenium (>=3.141.0)", "streamz (>=0.3.0)", "xarray (>=0.18.2)", "xyzservices (>=2022.9.0)"]
 examples-tests = ["hvplot[examples]", "hvplot[tests-nb]"]
 fugue-sql = ["fugue-sql-antlr (>=0.2.0)", "jinja2", "qpd (>=0.4.4)", "sqlglot"]
 geo = ["cartopy", "fiona", "geopandas", "geoviews (>=1.9.0)", "pyproj", "rasterio", "rioxarray", "spatialpandas (>=0.4.3)"]
 graphviz = ["pygraphviz"]
 hvdev = ["colorcet (>=0.0.1a1)", "datashader (>=0.0.1a1)", "holoviews (>=0.0.1a1)", "panel (>=0.0.1a1)", "param (>=0.0.1a1)", "pyviz-comms (>=0.0.1a1)"]
 hvdev-geo = ["geoviews (>=0.0.1a1)"]
-tests = ["fugue[sql]", "hvplot[fugue-sql]", "hvplot[tests-core]", "ibis-framework[duckdb]", "polars"]
-tests-core = ["dask[dataframe]", "ipywidgets", "matplotlib", "parameterized", "plotly", "pooch", "pre-commit", "pytest", "pytest-cov", "ruff", "scipy", "xarray"]
+tests = ["dask", "duckdb", "fugue[sql]", "hvplot[fugue-sql]", "hvplot[tests-core]", "ibis-framework[duckdb]", "polars", "spatialpandas"]
+tests-core = ["bokeh-sampledata", "dask[dataframe]", "ipywidgets", "matplotlib", "parameterized", "plotly", "pooch", "pre-commit", "psutil", "pytest", "pytest-cov", "ruff", "scipy", "xarray"]
 tests-nb = ["nbval", "pytest-xdist"]
 
 [[package]]
@@ -5835,4 +5835,4 @@ test = ["big-O", "importlib-resources", "jaraco.functools", "jaraco.itertools", 
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9,<3.13"
-content-hash = "20b93b08a11e62d9fc01b00486356f1d501f21687c8b8b4dc6b94b137b8c2564"
+content-hash = "466dc5bc11cd9d3562e5831c74183fc7fe0a915bdf1d68cf42bf2937e71daa0b"
