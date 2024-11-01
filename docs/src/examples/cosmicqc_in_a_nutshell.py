@@ -19,8 +19,9 @@
 # +
 import pathlib
 
-import cosmicqc
 import pandas as pd
+
+import cosmicqc
 
 # set a path for the parquet-based dataset
 # (in this case, CellProfiler SQLite data processed by CytoTable)
