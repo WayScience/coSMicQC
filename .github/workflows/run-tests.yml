@@ -17,6 +17,7 @@ jobs:
         with:
           # fetch tags for versioning details
           fetch-depth: 0
+          fetch-tags: true
       # run pre-commit
       - name: Python setup
         uses: actions/setup-python@v5
@@ -42,6 +43,7 @@ jobs:
         with:
         # fetch tags for versioning details
           fetch-depth: 0
+          fetch-tags: true
       - name: Python setup
         uses: actions/setup-python@v5
         with:
