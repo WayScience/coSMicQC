@@ -57,6 +57,10 @@ repos:
     hooks:
       - id: ruff-format
       - id: ruff
+  - repo: https://github.com/jendrikseipp/vulture
+    rev: 'v2.3'
+    hooks:
+      - id: vulture
   - repo: local
     hooks:
       - id: code-cov-gen

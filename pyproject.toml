@@ -29,24 +29,8 @@ pyyaml = "^6.0.1"
 fire = ">=0.6,<0.8"
 # used for template capabilities
 jinja2 = "^3.1.4"
-# used for report generation capabilities
-plotly = "^5.22.0"
-# used for plotly dependencies
-kaleido = "0.2.1"
-# used for environment detection
-ipython = "^8.12.3"
-# used for image processing
-scikit-image = [
-  { version = "^0.19.3", python = "<3.9" },
-  { version = ">0.19.3", python = ">=3.9" },
-]
-# dependency of scikit-image
-pywavelets = [
-  { version = "^1.4.1", python = "<3.9" },
-  { version = ">1.4.1", python = ">=3.9" },
-]
-# used for image modifications in cytodataframe
-opencv-python = "^4.10.0.84"
+# used for assisting single-cell profile and image analysis
+cytodataframe = "^0.0.11"
 
 [tool.poetry.group.dev.dependencies]
 # provides testing capabilities for project
@@ -195,3 +179,7 @@ poster-render.shell = """
   mv docs/presentations/2024-09-18-SBI2-Conference/sbi2-2024-cosmicqc-poster.pdf \
   docs/src/media
 """
+
+[tool.vulture]
+min_confidence = 90
+paths = [ "src/cosmicqc", "tests" ]
