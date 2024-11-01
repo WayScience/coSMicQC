@@ -19,7 +19,8 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          fetch-tags: true
+      - name: Fetch tags
+        run: git fetch --prune --unshallow --tags
       - name: Python setup
         uses: actions/setup-python@v5
         with:
