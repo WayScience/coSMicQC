@@ -28,7 +28,6 @@ import logging
 import pathlib
 from typing import List, Optional
 
-import cosmicqc
 import holoviews
 import hvplot.pandas
 import numpy as np
@@ -41,6 +40,8 @@ from IPython.display import HTML, Image
 from parsl.config import Config
 from parsl.executors import ThreadPoolExecutor
 from pyarrow import parquet
+
+import cosmicqc
 
 # set bokeh for visualizations with hvplot
 hvplot.extension("bokeh")

@@ -4,6 +4,7 @@ Tests cosmicqc analyze module
 
 import pandas as pd
 import pytest
+
 from cosmicqc import analyze
 
 

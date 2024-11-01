@@ -9,9 +9,8 @@ from typing import Any, Dict, List, Optional, Union
 
 import pandas as pd
 import yaml
+from cytodataframe.frame import CytoDataFrame
 from scipy.stats import zscore as scipy_zscore
-
-from .frame import CytoDataFrame
 
 DEFAULT_QC_THRESHOLD_FILE = (
     f"{pathlib.Path(__file__).parent!s}/data/qc_nuclei_thresholds_default.yml"

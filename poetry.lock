@@ -1048,6 +1048,28 @@ test = ["certifi", "cryptography-vectors (==43.0.0)", "pretend", "pytest (>=6.2.
 test-randomorder = ["pytest-randomly"]
 
 [[package]]
+name = "cytodataframe"
+version = "0.0.11"
+description = "An in-memory data analysis format for single-cell profiles alongside their corresponding images and segmentation masks."
+optional = false
+python-versions = "<3.13,>=3.9"
+files = [
+    {file = "cytodataframe-0.0.11-py3-none-any.whl", hash = "sha256:2255f21f4411b6a8d4d0c9029ea92c05952ce8fd9d360459f8e5d9bb811a16ab"},
+    {file = "cytodataframe-0.0.11.tar.gz", hash = "sha256:0d5324f970e0b0d33ead506a6cc663735c385e4d482ffc625dafdf1364379e2d"},
+]
+
+[package.dependencies]
+cosmicqc = ">=0.0.11,<0.0.12"
+ipython = ">=8.12.3,<9.0.0"
+kaleido = "0.2.1"
+opencv-python = ">=4.10.0.84,<5.0.0.0"
+pandas = {version = ">=2.2.2,<3.0.0", markers = "python_version >= \"3.9\""}
+plotly = ">=5.24.1,<6.0.0"
+pyarrow = ">=16.0.0,<17.0.0"
+pywavelets = {version = ">1.4.1", markers = "python_version >= \"3.9\""}
+scikit-image = {version = ">0.19.3", markers = "python_version >= \"3.9\""}
+
+[[package]]
 name = "cytotable"
 version = "0.0.10"
 description = "Transform CellProfiler and DeepProfiler data for processing image-based profiling readouts with Pycytominer and other Cytomining tools."
@@ -5835,4 +5857,4 @@ test = ["big-O", "importlib-resources", "jaraco.functools", "jaraco.itertools", 
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9,<3.13"
-content-hash = "466dc5bc11cd9d3562e5831c74183fc7fe0a915bdf1d68cf42bf2937e71daa0b"
+content-hash = "b6c5863e986f02679c6e1f22ad8ea1248a4e5ed09b5d1c42221bc10ba6d6b126"
