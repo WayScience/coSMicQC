@@ -27,6 +27,7 @@ jobs:
       - name: Setup for poetry
         run: |
           python -m pip install poetry
+          poetry self add "poetry-dynamic-versioning[plugin]"
       - name: Install environment
         run: poetry install --no-interaction --no-ansi
       - uses: pre-commit/action@v3.0.1
@@ -53,6 +54,7 @@ jobs:
       - name: Setup for poetry
         run: |
           python -m pip install poetry
+          poetry self add "poetry-dynamic-versioning[plugin]"
       - name: Install environment
         run: poetry install --no-interaction --no-ansi
       - name: Run pytest
