@@ -18,7 +18,7 @@ jobs:
           # fetch tags for versioning details
           fetch-depth: 0
       - name: Fetch tags
-        run: git fetch --prune --tags
+        run: git fetch --all --tags
       # run pre-commit
       - name: Python setup
         uses: actions/setup-python@v5
@@ -45,7 +45,7 @@ jobs:
         # fetch tags for versioning details
           fetch-depth: 0
       - name: Fetch tags
-        run: git fetch --prune --unshallow --tags
+        run: git fetch --all --tags
       - name: Python setup
         uses: actions/setup-python@v5
         with:
