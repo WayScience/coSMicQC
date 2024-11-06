@@ -106,7 +106,7 @@ files = [ "src/cosmicqc/__init__.py" ]
 root = "."
 
 [tool.ruff]
-target-version = "py38"
+target-version = "py310"
 line-length = 88
 fix = true
 
