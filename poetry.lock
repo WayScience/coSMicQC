@@ -1049,17 +1049,16 @@ test-randomorder = ["pytest-randomly"]
 
 [[package]]
 name = "cytodataframe"
-version = "0.0.12"
+version = "0.0.13"
 description = "An in-memory data analysis format for single-cell profiles alongside their corresponding images and segmentation masks."
 optional = false
 python-versions = "<3.13,>=3.9"
 files = [
-    {file = "cytodataframe-0.0.12-py3-none-any.whl", hash = "sha256:3d17fd39448bb2eebe8d792231055011da307e965d4dab382480c68ff3177ef6"},
-    {file = "cytodataframe-0.0.12.tar.gz", hash = "sha256:c0b042d9441aacb256b90512333a1b9c58f545ff82777ebffe32ccfd07efaad4"},
+    {file = "cytodataframe-0.0.13-py3-none-any.whl", hash = "sha256:693446a56b86178cd9104135b5743bb3b72628ac99c8794913626e4d1d5c57a4"},
+    {file = "cytodataframe-0.0.13.tar.gz", hash = "sha256:8fc7c77488215d9f324dff4a7a1b6cafa0a2f152bff6a139e9b0a3990c2b5c54"},
 ]
 
 [package.dependencies]
-cosmicqc = ">=0.0.11,<0.0.12"
 imagecodecs = ">=2024.9.22,<2025.0.0"
 ipython = ">=8.12.3,<9.0.0"
 kaleido = "0.2.1"
