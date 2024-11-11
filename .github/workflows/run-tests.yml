@@ -31,6 +31,8 @@ jobs:
       - name: Install environment
         run: poetry install --no-interaction --no-ansi
       - uses: pre-commit/action@v3.0.1
+      - uses: pre-commit-ci/lite-action@v1.1.0
+        if: ${{ !cancelled() }}
   run_tests:
     strategy:
       matrix:
