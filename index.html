@@ -3,10 +3,30 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="refresh" content="0; url=https://wayscience.github.io/coSMicQC/main">
     <title>Redirecting...</title>
+    <script>
+        // Define the primary and fallback URLs
+        const primaryUrl = "https://wayscience.github.io/coSMicQC/main";
+        const fallbackUrl = "https://wayscience.github.io/coSMicQC/v0.1.1";
+
+        // Attempt to load the primary URL
+        fetch(primaryUrl, { method: 'HEAD' })
+            .then(response => {
+                if (response.ok) {
+                    // Redirect to the primary URL if it exists
+                    window.location.href = primaryUrl;
+                } else {
+                    // Redirect to the fallback URL if the primary URL is unavailable
+                    window.location.href = fallbackUrl;
+                }
+            })
+            .catch(() => {
+                // Redirect to the fallback URL if there's a network error or other issue
+                window.location.href = fallbackUrl;
+            });
+    </script>
 </head>
 <body>
-    <p>If you are not redirected automatically, follow this <a href="https://wayscience.github.io/coSMicQC/main">link to the main page</a>.</p>
+    <p>Redirecting... If you are not redirected automatically, try <a href="https://wayscience.github.io/coSMicQC/main">the main page</a> or the <a href="https://wayscience.github.io/coSMicQC/v0.1.1/index.html">backup page</a>.</p>
 </body>
 </html>
