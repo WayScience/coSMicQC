@@ -133,3 +133,6 @@ poetry run sphinx-build docs/src docs/build
 # (used in production)
 poetry run sphinx-multiversion docs/src docs/build
 ```
+
+After the docs build, navigate the `docs/build` folder and open the HTML files with your browser.
+Opening the `index.html` file which may be found in the base of `docs/build` or `docs/build/<version>` will simulate the docsite experience through GitHub Pages.
