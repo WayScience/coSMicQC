@@ -5529,13 +5529,13 @@ test = ["coverage", "pytest", "pytest-cov"]
 
 [[package]]
 name = "umap-learn"
-version = "0.5.6"
+version = "0.5.7"
 description = "Uniform Manifold Approximation and Projection"
 optional = false
 python-versions = "*"
 files = [
-    {file = "umap-learn-0.5.6.tar.gz", hash = "sha256:5b3917a862c23ba0fc83bfcd67a7b719dec85b3d9c01fdc7d894cce455df4e03"},
-    {file = "umap_learn-0.5.6-py3-none-any.whl", hash = "sha256:881cc0c2ee845b790bf0455aa1664f9f68b838d9d0fe12a1291b85c5a559c913"},
+    {file = "umap-learn-0.5.7.tar.gz", hash = "sha256:b2a97973e4c6ffcebf241100a8de589a4c84126a832ab40f296c6d9fcc5eb19e"},
+    {file = "umap_learn-0.5.7-py3-none-any.whl", hash = "sha256:6a7e0be2facfa365a5ed6588447102bdbef32a0ef449535c25c97ea7e680073c"},
 ]
 
 [package.dependencies]
