@@ -63,9 +63,8 @@ def identify_outliers(
     # Ensure the input is a CytoDataFrame, converting if necessary
     df = CytoDataFrame(data=df)
 
-    # Create a copy of the DataFrame only if we intend to export results
-    # Otherwise, operate directly on the input to save memory.
-    outlier_df = df.copy() if export_path else df
+    # reference the df for a new outlier_df
+    outlier_df = df
 
     # Define the naming scheme for z-score columns based on thresholds
     thresholds_name = (
