@@ -175,26 +175,29 @@ def find_outliers(
             Outlier data frame for the given conditions.
     """
 
-    # interpret the df as CytoDataFrame
-    df = CytoDataFrame(data=df)
-
+    # Resolve feature_thresholds if provided as a string
     if isinstance(feature_thresholds, str):
         feature_thresholds = read_thresholds_set_from_file(
             feature_thresholds=feature_thresholds,
             feature_thresholds_file=feature_thresholds_file,
         )
 
-    # Filter DataFrame for outliers using all conditions
-    outliers_df = df[
-        # use identify outliers as a mask on the full dataframe
-        identify_outliers(
-            df=df,
-            feature_thresholds=feature_thresholds,
-            feature_thresholds_file=feature_thresholds_file,
-        )
-    ]
+    # Determine the columns required for processing
+    required_columns = list(feature_thresholds.keys()) + metadata_columns
 
-    # Print outliers count and range for each feature
+    # Interpret the df as CytoDataFrame
+    df = CytoDataFrame(data=df)[required_columns]
+
+    # Filter DataFrame for outliers using identify_outliers
+    outliers_mask = identify_outliers(
+        # Select only the required columns from the DataFrame
+        df=df,
+        feature_thresholds=feature_thresholds,
+        feature_thresholds_file=feature_thresholds_file,
+    )
+    outliers_df = df[outliers_mask]
+
+    # Print outlier count and range for each feature
     print(
         "Number of outliers:",
         outliers_df.shape[0],
@@ -206,15 +209,13 @@ def find_outliers(
         print(f"{feature} Max:", outliers_df[feature].max())
 
     # Include metadata columns in the output DataFrame
-    columns_to_include = list(feature_thresholds.keys()) + metadata_columns
+    result = outliers_df[required_columns]
 
-    result = outliers_df[columns_to_include]
-
-    # export the file if specified
+    # Export the file if specified
     if export_path is not None:
         result.export(file_path=export_path)
 
-    # Return outliers DataFrame with specified columns
+    # Return the resulting DataFrame
     return result
 
 
