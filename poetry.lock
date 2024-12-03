@@ -4112,13 +4112,13 @@ tests = ["flake8", "pytest"]
 
 [[package]]
 name = "pycytominer"
-version = "1.1.0"
+version = "1.2.1"
 description = "Python package for processing image-based profiling data"
 optional = false
-python-versions = ">=3.8,<4.0"
+python-versions = "<3.13,>=3.9"
 files = [
-    {file = "pycytominer-1.1.0-py3-none-any.whl", hash = "sha256:d15cf71bca14fc16deab297c4ed5cc8ee2d19c260fc8bbc5b3e9c3a57eace491"},
-    {file = "pycytominer-1.1.0.tar.gz", hash = "sha256:b2b97abd94e6f43f3b5a1d1ebced1281084dff26bba8ba54d9f8cf1b01c4037a"},
+    {file = "pycytominer-1.2.1-py3-none-any.whl", hash = "sha256:157917e1178b7ec43b07c176faeecd260ab65e313501c3f4b143cbd2bae1555f"},
+    {file = "pycytominer-1.2.1.tar.gz", hash = "sha256:a2b2a1721ec1a40f525fc99a87edadf716dce4faa926b33ba2551f45a13a66ed"},
 ]
 
 [package.dependencies]
@@ -4127,7 +4127,7 @@ pandas = ">=1.2.0"
 pyarrow = ">=8.0.0"
 scikit-learn = ">=0.21.2"
 scipy = ">=1.5"
-sqlalchemy = ">=1.3.6,<2"
+sqlalchemy = ">=1.3.6,<3"
 
 [package.extras]
 cell-locations = ["boto3 (>=1.26.79)", "fire (>=0.5.0)", "fsspec (>=2023.1.0)", "s3fs (>=2023.4.0)"]
