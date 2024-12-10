@@ -268,80 +268,83 @@ For the latest released version, please have a look at <a href="../../../../v0.1
 <span class="sd">            or not for use within other functions.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="c1"># interpret the df as CytoDataFrame</span>
+    <span class="c1"># Ensure the input is a CytoDataFrame, converting if necessary</span>
     <span class="n">df</span> <span class="o">=</span> <span class="n">CytoDataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">df</span><span class="p">)</span>
 
-    <span class="c1"># create a copy of the dataframe to ensure</span>
-    <span class="c1"># we don&#39;t modify the supplied dataframe inplace.</span>
-    <span class="n">outlier_df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="c1"># reference the df for a new outlier_df</span>
+    <span class="n">outlier_df</span> <span class="o">=</span> <span class="n">df</span>
 
+    <span class="c1"># Define the naming scheme for z-score columns based on thresholds</span>
     <span class="n">thresholds_name</span> <span class="o">=</span> <span class="p">(</span>
         <span class="sa">f</span><span class="s2">&quot;cqc.</span><span class="si">{</span><span class="n">feature_thresholds</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">feature_thresholds</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
         <span class="k">else</span> <span class="s2">&quot;cqc.custom&quot;</span>
     <span class="p">)</span>
 
+    <span class="c1"># If feature_thresholds is a string, load the thresholds from the specified file</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">feature_thresholds</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
         <span class="n">feature_thresholds</span> <span class="o">=</span> <span class="n">read_thresholds_set_from_file</span><span class="p">(</span>
             <span class="n">feature_thresholds</span><span class="o">=</span><span class="n">feature_thresholds</span><span class="p">,</span>
             <span class="n">feature_thresholds_file</span><span class="o">=</span><span class="n">feature_thresholds_file</span><span class="p">,</span>
         <span class="p">)</span>
 
-    <span class="c1"># Create z-score columns for each feature to reference during outlier detection</span>
+    <span class="c1"># Dictionary to store mappings of features to their z-score column names</span>
     <span class="n">zscore_columns</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">for</span> <span class="n">feature</span> <span class="ow">in</span> <span class="n">feature_thresholds</span><span class="p">:</span>
+        <span class="c1"># Ensure the feature exists in the DataFrame</span>
         <span class="k">if</span> <span class="n">feature</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Feature &#39;</span><span class="si">{</span><span class="n">feature</span><span class="si">}</span><span class="s2">&#39; does not exist in the DataFrame.&quot;</span><span class="p">)</span>
-        <span class="n">outlier_df</span><span class="p">[(</span><span class="n">colname</span> <span class="o">:=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">thresholds_name</span><span class="si">}</span><span class="s2">.Z_Score.</span><span class="si">{</span><span class="n">feature</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)]</span> <span class="o">=</span> <span class="n">scipy_zscore</span><span class="p">(</span>
-            <span class="n">df</span><span class="p">[</span><span class="n">feature</span><span class="p">]</span>
-        <span class="p">)</span>
-        <span class="n">zscore_columns</span><span class="p">[</span><span class="n">feature</span><span class="p">]</span> <span class="o">=</span> <span class="n">colname</span>
 
-    <span class="c1"># Create outlier detection conditions for each feature</span>
-    <span class="n">conditions</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">for</span> <span class="n">feature</span><span class="p">,</span> <span class="n">threshold</span> <span class="ow">in</span> <span class="n">feature_thresholds</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-        <span class="c1"># For positive thresholds, look for outliers that are</span>
-        <span class="c1"># that number of std &quot;above&quot; the mean</span>
+        <span class="c1"># Construct the z-score column name</span>
+        <span class="n">zscore_col</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">thresholds_name</span><span class="si">}</span><span class="s2">.Z_Score.</span><span class="si">{</span><span class="n">feature</span><span class="si">}</span><span class="s2">&quot;</span>
+
+        <span class="c1"># Calculate and store z-scores only if not already present</span>
+        <span class="k">if</span> <span class="n">zscore_col</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">outlier_df</span><span class="p">:</span>
+            <span class="n">outlier_df</span><span class="p">[</span><span class="n">zscore_col</span><span class="p">]</span> <span class="o">=</span> <span class="n">scipy_zscore</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">feature</span><span class="p">])</span>
+
+        <span class="c1"># Add the column name to the zscore_columns dictionary</span>
+        <span class="n">zscore_columns</span><span class="p">[</span><span class="n">feature</span><span class="p">]</span> <span class="o">=</span> <span class="n">zscore_col</span>
+
+    <span class="c1"># Helper function to create outlier detection conditions</span>
+    <span class="k">def</span> <span class="nf">create_condition</span><span class="p">(</span><span class="n">feature</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">threshold</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">:</span>
+        <span class="c1"># Positive threshold checks for outliers above the mean</span>
         <span class="k">if</span> <span class="n">threshold</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">condition</span> <span class="o">=</span> <span class="n">outlier_df</span><span class="p">[</span><span class="n">zscore_columns</span><span class="p">[</span><span class="n">feature</span><span class="p">]]</span> <span class="o">&gt;</span> <span class="n">threshold</span>
-        <span class="c1"># For negative thresholds, look for outliers that are</span>
-        <span class="c1"># that number of std &quot;below&quot; the mean</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">condition</span> <span class="o">=</span> <span class="n">outlier_df</span><span class="p">[</span><span class="n">zscore_columns</span><span class="p">[</span><span class="n">feature</span><span class="p">]]</span> <span class="o">&lt;</span> <span class="n">threshold</span>
-        <span class="n">conditions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">condition</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">outlier_df</span><span class="p">[</span><span class="n">zscore_columns</span><span class="p">[</span><span class="n">feature</span><span class="p">]]</span> <span class="o">&gt;</span> <span class="n">threshold</span>
+        <span class="c1"># Negative threshold checks for outliers below the mean</span>
+        <span class="k">return</span> <span class="n">outlier_df</span><span class="p">[</span><span class="n">zscore_columns</span><span class="p">[</span><span class="n">feature</span><span class="p">]]</span> <span class="o">&lt;</span> <span class="n">threshold</span>
 
-    <span class="n">result</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="c1"># create a boolean pd.series identifier for dataframe</span>
-        <span class="c1"># based on all conditions for use within other functions.</span>
-        <span class="n">reduce</span><span class="p">(</span><span class="n">operator</span><span class="o">.</span><span class="n">and_</span><span class="p">,</span> <span class="n">conditions</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">include_threshold_scores</span>
-        <span class="c1"># otherwise, provide the threshold zscore col and the above column</span>
-        <span class="k">else</span> <span class="n">CytoDataFrame</span><span class="p">(</span>
-            <span class="n">data</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span>
-                <span class="p">[</span>
-                    <span class="c1"># grab only the outlier zscore columns from the outlier_df</span>
-                    <span class="n">outlier_df</span><span class="p">[</span><span class="n">zscore_columns</span><span class="o">.</span><span class="n">values</span><span class="p">()],</span>
-                    <span class="n">CytoDataFrame</span><span class="p">(</span>
-                        <span class="p">{</span>
-                            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">thresholds_name</span><span class="si">}</span><span class="s2">.is_outlier&quot;</span><span class="p">:</span> <span class="n">reduce</span><span class="p">(</span>
-                                <span class="n">operator</span><span class="o">.</span><span class="n">and_</span><span class="p">,</span> <span class="n">conditions</span>
-                            <span class="p">)</span>
-                        <span class="p">}</span>
-                    <span class="p">),</span>
-                <span class="p">],</span>
-                <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
-            <span class="p">),</span>
+    <span class="c1"># Generate outlier detection conditions for all features</span>
+    <span class="n">conditions</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">create_condition</span><span class="p">(</span><span class="n">feature</span><span class="p">,</span> <span class="n">threshold</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">feature</span><span class="p">,</span> <span class="n">threshold</span> <span class="ow">in</span> <span class="n">feature_thresholds</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+    <span class="p">]</span>
+
+    <span class="c1"># Construct the result based on whether threshold scores should be included</span>
+    <span class="k">if</span> <span class="n">include_threshold_scores</span><span class="p">:</span>
+        <span class="c1"># Extract z-score columns for each feature</span>
+        <span class="n">zscore_df</span> <span class="o">=</span> <span class="n">outlier_df</span><span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="n">zscore_columns</span><span class="o">.</span><span class="n">values</span><span class="p">())]</span>
+
+        <span class="c1"># Combine conditions into a single Series indicating outlier status</span>
+        <span class="n">is_outlier_series</span> <span class="o">=</span> <span class="n">reduce</span><span class="p">(</span><span class="n">operator</span><span class="o">.</span><span class="n">and_</span><span class="p">,</span> <span class="n">conditions</span><span class="p">)</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">thresholds_name</span><span class="si">}</span><span class="s2">.is_outlier&quot;</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Combine z-scores and outlier status into a single DataFrame</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">CytoDataFrame</span><span class="p">(</span>
+            <span class="n">data</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">zscore_df</span><span class="p">,</span> <span class="n">is_outlier_series</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
             <span class="n">data_context_dir</span><span class="o">=</span><span class="n">df</span><span class="o">.</span><span class="n">_custom_attrs</span><span class="p">[</span><span class="s2">&quot;data_context_dir&quot;</span><span class="p">],</span>
             <span class="n">data_mask_context_dir</span><span class="o">=</span><span class="n">df</span><span class="o">.</span><span class="n">_custom_attrs</span><span class="p">[</span><span class="s2">&quot;data_mask_context_dir&quot;</span><span class="p">],</span>
         <span class="p">)</span>
-    <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># Combine conditions into a single Series of boolean values</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">reduce</span><span class="p">(</span><span class="n">operator</span><span class="o">.</span><span class="n">and_</span><span class="p">,</span> <span class="n">conditions</span><span class="p">)</span>
 
+    <span class="c1"># Export the result if an export path is specified</span>
     <span class="k">if</span> <span class="n">export_path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">):</span>
-            <span class="n">CytoDataFrame</span><span class="p">(</span><span class="n">result</span><span class="p">)</span><span class="o">.</span><span class="n">export</span><span class="p">(</span><span class="n">file_path</span><span class="o">=</span><span class="n">export_path</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">result</span><span class="o">.</span><span class="n">export</span><span class="p">(</span><span class="n">file_path</span><span class="o">=</span><span class="n">export_path</span><span class="p">)</span>
+        <span class="n">export_df</span> <span class="o">=</span> <span class="n">CytoDataFrame</span><span class="p">(</span><span class="n">result</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">)</span> <span class="k">else</span> <span class="n">result</span>
+        <span class="n">export_df</span><span class="o">.</span><span class="n">export</span><span class="p">(</span><span class="n">file_path</span><span class="o">=</span><span class="n">export_path</span><span class="p">)</span>
 
+    <span class="c1"># Return the resulting Series or DataFrame</span>
     <span class="k">return</span> <span class="n">result</span></div>
 
 
@@ -386,26 +389,29 @@ For the latest released version, please have a look at <a href="../../../../v0.1
 <span class="sd">            Outlier data frame for the given conditions.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="c1"># interpret the df as CytoDataFrame</span>
-    <span class="n">df</span> <span class="o">=</span> <span class="n">CytoDataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">df</span><span class="p">)</span>
-
+    <span class="c1"># Resolve feature_thresholds if provided as a string</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">feature_thresholds</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
         <span class="n">feature_thresholds</span> <span class="o">=</span> <span class="n">read_thresholds_set_from_file</span><span class="p">(</span>
             <span class="n">feature_thresholds</span><span class="o">=</span><span class="n">feature_thresholds</span><span class="p">,</span>
             <span class="n">feature_thresholds_file</span><span class="o">=</span><span class="n">feature_thresholds_file</span><span class="p">,</span>
         <span class="p">)</span>
 
-    <span class="c1"># Filter DataFrame for outliers using all conditions</span>
-    <span class="n">outliers_df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span>
-        <span class="c1"># use identify outliers as a mask on the full dataframe</span>
-        <span class="n">identify_outliers</span><span class="p">(</span>
-            <span class="n">df</span><span class="o">=</span><span class="n">df</span><span class="p">,</span>
-            <span class="n">feature_thresholds</span><span class="o">=</span><span class="n">feature_thresholds</span><span class="p">,</span>
-            <span class="n">feature_thresholds_file</span><span class="o">=</span><span class="n">feature_thresholds_file</span><span class="p">,</span>
-        <span class="p">)</span>
-    <span class="p">]</span>
+    <span class="c1"># Determine the columns required for processing</span>
+    <span class="n">required_columns</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">feature_thresholds</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="o">+</span> <span class="n">metadata_columns</span>
 
-    <span class="c1"># Print outliers count and range for each feature</span>
+    <span class="c1"># Interpret the df as CytoDataFrame</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">CytoDataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">df</span><span class="p">)[</span><span class="n">required_columns</span><span class="p">]</span>
+
+    <span class="c1"># Filter DataFrame for outliers using identify_outliers</span>
+    <span class="n">outliers_mask</span> <span class="o">=</span> <span class="n">identify_outliers</span><span class="p">(</span>
+        <span class="c1"># Select only the required columns from the DataFrame</span>
+        <span class="n">df</span><span class="o">=</span><span class="n">df</span><span class="p">,</span>
+        <span class="n">feature_thresholds</span><span class="o">=</span><span class="n">feature_thresholds</span><span class="p">,</span>
+        <span class="n">feature_thresholds_file</span><span class="o">=</span><span class="n">feature_thresholds_file</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">outliers_df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">outliers_mask</span><span class="p">]</span>
+
+    <span class="c1"># Print outlier count and range for each feature</span>
     <span class="nb">print</span><span class="p">(</span>
         <span class="s2">&quot;Number of outliers:&quot;</span><span class="p">,</span>
         <span class="n">outliers_df</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
@@ -417,15 +423,13 @@ For the latest released version, please have a look at <a href="../../../../v0.1
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">feature</span><span class="si">}</span><span class="s2"> Max:&quot;</span><span class="p">,</span> <span class="n">outliers_df</span><span class="p">[</span><span class="n">feature</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
 
     <span class="c1"># Include metadata columns in the output DataFrame</span>
-    <span class="n">columns_to_include</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">feature_thresholds</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="o">+</span> <span class="n">metadata_columns</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">outliers_df</span><span class="p">[</span><span class="n">required_columns</span><span class="p">]</span>
 
-    <span class="n">result</span> <span class="o">=</span> <span class="n">outliers_df</span><span class="p">[</span><span class="n">columns_to_include</span><span class="p">]</span>
-
-    <span class="c1"># export the file if specified</span>
+    <span class="c1"># Export the file if specified</span>
     <span class="k">if</span> <span class="n">export_path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">result</span><span class="o">.</span><span class="n">export</span><span class="p">(</span><span class="n">file_path</span><span class="o">=</span><span class="n">export_path</span><span class="p">)</span>
 
-    <span class="c1"># Return outliers DataFrame with specified columns</span>
+    <span class="c1"># Return the resulting DataFrame</span>
     <span class="k">return</span> <span class="n">result</span></div>
 
 
