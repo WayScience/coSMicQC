@@ -60,80 +60,83 @@ def identify_outliers(
             or not for use within other functions.
     """
 
-    # interpret the df as CytoDataFrame
+    # Ensure the input is a CytoDataFrame, converting if necessary
     df = CytoDataFrame(data=df)
 
-    # create a copy of the dataframe to ensure
-    # we don't modify the supplied dataframe inplace.
-    outlier_df = df.copy()
+    # reference the df for a new outlier_df
+    outlier_df = df
 
+    # Define the naming scheme for z-score columns based on thresholds
     thresholds_name = (
         f"cqc.{feature_thresholds}"
         if isinstance(feature_thresholds, str)
         else "cqc.custom"
     )
 
+    # If feature_thresholds is a string, load the thresholds from the specified file
     if isinstance(feature_thresholds, str):
         feature_thresholds = read_thresholds_set_from_file(
             feature_thresholds=feature_thresholds,
             feature_thresholds_file=feature_thresholds_file,
         )
 
-    # Create z-score columns for each feature to reference during outlier detection
+    # Dictionary to store mappings of features to their z-score column names
     zscore_columns = {}
     for feature in feature_thresholds:
+        # Ensure the feature exists in the DataFrame
         if feature not in df.columns:
             raise ValueError(f"Feature '{feature}' does not exist in the DataFrame.")
-        outlier_df[(colname := f"{thresholds_name}.Z_Score.{feature}")] = scipy_zscore(
-            df[feature]
-        )
-        zscore_columns[feature] = colname
 
-    # Create outlier detection conditions for each feature
-    conditions = []
-    for feature, threshold in feature_thresholds.items():
-        # For positive thresholds, look for outliers that are
-        # that number of std "above" the mean
+        # Construct the z-score column name
+        zscore_col = f"{thresholds_name}.Z_Score.{feature}"
+
+        # Calculate and store z-scores only if not already present
+        if zscore_col not in outlier_df:
+            outlier_df[zscore_col] = scipy_zscore(df[feature])
+
+        # Add the column name to the zscore_columns dictionary
+        zscore_columns[feature] = zscore_col
+
+    # Helper function to create outlier detection conditions
+    def create_condition(feature: str, threshold: float) -> pd.Series:
+        # Positive threshold checks for outliers above the mean
         if threshold > 0:
-            condition = outlier_df[zscore_columns[feature]] > threshold
-        # For negative thresholds, look for outliers that are
-        # that number of std "below" the mean
-        else:
-            condition = outlier_df[zscore_columns[feature]] < threshold
-        conditions.append(condition)
+            return outlier_df[zscore_columns[feature]] > threshold
+        # Negative threshold checks for outliers below the mean
+        return outlier_df[zscore_columns[feature]] < threshold
 
-    result = (
-        # create a boolean pd.series identifier for dataframe
-        # based on all conditions for use within other functions.
-        reduce(operator.and_, conditions)
-        if not include_threshold_scores
-        # otherwise, provide the threshold zscore col and the above column
-        else CytoDataFrame(
-            data=pd.concat(
-                [
-                    # grab only the outlier zscore columns from the outlier_df
-                    outlier_df[zscore_columns.values()],
-                    CytoDataFrame(
-                        {
-                            f"{thresholds_name}.is_outlier": reduce(
-                                operator.and_, conditions
-                            )
-                        }
-                    ),
-                ],
-                axis=1,
-            ),
+    # Generate outlier detection conditions for all features
+    conditions = [
+        create_condition(feature, threshold)
+        for feature, threshold in feature_thresholds.items()
+    ]
+
+    # Construct the result based on whether threshold scores should be included
+    if include_threshold_scores:
+        # Extract z-score columns for each feature
+        zscore_df = outlier_df[list(zscore_columns.values())]
+
+        # Combine conditions into a single Series indicating outlier status
+        is_outlier_series = reduce(operator.and_, conditions).rename(
+            f"{thresholds_name}.is_outlier"
+        )
+
+        # Combine z-scores and outlier status into a single DataFrame
+        result = CytoDataFrame(
+            data=pd.concat([zscore_df, is_outlier_series], axis=1),
             data_context_dir=df._custom_attrs["data_context_dir"],
             data_mask_context_dir=df._custom_attrs["data_mask_context_dir"],
         )
-    )
+    else:
+        # Combine conditions into a single Series of boolean values
+        result = reduce(operator.and_, conditions)
 
+    # Export the result if an export path is specified
     if export_path is not None:
-        if isinstance(result, pd.Series):
-            CytoDataFrame(result).export(file_path=export_path)
-        else:
-            result.export(file_path=export_path)
+        export_df = CytoDataFrame(result) if isinstance(result, pd.Series) else result
+        export_df.export(file_path=export_path)
 
+    # Return the resulting Series or DataFrame
     return result
 
 
@@ -175,26 +178,29 @@ def find_outliers(
             Outlier data frame for the given conditions.
     """
 
-    # interpret the df as CytoDataFrame
-    df = CytoDataFrame(data=df)
-
+    # Resolve feature_thresholds if provided as a string
     if isinstance(feature_thresholds, str):
         feature_thresholds = read_thresholds_set_from_file(
             feature_thresholds=feature_thresholds,
             feature_thresholds_file=feature_thresholds_file,
         )
 
-    # Filter DataFrame for outliers using all conditions
-    outliers_df = df[
-        # use identify outliers as a mask on the full dataframe
-        identify_outliers(
-            df=df,
-            feature_thresholds=feature_thresholds,
-            feature_thresholds_file=feature_thresholds_file,
-        )
-    ]
+    # Determine the columns required for processing
+    required_columns = list(feature_thresholds.keys()) + metadata_columns
 
-    # Print outliers count and range for each feature
+    # Interpret the df as CytoDataFrame
+    df = CytoDataFrame(data=df)[required_columns]
+
+    # Filter DataFrame for outliers using identify_outliers
+    outliers_mask = identify_outliers(
+        # Select only the required columns from the DataFrame
+        df=df,
+        feature_thresholds=feature_thresholds,
+        feature_thresholds_file=feature_thresholds_file,
+    )
+    outliers_df = df[outliers_mask]
+
+    # Print outlier count and range for each feature
     print(
         "Number of outliers:",
         outliers_df.shape[0],
@@ -206,15 +212,13 @@ def find_outliers(
         print(f"{feature} Max:", outliers_df[feature].max())
 
     # Include metadata columns in the output DataFrame
-    columns_to_include = list(feature_thresholds.keys()) + metadata_columns
+    result = outliers_df[required_columns]
 
-    result = outliers_df[columns_to_include]
-
-    # export the file if specified
+    # Export the file if specified
     if export_path is not None:
         result.export(file_path=export_path)
 
-    # Return outliers DataFrame with specified columns
+    # Return the resulting DataFrame
     return result
 
 
