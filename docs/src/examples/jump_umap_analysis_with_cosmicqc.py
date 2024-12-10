@@ -5,7 +5,7 @@
 #       extension: .py
 #       format_name: light
 #       format_version: '1.5'
-#       jupytext_version: 1.16.2
+#       jupytext_version: 1.16.4
 #   kernelspec:
 #     display_name: Python 3 (ipykernel)
 #     language: python
@@ -317,9 +317,6 @@ print(
     outliers_counts.iloc[0],
     "include erroneous outliers of some kind.",
 )
-
-# show histograms to help visualize the data
-df_labeled_outliers.show_report();  # fmt: skip
 
 # ## Prepare data for analysis with pycytominer
 

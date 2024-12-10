@@ -5,7 +5,7 @@
 #       extension: .py
 #       format_name: light
 #       format_version: '1.5'
-#       jupytext_version: 1.16.2
+#       jupytext_version: 1.16.4
 #   kernelspec:
 #     display_name: Python 3 (ipykernel)
 #     language: python
@@ -20,6 +20,7 @@
 import pathlib
 
 import pandas as pd
+from cytodataframe import CytoDataFrame
 
 import cosmicqc
 
@@ -35,7 +36,7 @@ image_context_dir = pathlib.Path(data_path).parent / "Plate_2_images"
 mask_context_dir = pathlib.Path(data_path).parent / "Plate_2_masks"
 
 # create a cosmicqc CytoDataFrame (single-cell DataFrame)
-scdf = cosmicqc.CytoDataFrame(
+scdf = CytoDataFrame(
     data=data_path,
     data_context_dir=image_context_dir,
     data_mask_context_dir=mask_context_dir,
@@ -74,10 +75,6 @@ labeled_scdf = cosmicqc.analyze.label_outliers(
 # (added from the label_outliers function)
 labeled_scdf.iloc[:, -8:]
 # -
-
-# show histogram reports on the outliers and inliers
-# for each threshold set in the new columns
-labeled_scdf.show_report()  # fmt: skip
 
 # show cropped images through CytoDataFrame from the dataset to help analyze outliers
 labeled_scdf.sort_values(by="cqc.large_nuclei.is_outlier", ascending=False)[
