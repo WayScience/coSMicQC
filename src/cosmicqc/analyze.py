@@ -228,8 +228,6 @@ def label_outliers(  # noqa: PLR0913
     feature_thresholds_file: Optional[str] = DEFAULT_QC_THRESHOLD_FILE,
     include_threshold_scores: bool = False,
     export_path: Optional[str] = None,
-    report_path: Optional[str] = None,
-    **kwargs: Dict[str, Any],
 ) -> CytoDataFrame:
     """
     Use identify_outliers to label the original dataset for
@@ -330,10 +328,6 @@ def label_outliers(  # noqa: PLR0913
     # export the file if specified
     if export_path is not None:
         result.export(file_path=export_path)
-
-    # if we have a report path, generate the report and use kwargs
-    if report_path is not None:
-        result.show_report(report_path=report_path, **kwargs)
 
     return result
 
