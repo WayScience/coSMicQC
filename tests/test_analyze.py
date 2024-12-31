@@ -4,6 +4,7 @@ Tests cosmicqc analyze module
 
 import pandas as pd
 import pytest
+from cytodataframe import CytoDataFrame
 
 from cosmicqc import analyze
 
@@ -530,3 +531,35 @@ def test_identify_outliers(
         )["cqc.large_nuclei.is_outlier"],
         check_names=False,
     )
+
+
+def test_label_outliers_retains_custom_attrs(basic_outlier_dataframe: pd.DataFrame):
+    """
+    Tests that label_outliers retains custom attributes
+    """
+
+    # create a CytoDataFrame with custom attributes
+    cdf = CytoDataFrame(
+        data=basic_outlier_dataframe,
+        data_context_dir="example_context_dir",
+        data_mask_context_dir="example_mask_dir",
+        data_outline_context_dir="example_context_dir",
+        segmentation_file_regex={"example": "example"},
+    )
+
+    # run the data through label_outliers
+    df = analyze.label_outliers(
+        df=cdf,
+        feature_thresholds={"example_feature": 1},
+    )
+
+    # check that we still have the data we expect
+    assert df._custom_attrs == {
+        "data_source": "pandas.DataFrame",
+        "data_context_dir": "example_context_dir",
+        "data_bounding_box": None,
+        "data_mask_context_dir": "example_mask_dir",
+        "data_outline_context_dir": "example_context_dir",
+        "segmentation_file_regex": {"example": "example"},
+        "image_adjustment": None,
+    }

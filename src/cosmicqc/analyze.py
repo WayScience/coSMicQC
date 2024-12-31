@@ -262,7 +262,11 @@ def label_outliers(
     """
 
     # interpret the df as CytoDataFrame
-    df = CytoDataFrame(data=df)
+    if not isinstance(df, CytoDataFrame):
+        df = CytoDataFrame(data=df)
+
+    # store the custom attributes
+    custom_attrs = dict(df._custom_attrs)
 
     # for single outlier processing
     if isinstance(feature_thresholds, (str, dict)):
@@ -294,8 +298,8 @@ def label_outliers(
                 ],
                 axis=1,
             ),
-            data_context_dir=df._custom_attrs["data_context_dir"],
-            data_mask_context_dir=df._custom_attrs["data_mask_context_dir"],
+            # reuse the custom attributes
+            **custom_attrs,
         )
 
     # for multiple outlier processing
@@ -318,11 +322,12 @@ def label_outliers(
             ],
             axis=1,
         )
-        # return a dataframe with a deduplicated columns by name
+
+        # return a dataframe with deduplicated columns by name
         result = CytoDataFrame(
             labeled_df.loc[:, ~labeled_df.columns.duplicated()],
-            data_context_dir=df._custom_attrs["data_context_dir"],
-            data_mask_context_dir=df._custom_attrs["data_mask_context_dir"],
+            # reuse the custom attributes
+            **custom_attrs,
         )
 
     # export the file if specified
