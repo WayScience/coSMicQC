@@ -557,6 +557,7 @@ def test_label_outliers_retains_custom_attrs(basic_outlier_dataframe: pd.DataFra
     assert df._custom_attrs == {
         "data_source": "pandas.DataFrame",
         "data_context_dir": "example_context_dir",
+        "data_image_paths": None,
         "data_bounding_box": None,
         "data_mask_context_dir": "example_mask_dir",
         "data_outline_context_dir": "example_context_dir",
