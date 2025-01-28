@@ -48,7 +48,7 @@ jupyterlab-code-formatter = ">=2.2.1,<4.0.0"
 # used for example notebook formatting
 black = "^24.4.2"
 # used for example notebook formatting
-isort = "^5.13.2"
+isort = ">=5.13.2,<7.0.0"
 # added to generate test coverage reports
 coverage = "^7.6.0"
 # for standardizing various dev tasks
