@@ -4386,13 +4386,13 @@ tests = ["flake8", "pytest"]
 
 [[package]]
 name = "pycytominer"
-version = "1.2.1"
+version = "1.2.2"
 description = "Python package for processing image-based profiling data"
 optional = false
 python-versions = "<3.13,>=3.9"
 files = [
-    {file = "pycytominer-1.2.1-py3-none-any.whl", hash = "sha256:157917e1178b7ec43b07c176faeecd260ab65e313501c3f4b143cbd2bae1555f"},
-    {file = "pycytominer-1.2.1.tar.gz", hash = "sha256:a2b2a1721ec1a40f525fc99a87edadf716dce4faa926b33ba2551f45a13a66ed"},
+    {file = "pycytominer-1.2.2-py3-none-any.whl", hash = "sha256:00193ddb45ef430f813278ef48f990be424fa35866e6ba47e167380506738d6a"},
+    {file = "pycytominer-1.2.2.tar.gz", hash = "sha256:f4a1542ef1b45a640f28671d3e258f80b5320b8a3d0763da72d9176f918b9a27"},
 ]
 
 [package.dependencies]
