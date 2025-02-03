@@ -21,6 +21,10 @@ authors:
     family-names: Way
     orcid: 'https://orcid.org/0000-0002-0503-9348'
 repository-code: 'https://github.com/WayScience/coSMicQC'
+identifiers:
+  - description: Software DOI
+    type: doi
+    value: "10.5281/zenodo.14797008"
 abstract: >-
   coSMicQC is a software tool for single-cell quality control of morphology datasets.
 keywords:
