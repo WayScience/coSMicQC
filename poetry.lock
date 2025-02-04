@@ -1168,25 +1168,23 @@ analyze = ["crick", "distributed"]
 
 [[package]]
 name = "datashader"
-version = "0.16.3"
+version = "0.17.0"
 description = "Data visualization toolchain based on aggregating into a grid"
 optional = false
 python-versions = ">=3.9"
 files = [
-    {file = "datashader-0.16.3-py2.py3-none-any.whl", hash = "sha256:90e7425f17b5dc597ab50facca1d16df53c4893708500ad89d4e64b6eb7238aa"},
-    {file = "datashader-0.16.3.tar.gz", hash = "sha256:9d0040c7887f7a5a5edd374c297402fd208a62bf6845e87631b54f03b9ae479d"},
+    {file = "datashader-0.17.0-py3-none-any.whl", hash = "sha256:39421ff999294913e63d41954af955a5dece5d0c55d8fce1426043d70b22d07a"},
+    {file = "datashader-0.17.0.tar.gz", hash = "sha256:571aaea639e62222ba2fc49a530cffb3b1b183b6ec8ca8054978e01d2de79440"},
 ]
 
 [package.dependencies]
 colorcet = "*"
-dask = "*"
 multipledispatch = "*"
 numba = "*"
 numpy = "*"
 packaging = "*"
 pandas = "*"
 param = "*"
-pillow = "*"
 pyct = "*"
 requests = "*"
 scipy = "*"
@@ -1194,13 +1192,7 @@ toolz = "*"
 xarray = "*"
 
 [package.extras]
-all = ["bokeh (>3.1)", "bokeh-sampledata", "dask-expr", "dask-geopandas", "fastparquet", "geodatasets", "geopandas", "graphviz", "holoviews", "matplotlib (>=3.3)", "nbsite (>=0.8.4,<0.9.0)", "nbval", "netcdf4", "networkx", "numpydoc", "panel (>1.1)", "psutil", "pyarrow", "pytest", "pytest-benchmark", "pytest-cov", "pytest-xdist", "python-graphviz", "python-snappy", "rasterio", "rioxarray", "scikit-image", "shapely (>=2.0.0)", "spatialpandas", "sphinxcontrib-mermaid", "streamz"]
-doc = ["bokeh (>3.1)", "bokeh-sampledata", "dask-geopandas", "fastparquet", "geodatasets", "geopandas", "graphviz", "holoviews", "matplotlib (>=3.3)", "nbsite (>=0.8.4,<0.9.0)", "networkx", "numpydoc", "panel (>1.1)", "python-graphviz", "python-snappy", "rasterio", "scikit-image", "shapely (>=2.0.0)", "spatialpandas", "sphinxcontrib-mermaid", "streamz"]
-examples = ["bokeh (>3.1)", "bokeh-sampledata", "dask-geopandas", "geodatasets", "geopandas", "holoviews", "matplotlib (>=3.3)", "panel (>1.1)", "scikit-image", "shapely (>=2.0.0)", "spatialpandas"]
-examples-extra = ["bokeh (>3.1)", "bokeh-sampledata", "dask-geopandas", "fastparquet", "geodatasets", "geopandas", "graphviz", "holoviews", "matplotlib (>=3.3)", "networkx", "panel (>1.1)", "python-graphviz", "python-snappy", "rasterio", "scikit-image", "shapely (>=2.0.0)", "spatialpandas", "streamz"]
-geopandas = ["dask-geopandas", "geopandas", "shapely (>=2.0.0)"]
-gpu-tests = ["cudf", "cupy", "dask-cudf"]
-tests = ["dask-expr", "dask-geopandas", "geodatasets", "geopandas", "nbval", "netcdf4", "psutil", "pyarrow", "pytest", "pytest-benchmark", "pytest-cov", "pytest-xdist", "rasterio", "rioxarray", "scikit-image", "shapely (>=2.0.0)", "spatialpandas"]
+tests = ["pytest"]
 
 [[package]]
 name = "debugpy"
@@ -6329,4 +6321,4 @@ test = ["big-O", "importlib-resources", "jaraco.functools", "jaraco.itertools", 
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9,<3.13"
-content-hash = "81d4ec2dca9956edafb844bb45e769acaa7a09ccb87749b8fe2f60072cb18804"
+content-hash = "c2b2322bebaadaed02b4ba279323207ec8b0797ad85438b7591e22cb6990e5f4"
