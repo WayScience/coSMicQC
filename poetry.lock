@@ -1074,13 +1074,13 @@ tests = ["pytest", "pytest-cov", "pytest-xdist"]
 
 [[package]]
 name = "cytodataframe"
-version = "0.0.16"
+version = "0.0.17"
 description = "An in-memory data analysis format for single-cell profiles alongside their corresponding images and segmentation masks."
 optional = false
 python-versions = "<3.13,>=3.9"
 files = [
-    {file = "cytodataframe-0.0.16-py3-none-any.whl", hash = "sha256:fce3e34f61910570c684d9b335326d643db6bcca31db0e0e3ff42710601dba72"},
-    {file = "cytodataframe-0.0.16.tar.gz", hash = "sha256:6dd4c88f559a3a98737012f4068c6f36ba169b9edf5fed55620b0286c1d0d7f9"},
+    {file = "cytodataframe-0.0.17-py3-none-any.whl", hash = "sha256:2cc92cb4c7112eeb04ef9d1d11c987b913df71f905ac85689adc9feaa136d94f"},
+    {file = "cytodataframe-0.0.17.tar.gz", hash = "sha256:226a7863ceefa6934515e53909a0378a4798d1a7d52617c9cefe538d641695d4"},
 ]
 
 [package.dependencies]
@@ -1089,7 +1089,7 @@ ipython = ">=8.12.3,<9.0.0"
 matplotlib = ">=3.9.3,<4.0.0"
 opencv-python = ">=4.10.0.84,<5.0.0.0"
 pandas = {version = ">=2.2.2,<3.0.0", markers = "python_version >= \"3.9\""}
-pyarrow = ">=16,<19"
+pyarrow = ">=16,<20"
 pywavelets = {version = ">1.4.1", markers = "python_version >= \"3.9\""}
 scikit-image = {version = ">0.19.3", markers = "python_version >= \"3.9\""}
 
