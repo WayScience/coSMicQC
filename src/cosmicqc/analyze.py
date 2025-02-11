@@ -204,7 +204,7 @@ def find_outliers(
     print(
         "Number of outliers:",
         outliers_df.shape[0],
-        f"({'{:.2f}'.format((outliers_df.shape[0] / df.shape[0])*100)}%)",
+        f"({'{:.2f}'.format((outliers_df.shape[0] / df.shape[0]) * 100)}%)",
     )
     print("Outliers Range:")
     for feature in feature_thresholds:
