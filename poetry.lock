@@ -1096,13 +1096,13 @@ scikit-image = {version = ">0.19.3", markers = "python_version >= \"3.9\""}
 
 [[package]]
 name = "cytotable"
-version = "0.0.12"
+version = "0.0.13"
 description = "Transform CellProfiler and DeepProfiler data for processing image-based profiling readouts with Pycytominer and other Cytomining tools."
 optional = false
 python-versions = "<3.14,>=3.9"
 files = [
-    {file = "cytotable-0.0.12-py3-none-any.whl", hash = "sha256:c703f0b500b4584a28c512f7dcc5e06dcd3333b7e7b893e46c8442f03176377a"},
-    {file = "cytotable-0.0.12.tar.gz", hash = "sha256:8202645597415cf9add37f80382ae95c9df4d813c0240764dc5184873bd41751"},
+    {file = "cytotable-0.0.13-py3-none-any.whl", hash = "sha256:4f4621396fa23dba55912c27b21fa51fed5c0812d389e8d78af4dbb933abd40e"},
+    {file = "cytotable-0.0.13.tar.gz", hash = "sha256:720e20db92467c959cc1f0270ca019af11945e3a0dad37ab2cba473971e1e0ff"},
 ]
 
 [package.dependencies]
@@ -6322,4 +6322,4 @@ test = ["big-O", "importlib-resources", "jaraco.functools", "jaraco.itertools", 
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9,<3.13"
-content-hash = "78fd1717166f256fc381cc98a8f609ad1c49b04ca79e399ce856753de27d5b44"
+content-hash = "0d9c199138ab9c20fc6e15f3ca2a37fecb1c96e7d70272d40236a4ac1bb2c370"
