@@ -559,7 +559,7 @@ def test_label_outliers_retains_custom_attrs(basic_outlier_dataframe: pd.DataFra
         "data_context_dir": "example_context_dir",
         "data_image_paths": None,
         "data_bounding_box": None,
-        'compartment_center_xy': None,
+        "compartment_center_xy": None,
         "data_mask_context_dir": "example_mask_dir",
         "data_outline_context_dir": "example_context_dir",
         "segmentation_file_regex": {"example": "example"},
