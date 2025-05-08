@@ -562,5 +562,7 @@ def test_label_outliers_retains_custom_attrs(basic_outlier_dataframe: pd.DataFra
         "data_mask_context_dir": "example_mask_dir",
         "data_outline_context_dir": "example_context_dir",
         "segmentation_file_regex": {"example": "example"},
-        "image_adjustment": None,
+        'display_options': None,
+        'image_adjustment': None,
+  +     'is_transposed': False,
     }
