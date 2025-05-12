@@ -1153,15 +1153,15 @@ tests = ["pytest", "pytest-cov", "pytest-xdist"]
 
 [[package]]
 name = "cytodataframe"
-version = "0.0.21"
+version = "0.0.22"
 description = "An in-memory data analysis format for single-cell profiles alongside their corresponding images and segmentation masks."
 optional = false
 python-versions = "<3.13,>=3.9"
 groups = ["main"]
 markers = "platform_system == \"Linux\" and platform_machine == \"aarch64\""
 files = [
-    {file = "cytodataframe-0.0.21-py3-none-any.whl", hash = "sha256:1c5c69cc806fd4eae032b43e3741681f586f6df5ba6446f02e7c8cd8ccafb50a"},
-    {file = "cytodataframe-0.0.21.tar.gz", hash = "sha256:277b8c8a6ed4482e6db0f5164b6a1acdb3c7dfac3ad298f500227dc733b8849a"},
+    {file = "cytodataframe-0.0.22-py3-none-any.whl", hash = "sha256:3b119ea74cf6e281eb4bb36e2230f20263eca0e2f42199a131486d76305e2cdc"},
+    {file = "cytodataframe-0.0.22.tar.gz", hash = "sha256:e14c36d799cde03c9b98d490f6f00f3b432ba08c1241a4f6dd22caadd0767af1"},
 ]
 
 [package.dependencies]
