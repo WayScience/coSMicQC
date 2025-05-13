@@ -194,10 +194,12 @@ def test_detect_contamination(cytotable_NF1_contamination_data_df: pd.DataFrame)
     # If no skewness or variability, ensure it exits early
     if not detector.is_skewed and not detector.is_variable:
         assert not hasattr(detector, "whole_plate_contamination_texture"), (
-            "Step 2 should not have been executed if no skewness or variability was detected."
+            "Step 2 should not have been executed if no skewness or "
+            "variability was detected."
         )
         assert not hasattr(detector, "partial_contamination_texture_detected"), (
-            "Step 3 should not have been executed if no skewness or variability was detected."
+            "Step 3 should not have been executed if no skewness or "
+            "variability was detected."
         )
         return
 
@@ -217,5 +219,6 @@ def test_detect_contamination(cytotable_NF1_contamination_data_df: pd.DataFrame)
     else:
         # If no partial contamination, ensure step 3 is skipped
         assert not hasattr(detector, "partial_contamination_texture_detected"), (
-            "Step 3 should not have been executed if no partial contamination was detected."
+            "Step 3 should not have been executed if no partial contamination "
+            "was detected."
         )

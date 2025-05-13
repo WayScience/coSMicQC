@@ -2,7 +2,6 @@
 Module for detecting contamination (e.g., mycoplasma) from the morphology profiles.
 """
 
-
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -52,8 +51,8 @@ class ContaminationDetector:
         Run the first step of the contamination detection process by detecting either
         texture skew and/or FormFactor variability.
     check_texture_mean()
-        Check the mean value of the cytoplasm texture feature to determine if whole plate
-        contamination is present.
+        Check the mean value of the cytoplasm texture feature to determine if whole
+        plate contamination is present.
     check_formfactor_mean()
         Check the mean value of the FormFactor feature to determine if whole plate
         contamination is present.
@@ -69,7 +68,7 @@ class ContaminationDetector:
         plot the proportion of outliers per well.
     run_all_tests()
         Run all three steps of the contamination detection process with conditional logic.
-    """
+    """  # noqa: E501
 
     def __init__(
         self, dataframe: pd.DataFrame, nucleus_channel_naming: str = "DNA"
@@ -98,9 +97,11 @@ class ContaminationDetector:
 
     def skewness_test_cytoplasm_texture(self) -> bool:
         """
-        Bowley's skewness score is calculated for the cytoplasm texture around the nucleus feature.
-        Thresholds are assigned to determine if there is abnormal texture around the nucleus, either
-        based on a serious negative skew (indicating a whole plate issue) or a positive skew
+        Bowley's skewness score is calculated for the cytoplasm texture
+        around the nucleus feature.
+        Thresholds are assigned to determine if there is abnormal texture around
+        the nucleus, either based on a serious negative skew
+        (indicating a whole plate issue) or a positive skew
         (indicating a partial plate issue).
         Thresholds are set based on findings from multiple experiments.
 
@@ -118,8 +119,8 @@ class ContaminationDetector:
         # Determine if the distribution is skewed as boolean
         is_skewed = False
 
-        # Check for serious negative skew (really bad shift, might indicate whole plate issue)
-        if bowley_skewness < -0.15 or bowley_skewness > 0.09:
+        # Check for serious negative skew (might indicate whole plate issue)
+        if bowley_skewness < -0.15 or bowley_skewness > 0.09:  # noqa: PLR2004
             is_skewed = True
 
         return is_skewed
@@ -128,7 +129,8 @@ class ContaminationDetector:
         """
         Calculate IQR score for the FormFactor feature to determine if there is
         abnormal variability in the shape of the nuclei.
-        More variability in this feature indicates a higher proportion of non-circular nuclei.
+        More variability in this feature indicates a higher proportion
+        of non-circular nuclei.
         This is a good indicator of segmentation issues or contamination.
         Threshold is set based on findings from multiple experiments.
 
@@ -139,20 +141,24 @@ class ContaminationDetector:
         vals = self.dataframe[self.formfactor_feature].dropna()
         iqr = np.percentile(vals, 75) - np.percentile(vals, 25)
         # determine if distribution is highly variable
-        is_variable = iqr > 0.15
+        is_variable = iqr > 0.15  # noqa: PLR2004
 
         return is_variable
 
     def step_one_test(self) -> None:
         """
-        Step 1: Check for skewness in the cytoplasm texture around the nucleus and variability
-        in the FormFactor of the nucleus.
+        Step 1: Check for skewness in the cytoplasm texture around the nucleus and
+        variability in the FormFactor of the nucleus.
 
         Interpretations:
-        - If skewed and variable → likely contamination with segmentation impact. Move to step 2.
-        - If skewed only → likely contamination without segmentation impact. Move to step 2.
-        - If variable only → possible contamination or segmentation issue/phenotype. move to step 2.
-        - If neither → no strong indication of contamination or segmentation issues. Stop here.
+        - If skewed and variable
+            → likely contamination with segmentation impact. Move to step 2.
+        - If skewed only
+            → likely contamination without segmentation impact. Move to step 2.
+        - If variable only
+            → possible contamination or segmentation issue/phenotype. move to step 2.
+        - If neither
+            → no strong indication of contamination or segmentation issues. Stop here.
         """
         print("Running step 1...")
 
@@ -168,46 +174,50 @@ class ContaminationDetector:
         if is_skewed and is_variable:
             interpretation = (
                 "Contamination detected! 🚨\n"
-                "Anomalous texture around nuclei detected and nuclei segmentation is impacted.\n"
+                "Anomalous texture around nuclei detected and "
+                "nuclei segmentation is impacted.\n"
                 "Proceeding to step 2..."
             )
         elif is_skewed:
             interpretation = (
                 "Contamination detected! 🚨\n"
-                "Anomalous texture around nuclei detected but nuclei segmentation not clearly impacted.\n"
+                "Anomalous texture around nuclei detected but "
+                "nuclei segmentation not clearly impacted.\n"
                 "Proceeding to step 2..."
             )
         elif is_variable:
             interpretation = (
                 "Potential contamination detected! 🛑\n"
-                "This could indicate contamination, segmentation issues, or an interesting phenotype.\n"
+                "This could indicate contamination, segmentation issues, "
+                "or an interesting phenotype.\n"
                 "Proceeding to step 2..."
             )
         else:
             interpretation = "No indication of contamination. Plate appears clean 🫧!"
 
         print(
-            f"Is the distribution skewed/anomalous texture around the nucleus?: {is_skewed}"
+            f"Is the distribution skewed/anomalous texture around the nucleus?: {is_skewed}"  # noqa: E501
         )
         print(
-            f"Are the values for nuclei shape variable/unexpected amount of non-circular nuclei? {is_variable}"
+            f"Are the values for nuclei shape variable/unexpected amount of non-circular nuclei? {is_variable}"  # noqa: E501
         )
         print(interpretation)
 
     def check_texture_mean(self) -> bool:
         """
-        Check the mean value of the cytoplasm texture around the nucleus feature to determine
-        if whole plate or partial plate contamination is present.
+        Check the mean value of the cytoplasm texture around the nucleus feature to
+        determine if whole plate or partial plate contamination is present.
         Threshold is set based on findings from multiple experiments.
 
         Returns:
-            boolean: True if whole plate contamination is detected, False otherwise indicates partial contamination.
+            boolean: True if whole plate contamination is detected, False otherwise
+            indicates partial contamination.
         """
         # calculate the mean
         mean_value = self.dataframe[self.cyto_feature].mean()
-        whole_plate_contamination = mean_value >= -0.25
+        whole_plate_contamination = mean_value >= -0.25  # noqa: PLR2004
 
-        return whole_plate_contamination  # True means whole plate, False means partial plate
+        return whole_plate_contamination  # True = whole plate, False = partial plate
 
     def check_formfactor_mean(self) -> bool:
         """
@@ -216,25 +226,31 @@ class ContaminationDetector:
         Threshold is set based on findings from multiple experiments.
 
         Returns:
-            boolean: True if whole plate contamination is detected, False otherwise indicates partial contamination.
+            boolean: True if whole plate contamination is detected, False otherwise
+            indicates partial contamination.
         """
         # calculate the mean
         mean_value = self.dataframe[self.formfactor_feature].mean()
-        whole_plate_contamination = mean_value <= 0.78
+        whole_plate_contamination = mean_value <= 0.78  # noqa: PLR2004
 
-        return whole_plate_contamination  # True means whole plate, False means partial plate
+        return whole_plate_contamination  # True = whole plate, False = partial plate
 
     def step_two_test(self) -> None:
         """
-        Step 2: If skewness and/or variability detected, determine if the whole plate or partial plate is impacted
-        using the mean values of the features.
+        Step 2: If skewness and/or variability detected, determine if the whole plate or
+        partial plate is impacted using the mean values of the features.
 
         Interpretations:
-        - If whole plate contamination detected in both texture and formfactor → major warning.
-        - If whole plate contamination detected in texture only → check nucleus channel images for contamination.
-        - If whole plate contamination detected in formfactor only → check segmentation parameters and/or images for contamination.
-        - If partial plate contamination detected in texture only → proceed to step 3.
-        - If partial plate contamination detected in formfactor only → recommend performing 'find_outliers' with FormFactor.
+        - If whole plate contamination detected in both texture and formfactor
+            → major warning.
+        - If whole plate contamination detected in texture only
+            → check nucleus channel images for contamination.
+        - If whole plate contamination detected in formfactor only
+            → check segmentation parameters and/or images for contamination.
+        - If partial plate contamination detected in texture only
+            → proceed to step 3.
+        - If partial plate contamination detected in formfactor only
+            → recommend performing 'find_outliers' with FormFactor.
         """
         # run sanity check to ensure step one was ran prior to step two
         if not hasattr(self, "is_skewed") or not hasattr(self, "is_variable"):
@@ -261,14 +277,14 @@ class ContaminationDetector:
         if self.is_skewed:
             self.whole_plate_contamination_texture = self.check_texture_mean()
             print(
-                f"Whole Plate Contamination Texture: {self.whole_plate_contamination_texture}"
+                f"Whole Plate Contamination Texture: {self.whole_plate_contamination_texture}"  # noqa: E501
             )
 
         # Check for formfactor contamination
         if self.is_variable:
             self.whole_plate_contamination_formfactor = self.check_formfactor_mean()
             print(
-                f"Whole Plate Contamination FormFactor: {self.whole_plate_contamination_formfactor}"
+                f"Whole Plate Contamination FormFactor: {self.whole_plate_contamination_formfactor}"  # noqa: E501
             )
 
         # Determine interpretation
@@ -278,18 +294,24 @@ class ContaminationDetector:
         ):
             interpretation = (
                 "MAJOR WARNING! 💥\n"
-                "Contamination across entire plate detected in both texture and nuclei shape features.\n"
-                "Strongly suggest inspecting the nucleus channel images for contamination."
+                "Contamination across entire plate detected in both texture and nuclei "
+                "shape features.\n"
+                "Strongly suggest inspecting the nucleus channel images for"
+                "contamination."
             )
         elif self.whole_plate_contamination_texture:
             interpretation = (
-                "The whole plate is contaminated based on cytoplasm texture in nucleus channel.\n"
-                "Please check your nucleus channel images for contamination by brightening the random FOVs."
+                "The whole plate is contaminated based on cytoplasm texture in nucleus "
+                "channel.\n"
+                "Please check your nucleus channel images for contamination by "
+                "brightening the random FOVs."
             )
         elif self.whole_plate_contamination_formfactor:
             interpretation = (
-                "The whole plate is contaminated or the segmentation parameters are non-optimal based on the shape of the nuclei.\n"
-                "Please check your segmentation parameters and/or the images for contamination by brightening the images."
+                "The whole plate is contaminated or the segmentation parameters are "
+                "non-optimal based on the shape of the nuclei.\n"
+                "Please check your segmentation parameters and/or the images for "
+                "contamination by brightening the images."
             )
         elif (
             self.is_skewed
@@ -297,7 +319,8 @@ class ContaminationDetector:
             and not self.is_variable
         ):
             interpretation = (
-                "Partial plate contamination detected based on cytoplasm texture in nucleus channel.\n"
+                "Partial plate contamination detected based on cytoplasm texture "
+                "in nucleus channel.\n"
                 "Proceeding to step 3..."
             )
         elif (
@@ -306,11 +329,14 @@ class ContaminationDetector:
             and not self.is_skewed
         ):
             interpretation = (
-                "Partial shape deviation detected — possibly an interesting phenotype or poor segmentation.\n"
-                "Recommend performing 'find_outliers' with FormFactor to further evaluate segmentations."
+                "Partial shape deviation detected — possibly an interesting phenotype "
+                "or poor segmentation.\n"
+                "Recommend running 'find_outliers' with FormFactor to "
+                "further evaluate segmentations."
             )
 
-        # Set partial contamination flag for texture to True if meets conditions (used in step 3)
+        # Set partial contamination flag for texture to True if meets conditions
+        # (used in step 3)
         self.partial_contamination_texture_detected = (
             self.is_skewed and not self.whole_plate_contamination_texture
         )
@@ -347,7 +373,8 @@ class ContaminationDetector:
             feature_thresholds=texture_feature_thresholds,
         )
 
-        # for added support, also check for outliers using granularity of the cytoplasm in the nuclei channel
+        # for added support, also check for outliers using granularity of the cytoplasm
+        # in the nuclei channel
         granularity_feature_thresholds = {
             # outlier threshold for only cytoplasm granularity in nuclei channel
             "Cytoplasm_Granularity_2_DAPI": 1,
@@ -459,7 +486,8 @@ class ContaminationDetector:
 
     def step_three_test(self) -> None:
         """
-        Step 3: If partial contamination detected, find outliers and plot the proportion of outliers per well.
+        Step 3: If partial contamination detected, find outliers and plot the proportion
+        of outliers per well.
         """
         # run sanity check to ensure step two was ran prior to step three
         if not hasattr(self, "partial_contamination_texture_detected"):
@@ -472,7 +500,7 @@ class ContaminationDetector:
         # check if partial contamination was detected
         if self.partial_contamination_texture_detected:
             print(
-                "Finding outlier single-cells with anomalous texture around the nucleus..."
+                "Finding outlier cells with anomalous texture around the nucleus..."
             )
             outliers = self.plot_proportion_outliers()
 
@@ -492,7 +520,7 @@ class ContaminationDetector:
 
     def detect_contamination(self) -> None:
         """
-        Run all three steps of the contamination detection process with conditional logic.
+        Run all steps of the contamination detection process with conditional logic.
         """
         # Run the first step in the process to check for skewness and variability
         self.step_one_test()
