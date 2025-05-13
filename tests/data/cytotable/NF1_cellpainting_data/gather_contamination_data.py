@@ -5,7 +5,7 @@ with specifically coSMicQC contamination detector tests.
 This file may be processed using the following command from the root
 of the project repository:
 `poetry run python tests/data/cytotable/NF1_cellpainting_data/gather_contamination_data.py`
-"""
+"""  # noqa: E501
 
 import pathlib
 import urllib.request

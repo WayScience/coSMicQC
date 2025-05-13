@@ -70,7 +70,8 @@ def test_check_texture_mean(cytotable_NF1_contamination_data_df: pd.DataFrame):
 
 def test_check_formfactor_mean(cytotable_NF1_contamination_data_df: pd.DataFrame):
     """
-    Test if there is whole plate or partial plate contamination based on nuclei shape mean.
+    Test if there is whole plate or partial plate contamination
+    based on nuclei shape mean.
     """
     # Create the ContaminationDetector object
     detector = cd.ContaminationDetector(
@@ -93,7 +94,7 @@ def test_step_two(cytotable_NF1_contamination_data_df: pd.DataFrame):
         dataframe=cytotable_NF1_contamination_data_df, nucleus_channel_naming="DAPI"
     )
 
-    # Excute step 1 as it is required for step 2
+    # Execute step 1 as it is required for step 2
     detector.step_one_test()
 
     # Execute step 2
@@ -115,7 +116,7 @@ def test_find_texture_outliers(
     # Assert the outliers DataFrame is not empty and has the expected shape
     assert isinstance(outliers_df, pd.DataFrame)
     assert not outliers_df.empty
-    assert outliers_df.shape[0] == 4053
+    assert outliers_df.shape[0] == 4053  # noqa: PLR2004
 
 
 def test_plot_proportion_outliers(cytotable_NF1_contamination_data_df: pd.DataFrame):

@@ -262,7 +262,7 @@ class ContaminationDetector:
         if not self.is_skewed and not self.is_variable:
             print("Data is neither skewed nor variable based on step one.")
             print(
-                "Interpretation: No indication of contamination. Plate appears clean 🫧."
+                "Interpretation: No indication of contamination. Plate appears clean 🫧."  # noqa: E501
             )
             self.partial_contamination_texture_detected = False
             return
