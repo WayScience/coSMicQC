@@ -1132,14 +1132,23 @@ tests = ["pytest", "pytest-cov", "pytest-xdist"]
 
 [[package]]
 name = "cytodataframe"
+<<<<<<< HEAD
 version = "0.0.21"
+=======
+version = "0.0.22"
+>>>>>>> main
 description = "An in-memory data analysis format for single-cell profiles alongside their corresponding images and segmentation masks."
 optional = false
 python-versions = "<3.13,>=3.9"
 groups = ["main"]
 files = [
+<<<<<<< HEAD
     {file = "cytodataframe-0.0.21-py3-none-any.whl", hash = "sha256:1c5c69cc806fd4eae032b43e3741681f586f6df5ba6446f02e7c8cd8ccafb50a"},
     {file = "cytodataframe-0.0.21.tar.gz", hash = "sha256:277b8c8a6ed4482e6db0f5164b6a1acdb3c7dfac3ad298f500227dc733b8849a"},
+=======
+    {file = "cytodataframe-0.0.22-py3-none-any.whl", hash = "sha256:3b119ea74cf6e281eb4bb36e2230f20263eca0e2f42199a131486d76305e2cdc"},
+    {file = "cytodataframe-0.0.22.tar.gz", hash = "sha256:e14c36d799cde03c9b98d490f6f00f3b432ba08c1241a4f6dd22caadd0767af1"},
+>>>>>>> main
 ]
 
 [package.dependencies]
@@ -1154,14 +1163,14 @@ scikit-image = {version = ">0.19.3", markers = "python_version >= \"3.9\""}
 
 [[package]]
 name = "cytotable"
-version = "0.0.14"
+version = "0.0.15"
 description = "Transform CellProfiler and DeepProfiler data for processing image-based profiling readouts with Pycytominer and other Cytomining tools."
 optional = false
 python-versions = "<3.14,>=3.9"
 groups = ["dev"]
 files = [
-    {file = "cytotable-0.0.14-py3-none-any.whl", hash = "sha256:8148f7b67ca7567e2626918b040d5246c5bbba4f300651a260166ca2961ec99d"},
-    {file = "cytotable-0.0.14.tar.gz", hash = "sha256:8a1572ff3c3fefc750b38ac51f4a96fa370be385ae8a46f7ed24c2bdd739d006"},
+    {file = "cytotable-0.0.15-py3-none-any.whl", hash = "sha256:e7b99d3fe7c4ac5d1f945a4101c4f14ec3cdcb435411a8512a0305bac4ad1a28"},
+    {file = "cytotable-0.0.15.tar.gz", hash = "sha256:08f7775bbc6ee57b51893c39b7a81b53aaa5116271d3f232759305b4d69a9f46"},
 ]
 
 [package.dependencies]
@@ -6774,5 +6783,10 @@ type = ["pytest-mypy"]
 
 [metadata]
 lock-version = "2.1"
+<<<<<<< HEAD
 python-versions = ">=3.10,<3.13"
 content-hash = "52a5ac059a27ece63e61262630337687be80491a58a27fe67e4d06b3e13fc60e"
+=======
+python-versions = ">=3.9,<3.13"
+content-hash = "e19baa9792bf9b6199bf46410a7fc90fca70bbfd5a34ee6017df737fd7f8afd2"
+>>>>>>> main
