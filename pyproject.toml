@@ -12,7 +12,7 @@ readme = "README.md"
 packages = [ { include = "cosmicqc", from = "src" } ]
 
 [tool.poetry.dependencies]
-python = ">=3.9,<3.13"
+python = ">=3.10,<3.13"
 pandas = [
   { version = "<2.2.2", python = "<3.9" },
   { version = "^2.2.2", python = ">=3.9" },
@@ -31,6 +31,8 @@ fire = ">=0.6,<0.8"
 jinja2 = "^3.1.4"
 # used for assisting single-cell profile and image analysis
 cytodataframe = ">=0.0.11"
+seaborn = "^0.13.2"
+matplotlib = "^3.10.3"
 
 [tool.poetry.group.dev.dependencies]
 # provides testing capabilities for project
