@@ -2,12 +2,10 @@
 Module for detecting contamination (e.g., mycoplasma) from the morphology profiles.
 """
 
-import pathlib
-from typing import Union
 
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
 import seaborn as sns
 
 from cosmicqc import find_outliers

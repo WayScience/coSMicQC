@@ -148,6 +148,7 @@ def test_plot_proportion_outliers(cytotable_NF1_contamination_data_df: pd.DataFr
     # Assert the proportions are within the range 0 to 100
     assert proportion_df["Proportion"].between(0, 100).all()
 
+
 def test_step_three(
     cytotable_NF1_contamination_data_df: pd.DataFrame,
 ):
@@ -172,6 +173,7 @@ def test_step_three(
 
     # Check if the results are as expected
     assert detector.partial_contamination_texture_detected
+
 
 def test_detect_contamination(cytotable_NF1_contamination_data_df: pd.DataFrame):
     """
