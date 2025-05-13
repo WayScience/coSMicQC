@@ -499,9 +499,7 @@ class ContaminationDetector:
 
         # check if partial contamination was detected
         if self.partial_contamination_texture_detected:
-            print(
-                "Finding outlier cells with anomalous texture around the nucleus..."
-            )
+            print("Finding outlier cells with anomalous texture around the nucleus...")
             outliers = self.plot_proportion_outliers()
 
             # Calculate the 75th percentile (top 25%) of the outlier proportions
