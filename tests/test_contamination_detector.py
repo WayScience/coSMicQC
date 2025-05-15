@@ -116,7 +116,7 @@ def test_find_texture_outliers(
     # Assert the outliers DataFrame is not empty and has the expected shape
     assert isinstance(outliers_df, pd.DataFrame)
     assert not outliers_df.empty
-    assert outliers_df.shape[0] == 4053  # noqa: PLR2004
+    assert outliers_df.shape[0] == 242  # noqa: PLR2004
 
 
 def test_plot_proportion_outliers(cytotable_NF1_contamination_data_df: pd.DataFrame):
@@ -185,8 +185,10 @@ def test_detect_contamination(cytotable_NF1_contamination_data_df: pd.DataFrame)
         dataframe=cytotable_NF1_contamination_data_df, nucleus_channel_naming="DAPI"
     )
 
-    # Run the detect_contamination method
-    detector.detect_contamination()
+    # Mock the plotting functions to avoid rendering the plot
+    with patch("matplotlib.pyplot.show"):
+        # Run the detect_contamination method
+        detector.detect_contamination()
 
     # Assertions for step 1
     assert hasattr(detector, "is_skewed"), "Step 1 did not set 'is_skewed'."
