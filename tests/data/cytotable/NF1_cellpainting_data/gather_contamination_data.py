@@ -35,4 +35,3 @@ filtered_nf1_df = nf1_df[nf1_df["Image_Metadata_Well"].str.match(r"^[BCD].*[159]
 filtered_nf1_df.to_parquet(filtered_file_path, index=False)
 
 print(f"Filtered file saved to: {filtered_file_path}")
-
