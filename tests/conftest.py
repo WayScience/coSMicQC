@@ -25,7 +25,9 @@ def fixture_cytotable_NF1_contamination_df():
     """
     Return df to test CytoTable NF1 Plate 3 dataset (related to contamination)
     """
-    return pd.read_parquet("tests/data/cytotable/NF1_cellpainting_data/Plate_3.parquet")
+    return pd.read_parquet(
+        "tests/data/cytotable/NF1_cellpainting_data/Plate_3_filtered.parquet"
+    )
 
 
 @pytest.fixture(name="basic_outlier_dataframe")
