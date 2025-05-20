@@ -6,7 +6,7 @@ from unittest.mock import patch
 
 import pandas as pd
 
-from cosmicqc import contamination_detector as cd
+from cosmicqc import detection as cd
 
 
 def test_skewness_cytoplasm_texture(cytotable_NF1_contamination_data_df: pd.DataFrame):
@@ -22,7 +22,7 @@ def test_skewness_cytoplasm_texture(cytotable_NF1_contamination_data_df: pd.Data
     is_skewed = detector.skewness_test_cytoplasm_texture()
 
     # Check if the skewness is as expected
-    assert is_skewed is True
+    assert is_skewed
 
 
 def test_variability_formfactor(cytotable_NF1_contamination_data_df: pd.DataFrame):
@@ -41,18 +41,20 @@ def test_variability_formfactor(cytotable_NF1_contamination_data_df: pd.DataFram
     assert not is_variable
 
 
-def test_step_one_basic(cytotable_NF1_contamination_data_df: pd.DataFrame):
+def test_check_skew_and_variable_basic(
+    cytotable_NF1_contamination_data_df: pd.DataFrame,
+):
     # Create the ContaminationDetector object
     detector = cd.ContaminationDetector(
         dataframe=cytotable_NF1_contamination_data_df, nucleus_channel_naming="DAPI"
     )
-    detector.step_one_test()
+    detector.check_skew_and_variable()
 
     assert detector.is_skewed
     assert not detector.is_variable
 
 
-def test_check_texture_mean(cytotable_NF1_contamination_data_df: pd.DataFrame):
+def test_calculate_texture_mean(cytotable_NF1_contamination_data_df: pd.DataFrame):
     """
     Test if there is whole plate or partial plate contamination based on texture mean.
     """
@@ -62,13 +64,13 @@ def test_check_texture_mean(cytotable_NF1_contamination_data_df: pd.DataFrame):
     )
 
     # Determine if whole plate is contaminated or partial
-    whole_plate_contamination_texture = detector.check_texture_mean()
+    whole_plate_contamination_texture = detector.calculate_texture_mean()
 
     # Assert the result is False as we expect partial plate contamination
     assert not whole_plate_contamination_texture
 
 
-def test_check_formfactor_mean(cytotable_NF1_contamination_data_df: pd.DataFrame):
+def test_calculate_formfactor_mean(cytotable_NF1_contamination_data_df: pd.DataFrame):
     """
     Test if there is whole plate or partial plate contamination
     based on nuclei shape mean.
@@ -79,13 +81,13 @@ def test_check_formfactor_mean(cytotable_NF1_contamination_data_df: pd.DataFrame
     )
 
     # Determine if whole plate is contaminated or partial
-    whole_plate_contamination_formfactor = detector.check_formfactor_mean()
+    whole_plate_contamination_formfactor = detector.calculate_formfactor_mean()
 
     # Assert the result is False the data was not variable
     assert not whole_plate_contamination_formfactor
 
 
-def test_step_two(cytotable_NF1_contamination_data_df: pd.DataFrame):
+def test_check_feature_means(cytotable_NF1_contamination_data_df: pd.DataFrame):
     """
     Test the behavior of step 2 in the contamination detection process.
     """
@@ -95,10 +97,10 @@ def test_step_two(cytotable_NF1_contamination_data_df: pd.DataFrame):
     )
 
     # Execute step 1 as it is required for step 2
-    detector.step_one_test()
+    detector.check_skew_and_variable()
 
     # Execute step 2
-    detector.step_two_test()
+    detector.check_feature_means()
 
     # Check if the results are as expected
     assert not detector.whole_plate_contamination_texture
@@ -131,10 +133,10 @@ def test_plot_proportion_outliers(cytotable_NF1_contamination_data_df: pd.DataFr
     # Mock the plotting functions to avoid rendering the plot
     with patch("matplotlib.pyplot.show"):
         # Execute step 1 as it is required for step 2
-        detector.step_one_test()
+        detector.check_skew_and_variable()
 
         # Execute step 2 prior to plotting (or it will yield an error)
-        detector.step_two_test()
+        detector.check_feature_means()
         # Run the method
         proportion_df = detector.plot_proportion_outliers()
 
@@ -150,7 +152,7 @@ def test_plot_proportion_outliers(cytotable_NF1_contamination_data_df: pd.DataFr
     assert proportion_df["Proportion"].between(0, 100).all()
 
 
-def test_step_three(
+def test_check_partial_contamination(
     cytotable_NF1_contamination_data_df: pd.DataFrame,
 ):
     """
@@ -162,15 +164,15 @@ def test_step_three(
     )
 
     # Execute step 1 as it is required for step 2
-    detector.step_one_test()
+    detector.check_skew_and_variable()
 
     # Execute step 2 as it is required for step 3
-    detector.step_two_test()
+    detector.check_feature_means()
 
     # Mock the plotting functions to avoid rendering the plot
     with patch("matplotlib.pyplot.show"):
         # Execute step 3
-        detector.step_three_test()
+        detector.check_partial_contamination()
 
     # Check if the results are as expected
     assert detector.partial_contamination_texture_detected
