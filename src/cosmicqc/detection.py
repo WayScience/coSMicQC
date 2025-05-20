@@ -22,6 +22,7 @@ def bool_to_emoji(val: bool) -> str:
     """
     return "✅" if val else "❌"
 
+
 class ContaminationDetector:
     """_
     This class implements a contamination detection process for
