@@ -55,32 +55,70 @@ class ContaminationDetector:
             The feature name for cytoplasm texture.
         formfactor_feature : str
             The feature name for FormFactor.
+        lower_skew_threshold : float
+            Lower threshold for Bowley's skewness.
+        upper_skew_threshold : float
+            Upper threshold for Bowley's skewness.
+        variability_threshold : float
+            Threshold for variability in the FormFactor feature.
+        texture_mean_threshold : float
+            Threshold for mean value of cytoplasm texture.
+        formfactor_mean_threshold : float
+            Threshold for mean value of FormFactor.
+        outlier_std_threshold : float
+            Standard deviation threshold for outlier detection.
         is_skewed : bool
             Indicates if the distribution is skewed.
         is_variable : bool
             Indicates if the distribution is variable.
+        whole_plate_contamination_texture : bool
+            Indicates if whole plate contamination is detected in the texture feature.
+        whole_plate_contamination_formfactor : bool
+            Indicates if whole plate contamination is detected in the FormFactor feature.
         partial_contamination_texture_detected : bool
             Indicates if partial contamination is detected in the texture feature.
     """
 
     def __init__(
-        self, dataframe: pd.DataFrame, nucleus_channel_naming: str = "DNA"
+        self,
+        dataframe: pd.DataFrame,
+        nucleus_channel_naming: str = "DNA",
+        lower_skew_threshold: float = -0.15,
+        upper_skew_threshold: float = 0.09,
+        variability_threshold: float = 0.15,
+        texture_mean_threshold: float = -0.25,
+        formfactor_mean_threshold: float = 0.78,
+        outlier_std_threshold: float = 1.0,
     ) -> None:
         """
         Initializer for the ContaminationDetector class.
 
         Args:
-            dataframe (pd.DataFrame):
-                The input DataFrame containing the features to be analyzed.
-                Should be the output from the CytoTable convert function.
-            nucleus_channel_naming (str, optional):
-                The naming convention for the nucleus channel in the DataFrame.
-                Defaults to "DNA".
-        Raises:
-            ValueError: Raised if setting either report path or name without the other.
+            dataframe (pd.DataFrame): The input DataFrame containing the features
+                to be analyzed. Should be the output from CytoTable convert.
+            nucleus_channel_naming (str, optional): Naming convention for the nucleus
+                channel in the DataFrame. Defaults to "DNA".
+            lower_skew_threshold (float, optional): Lower threshold for Bowley's
+                skewness to flag whole-plate contamination. Defaults to -0.15.
+            upper_skew_threshold (float, optional): Upper threshold for Bowley's
+                skewness to flag partial-plate contamination. Defaults to 0.09.
+            variability_threshold (float, optional): Threshold for acceptable
+                coefficient of variation in selected features. Defaults to 0.15.
+            texture_mean_threshold (float, optional): Mean texture value threshold
+                for detecting abnormalities. Defaults to -0.25.
+            formfactor_mean_threshold (float, optional): Mean FormFactor threshold
+                for detecting nuclear shape issues. Defaults to 0.78.
+            outlier_std_threshold (float, optional): Number of standard deviations from
+                the mean used to flag outliers. Defaults to 1.0.
         """
         self.dataframe = dataframe
         self.nucleus_channel_naming = nucleus_channel_naming
+        self.lower_skew_threshold = lower_skew_threshold
+        self.upper_skew_threshold = upper_skew_threshold
+        self.variability_threshold = variability_threshold
+        self.texture_mean_threshold = texture_mean_threshold
+        self.formfactor_mean_threshold = formfactor_mean_threshold
+        self.outlier_std_threshold = outlier_std_threshold
 
         # set the features to be used for contamination detection
         self.cyto_feature = (
@@ -115,7 +153,10 @@ class ContaminationDetector:
         # check if the distribution is skewed
         # Bowley's skewness is negative for a whole plate issue
         # and positive for a partial plate issue
-        return bowley_skewness < -0.15 or bowley_skewness > 0.09  # noqa: PLR2004
+        return (
+            bowley_skewness < self.lower_skew_threshold
+            or bowley_skewness > self.upper_skew_threshold
+        )
 
     def variability_test_formfactor(self) -> bool:
         """
@@ -136,7 +177,7 @@ class ContaminationDetector:
         iqr = np.percentile(vals, 75) - np.percentile(vals, 25)
 
         # determine if distribution is highly variable
-        return iqr > 0.15  # noqa: PLR2004
+        return iqr > self.variability_threshold
 
     def check_skew_and_variable(self) -> None:
         """
@@ -207,7 +248,7 @@ class ContaminationDetector:
         """
         # check if the mean value is above the threshold
         # True = whole plate, False = partial plate
-        return self.dataframe[self.cyto_feature].mean() >= -0.25  # noqa: PLR2004
+        return self.dataframe[self.cyto_feature].mean() >= self.texture_mean_threshold
 
     def calculate_formfactor_mean(self) -> bool:
         """
@@ -226,7 +267,10 @@ class ContaminationDetector:
         """
         # check if the mean value is below the threshold
         # True = whole plate, False = partial plate
-        return self.dataframe[self.formfactor_feature].mean() <= 0.78  # noqa: PLR2004
+        return (
+            self.dataframe[self.formfactor_feature].mean()
+            <= self.formfactor_mean_threshold
+        )
 
     def check_feature_means(self) -> None:
         """
@@ -399,7 +443,7 @@ class ContaminationDetector:
         # detect outliers based on original texture feature
         texture_feature_thresholds = {
             # outlier threshold for only cytoplasm texture in nuclei channel
-            self.cyto_feature: 1,
+            self.cyto_feature: self.outlier_std_threshold,
         }
 
         texture_nuclei_outliers = find_outliers(
@@ -412,7 +456,8 @@ class ContaminationDetector:
         # in the nuclei channel
         granularity_feature_thresholds = {
             # outlier threshold for only cytoplasm granularity in nuclei channel
-            f"Cytoplasm_Granularity_2_{self.nucleus_channel_naming}": 1,
+            f"Cytoplasm_Granularity_2_{self.nucleus_channel_naming}":
+                self.outlier_std_threshold,
         }
 
         granularity_nuclei_outliers = find_outliers(
