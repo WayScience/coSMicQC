@@ -227,18 +227,18 @@ def test_run(cytotable_NF1_contamination_data_df: pd.DataFrame):
         return
 
     # Assertions for step 2
-    assert hasattr(
-        detector, "whole_plate_contamination_texture"
-    ), "Step 2 did not set 'whole_plate_contamination_texture'."
-    assert hasattr(
-        detector, "whole_plate_contamination_formfactor"
-    ), "Step 2 did not set 'whole_plate_contamination_formfactor'."
+    assert hasattr(detector, "whole_plate_contamination_texture"), (
+        "Step 2 did not set 'whole_plate_contamination_texture'."
+    )
+    assert hasattr(detector, "whole_plate_contamination_formfactor"), (
+        "Step 2 did not set 'whole_plate_contamination_formfactor'."
+    )
 
     # If partial contamination is detected, ensure step 3 is executed
     if detector.partial_contamination_texture_detected:
-        assert hasattr(
-            detector, "partial_contamination_texture_detected"
-        ), "Step 3 should have been executed if partial contamination was detected."
+        assert hasattr(detector, "partial_contamination_texture_detected"), (
+            "Step 3 should have been executed if partial contamination was detected."
+        )
     else:
         # If no partial contamination, ensure step 3 is skipped
         assert not hasattr(detector, "partial_contamination_texture_detected"), (
