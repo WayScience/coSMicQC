@@ -121,35 +121,52 @@ def test_find_texture_outliers(
     assert outliers_df.shape[0] == 242  # noqa: PLR2004
 
 
-def test_plot_proportion_outliers(cytotable_NF1_contamination_data_df: pd.DataFrame):
+def test_get_outlier_proportion_per_well(
+    cytotable_NF1_contamination_data_df: pd.DataFrame,
+):
     """
-    Test the plot_proportion_outliers method.
+    Test the get_outlier_proportion_per_well method.
     """
     # Create the ContaminationDetector object
     detector = cd.ContaminationDetector(
         dataframe=cytotable_NF1_contamination_data_df, nucleus_channel_naming="DAPI"
     )
 
-    # Mock the plotting functions to avoid rendering the plot
-    with patch("matplotlib.pyplot.show"):
-        # Execute step 1 as it is required for step 2
-        detector.check_skew_and_variable()
+    # Execute step 1 as it is required for step 2
+    detector.check_skew_and_variable()
 
-        # Execute step 2 prior to plotting (or it will yield an error)
-        detector.check_feature_means()
-        # Run the method
-        proportion_df = detector.plot_proportion_outliers()
+    # Execute step 2 prior to plotting (or it will yield an error)
+    detector.check_feature_means()
+    # Run the method
+    outlier_proportions_df = detector.get_outlier_proportion_per_well()
 
     # Assert the returned DataFrame is not empty
-    assert isinstance(proportion_df, pd.DataFrame)
-    assert not proportion_df.empty
+    assert isinstance(outlier_proportions_df, pd.DataFrame)
+    assert not outlier_proportions_df.empty
+    assert outlier_proportions_df.shape[0] == 12  # noqa: PLR2004
 
     # Assert the DataFrame contains the expected columns
     expected_columns = ["Well", "Proportion", "CellCount", "Image_Metadata_Well"]
-    assert all(col in proportion_df.columns for col in expected_columns)
+    assert all(col in outlier_proportions_df.columns for col in expected_columns)
 
     # Assert the proportions are within the range 0 to 100
-    assert proportion_df["Proportion"].between(0, 100).all()
+    assert outlier_proportions_df["Proportion"].between(0, 100).all()
+
+
+def test_plot_outlier_proportions_runs_and_shows(
+    cytotable_NF1_contamination_data_df: pd.DataFrame,
+):
+    """
+    Test the plot_outlier_proportions function returns a plot.
+    """
+    detector = cd.ContaminationDetector(
+        dataframe=cytotable_NF1_contamination_data_df, nucleus_channel_naming="DAPI"
+    )
+
+    with patch("matplotlib.pyplot.show") as mock_show:
+        outlier_proportions_df = detector.get_outlier_proportion_per_well()
+        detector.plot_outlier_proportions(df=outlier_proportions_df)
+        mock_show.assert_called_once()
 
 
 def test_check_partial_contamination(
@@ -178,9 +195,10 @@ def test_check_partial_contamination(
     assert detector.partial_contamination_texture_detected
 
 
-def test_detect_contamination(cytotable_NF1_contamination_data_df: pd.DataFrame):
+def test_run(cytotable_NF1_contamination_data_df: pd.DataFrame):
     """
-    Test the detect_contamination method using real data.
+    Test the run method using real data to make sure the stepwise method
+    runs correctly.
     """
     # Create the ContaminationDetector object
     detector = cd.ContaminationDetector(
@@ -189,8 +207,8 @@ def test_detect_contamination(cytotable_NF1_contamination_data_df: pd.DataFrame)
 
     # Mock the plotting functions to avoid rendering the plot
     with patch("matplotlib.pyplot.show"):
-        # Run the detect_contamination method
-        detector.detect_contamination()
+        # Execute the run method
+        detector.run()
 
     # Assertions for step 1
     assert hasattr(detector, "is_skewed"), "Step 1 did not set 'is_skewed'."
@@ -209,18 +227,18 @@ def test_detect_contamination(cytotable_NF1_contamination_data_df: pd.DataFrame)
         return
 
     # Assertions for step 2
-    assert hasattr(detector, "whole_plate_contamination_texture"), (
-        "Step 2 did not set 'whole_plate_contamination_texture'."
-    )
-    assert hasattr(detector, "whole_plate_contamination_formfactor"), (
-        "Step 2 did not set 'whole_plate_contamination_formfactor'."
-    )
+    assert hasattr(
+        detector, "whole_plate_contamination_texture"
+    ), "Step 2 did not set 'whole_plate_contamination_texture'."
+    assert hasattr(
+        detector, "whole_plate_contamination_formfactor"
+    ), "Step 2 did not set 'whole_plate_contamination_formfactor'."
 
     # If partial contamination is detected, ensure step 3 is executed
     if detector.partial_contamination_texture_detected:
-        assert hasattr(detector, "partial_contamination_texture_detected"), (
-            "Step 3 should have been executed if partial contamination was detected."
-        )
+        assert hasattr(
+            detector, "partial_contamination_texture_detected"
+        ), "Step 3 should have been executed if partial contamination was detected."
     else:
         # If no partial contamination, ensure step 3 is skipped
         assert not hasattr(detector, "partial_contamination_texture_detected"), (

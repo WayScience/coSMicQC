@@ -440,34 +440,28 @@ class ContaminationDetector:
         # return the outliers dataframe
         return combined_outliers
 
-    def plot_proportion_outliers(self) -> pd.DataFrame:
+    def get_outlier_proportion_per_well(self) -> pd.DataFrame:
         """
-        Plot the proportion of outliers detected in each well.
+        Calculate the proportion of outliers per well to be used for plotting.
 
         Returns:
-            pd.DataFrame: DataFrame containing the proportion of outliers per well.
+            pd.DataFrame: Proportion per well dataframe
         """
-        # check if the contamination status is set
-        if not hasattr(self, "partial_contamination_texture_detected"):
-            raise RuntimeError("You must run the second test before plotting outliers.")
-
-        # find outliers
+        # Get the outliers detected
         combined_outliers = self.find_texture_outliers()
 
-        # calculate the proportion of outliers per well
+        # Calculate the proportion of outliers per well
         outlier_proportion_per_well = (
             combined_outliers.groupby("Image_Metadata_Well")
             .size()
             .div(self.dataframe.groupby("Image_Metadata_Well").size(), fill_value=0)
             .fillna(0)
+            .reset_index()
         )
-
-        # convert to a DataFrame for easier handling
-        outlier_proportion_per_well = outlier_proportion_per_well.reset_index()
         outlier_proportion_per_well.columns = ["Well", "Proportion"]
         outlier_proportion_per_well["Proportion"] *= 100
 
-        # Fix the order of wells
+        # Sort the wells in order of row and column (e.g., A01, A02, B01, B02, ...)
         outlier_proportion_per_well["Well"] = pd.Categorical(
             outlier_proportion_per_well["Well"],
             sorted(
@@ -476,29 +470,36 @@ class ContaminationDetector:
         )
         outlier_proportion_per_well = outlier_proportion_per_well.sort_values("Well")
 
-        # get total cell count per well
+        # Calculate the cell counts per well
         cell_count_per_well = (
             self.dataframe.groupby("Image_Metadata_Well")
             .size()
             .reset_index(name="CellCount")
         )
 
-        # merge into the outlier proportion dataframe
+        # Merge cell count with proportions
         outlier_proportion_per_well = outlier_proportion_per_well.merge(
             cell_count_per_well, left_on="Well", right_on="Image_Metadata_Well"
         )
 
-        # normalize cell count to [0,1] for colormap mapping
-        norm = plt.Normalize(
-            outlier_proportion_per_well["CellCount"].min(),
-            outlier_proportion_per_well["CellCount"].max(),
-        )
-        colors = plt.cm.viridis(norm(outlier_proportion_per_well["CellCount"]))
+        return outlier_proportion_per_well
 
-        # plot the proportions
+    def plot_outlier_proportions(self, df: pd.DataFrame) -> None:
+        """
+        Plot the proportion of outliers per well with a color gradient
+        based on the total cell count per well.
+
+        Args:
+            df (pd.DataFrame): Proportion per well DataFrame
+        """
+        # Normalize the cell count for color mapping
+        norm = plt.Normalize(df["CellCount"].min(), df["CellCount"].max())
+        colors = plt.cm.viridis(norm(df["CellCount"]))
+
+        # Create bar plot
         plt.figure(figsize=(20, 6))
         ax = sns.barplot(
-            data=outlier_proportion_per_well,
+            data=df,
             x="Well",
             y="Proportion",
             hue="Well",
@@ -510,14 +511,10 @@ class ContaminationDetector:
         plt.xticks(rotation=45)
         plt.ylim(0, 100)
 
-        # Fix: assign colorbar to the axis we just plotted
         sm = plt.cm.ScalarMappable(cmap="viridis", norm=norm)
-        sm.set_array([])  # this avoids a warning
+        sm.set_array([])
         plt.colorbar(sm, ax=ax, label="Total Cell Count")
-
         plt.show()
-
-        return outlier_proportion_per_well
 
     def check_partial_contamination(self) -> None:
         """
@@ -535,7 +532,8 @@ class ContaminationDetector:
         # check if partial contamination was detected
         if self.partial_contamination_texture_detected:
             print("Finding outlier cells with anomalous texture around the nucleus...")
-            outliers = self.plot_proportion_outliers()
+            outliers = self.get_outlier_proportion_per_well()
+            self.plot_outlier_proportions(outliers)
 
             # Calculate the 75th percentile (top 25%) of the outlier proportions
             top_25_percent_threshold = outliers["Proportion"].quantile(0.75)
@@ -551,7 +549,7 @@ class ContaminationDetector:
         else:
             print("No partial contamination detected; no outliers to find.")
 
-    def detect_contamination(self) -> None:
+    def run(self) -> None:
         """
         Run all steps of the contamination detection process with conditional logic.
         """
@@ -560,6 +558,9 @@ class ContaminationDetector:
 
         # Exit early if no skewness or variability detected
         if not self.is_skewed and not self.is_variable:
+            print(
+                "No skewness or variability detected. Exiting contamination detector."
+            )
             return
 
         # Run the second step if skewness or variability was detected
