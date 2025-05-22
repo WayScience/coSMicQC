@@ -456,8 +456,7 @@ class ContaminationDetector:
         # in the nuclei channel
         granularity_feature_thresholds = {
             # outlier threshold for only cytoplasm granularity in nuclei channel
-            f"Cytoplasm_Granularity_2_{self.nucleus_channel_naming}":
-                self.outlier_std_threshold,
+            f"Cytoplasm_Granularity_2_{self.nucleus_channel_naming}": self.outlier_std_threshold,
         }
 
         granularity_nuclei_outliers = find_outliers(
