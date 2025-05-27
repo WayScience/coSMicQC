@@ -24,7 +24,7 @@ def bool_to_emoji(val: bool) -> str:
 
 
 class ContaminationDetector:
-    """_
+    """
     This class implements a contamination detection process for
     high-content morphology data.
     Contamination can be classified as many things, including
@@ -72,14 +72,14 @@ class ContaminationDetector:
         is_variable : bool
             Indicates if the distribution is variable.
         whole_plate_contamination_texture : bool
-            Indicates if whole plate contamination is detected in the texture feature.
+            Indicates if whole plate contamination is detected in texture feature.
         whole_plate_contamination_formfactor : bool
-            Indicates if whole plate contamination is detected in the FormFactor feature.
+            Indicates if whole plate contamination is detected in FormFactor feature.
         partial_contamination_texture_detected : bool
             Indicates if partial contamination is detected in the texture feature.
     """
 
-    def __init__(
+    def __init__(  # noqa: PLR0913
         self,
         dataframe: pd.DataFrame,
         nucleus_channel_naming: str = "DNA",
@@ -96,19 +96,19 @@ class ContaminationDetector:
         Args:
             dataframe (pd.DataFrame): The input DataFrame containing the features
                 to be analyzed. Should be the output from CytoTable convert.
-            nucleus_channel_naming (str, optional): Naming convention for the nucleus
+            nucleus_channel_naming (str): Naming convention for the nucleus
                 channel in the DataFrame. Defaults to "DNA".
-            lower_skew_threshold (float, optional): Lower threshold for Bowley's
+            lower_skew_threshold (float): Lower threshold for Bowley's
                 skewness to flag whole-plate contamination. Defaults to -0.15.
-            upper_skew_threshold (float, optional): Upper threshold for Bowley's
+            upper_skew_threshold (float): Upper threshold for Bowley's
                 skewness to flag partial-plate contamination. Defaults to 0.09.
-            variability_threshold (float, optional): Threshold for acceptable
+            variability_threshold (float): Threshold for acceptable
                 coefficient of variation in selected features. Defaults to 0.15.
-            texture_mean_threshold (float, optional): Mean texture value threshold
+            texture_mean_threshold (float): Mean texture value threshold
                 for detecting abnormalities. Defaults to -0.25.
-            formfactor_mean_threshold (float, optional): Mean FormFactor threshold
+            formfactor_mean_threshold (float): Mean FormFactor threshold
                 for detecting nuclear shape issues. Defaults to 0.78.
-            outlier_std_threshold (float, optional): Number of standard deviations from
+            outlier_std_threshold (float): Number of standard deviations from
                 the mean used to flag outliers. Defaults to 1.0.
         """
         self.dataframe = dataframe
@@ -126,7 +126,7 @@ class ContaminationDetector:
         )
         self.formfactor_feature = "Nuclei_AreaShape_FormFactor"
 
-    def skewness_test_cytoplasm_texture(self) -> bool:
+    def _skewness_test_cytoplasm_texture(self) -> bool:
         """
         Bowley's skewness score is calculated for the cytoplasm texture
         around the nucleus feature.
@@ -158,7 +158,7 @@ class ContaminationDetector:
             or bowley_skewness > self.upper_skew_threshold
         )
 
-    def variability_test_formfactor(self) -> bool:
+    def _variability_test_formfactor(self) -> bool:
         """
         Calculate Interquartile Range (IQR) score for the FormFactor feature
         to determine if there is abnormal variability in the shape of the nuclei.
@@ -187,8 +187,8 @@ class ContaminationDetector:
         print("Running step 1...")
 
         # perform skewness and variability tests
-        self.is_skewed = self.skewness_test_cytoplasm_texture()
-        self.is_variable = self.variability_test_formfactor()
+        self.is_skewed = self._skewness_test_cytoplasm_texture()
+        self.is_variable = self._variability_test_formfactor()
 
         # format results in a pretty table
         print("Summary:\n")
@@ -228,10 +228,9 @@ class ContaminationDetector:
         else:
             interpretation = "No indication of contamination. Plate appears clean 🫧!"
 
-        print("Interpretation:\n")
-        print(interpretation)
+        print(f"Interpretation:\n{interpretation}")
 
-    def calculate_texture_mean(self) -> bool:
+    def _calculate_texture_mean(self) -> bool:
         """
         Check the mean value of cytoplasm texture around a nucleus feature to
         determine if whole plate or partial plate contamination is present.
@@ -250,7 +249,7 @@ class ContaminationDetector:
         # True = whole plate, False = partial plate
         return self.dataframe[self.cyto_feature].mean() >= self.texture_mean_threshold
 
-    def calculate_formfactor_mean(self) -> bool:
+    def _calculate_formfactor_mean(self) -> bool:
         """
         Check the mean value of the FormFactor of the nucleus to determine
         if whole plate or partial plate contamination is present.
@@ -306,10 +305,10 @@ class ContaminationDetector:
 
         # Instantiate variables to check for whole plate contamination
         self.whole_plate_contamination_texture = (
-            self.calculate_texture_mean() if self.is_skewed else False
+            self._calculate_texture_mean() if self.is_skewed else False
         )
         self.whole_plate_contamination_formfactor = (
-            self.calculate_formfactor_mean() if self.is_variable else False
+            self._calculate_formfactor_mean() if self.is_variable else False
         )
 
         # Set lookup dictionary for all interpretations based on the boolean values
@@ -422,7 +421,7 @@ class ContaminationDetector:
             self.is_skewed and not self.whole_plate_contamination_texture
         )
 
-    def find_texture_outliers(self) -> pd.DataFrame:
+    def _find_texture_outliers(self) -> pd.DataFrame:
         """
         Use coSMicQC find_outliers function to identify contaminated single-cells based
         on texture in the cytoplasm around the nucleus in partially contaminated plates.
@@ -456,7 +455,8 @@ class ContaminationDetector:
         # in the nuclei channel
         granularity_feature_thresholds = {
             # outlier threshold for only cytoplasm granularity in nuclei channel
-            f"Cytoplasm_Granularity_2_{self.nucleus_channel_naming}": self.outlier_std_threshold,
+            f"Cytoplasm_Granularity_2_{self.nucleus_channel_naming}":
+                self.outlier_std_threshold,
         }
 
         granularity_nuclei_outliers = find_outliers(
@@ -484,7 +484,7 @@ class ContaminationDetector:
         # return the outliers dataframe
         return combined_outliers
 
-    def get_outlier_proportion_per_well(self) -> pd.DataFrame:
+    def _get_outlier_proportion_per_well(self) -> pd.DataFrame:
         """
         Calculate the proportion of outliers per well to be used for plotting.
 
@@ -492,7 +492,7 @@ class ContaminationDetector:
             pd.DataFrame: Proportion per well dataframe
         """
         # Get the outliers detected
-        combined_outliers = self.find_texture_outliers()
+        combined_outliers = self._find_texture_outliers()
 
         # Calculate the proportion of outliers per well
         outlier_proportion_per_well = (
@@ -528,7 +528,7 @@ class ContaminationDetector:
 
         return outlier_proportion_per_well
 
-    def plot_outlier_proportions(self, df: pd.DataFrame) -> None:
+    def _plot_outlier_proportions(self, df: pd.DataFrame) -> None:
         """
         Plot the proportion of outliers per well with a color gradient
         based on the total cell count per well.
@@ -576,8 +576,8 @@ class ContaminationDetector:
         # check if partial contamination was detected
         if self.partial_contamination_texture_detected:
             print("Finding outlier cells with anomalous texture around the nucleus...")
-            outliers = self.get_outlier_proportion_per_well()
-            self.plot_outlier_proportions(outliers)
+            outliers = self._get_outlier_proportion_per_well()
+            self._plot_outlier_proportions(outliers)
 
             # Calculate the 75th percentile (top 25%) of the outlier proportions
             top_25_percent_threshold = outliers["Proportion"].quantile(0.75)

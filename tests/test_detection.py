@@ -19,7 +19,7 @@ def test_skewness_cytoplasm_texture(cytotable_NF1_contamination_data_df: pd.Data
     )
 
     # Calculate skewness
-    is_skewed = detector.skewness_test_cytoplasm_texture()
+    is_skewed = detector._skewness_test_cytoplasm_texture()
 
     # Check if the skewness is as expected
     assert is_skewed
@@ -35,7 +35,7 @@ def test_variability_formfactor(cytotable_NF1_contamination_data_df: pd.DataFram
     )
 
     # Calculate variability
-    is_variable = detector.variability_test_formfactor()
+    is_variable = detector._variability_test_formfactor()
 
     # Check if the variability is as expected
     assert not is_variable
@@ -64,7 +64,7 @@ def test_calculate_texture_mean(cytotable_NF1_contamination_data_df: pd.DataFram
     )
 
     # Determine if whole plate is contaminated or partial
-    whole_plate_contamination_texture = detector.calculate_texture_mean()
+    whole_plate_contamination_texture = detector._calculate_texture_mean()
 
     # Assert the result is False as we expect partial plate contamination
     assert not whole_plate_contamination_texture
@@ -81,7 +81,7 @@ def test_calculate_formfactor_mean(cytotable_NF1_contamination_data_df: pd.DataF
     )
 
     # Determine if whole plate is contaminated or partial
-    whole_plate_contamination_formfactor = detector.calculate_formfactor_mean()
+    whole_plate_contamination_formfactor = detector._calculate_formfactor_mean()
 
     # Assert the result is False the data was not variable
     assert not whole_plate_contamination_formfactor
@@ -113,7 +113,7 @@ def test_find_texture_outliers(
     detector = cd.ContaminationDetector(
         dataframe=cytotable_NF1_contamination_data_df, nucleus_channel_naming="DAPI"
     )
-    outliers_df = detector.find_texture_outliers()
+    outliers_df = detector._find_texture_outliers()
 
     # Assert the outliers DataFrame is not empty and has the expected shape
     assert isinstance(outliers_df, pd.DataFrame)
@@ -138,7 +138,7 @@ def test_get_outlier_proportion_per_well(
     # Execute step 2 prior to plotting (or it will yield an error)
     detector.check_feature_means()
     # Run the method
-    outlier_proportions_df = detector.get_outlier_proportion_per_well()
+    outlier_proportions_df = detector._get_outlier_proportion_per_well()
 
     # Assert the returned DataFrame is not empty
     assert isinstance(outlier_proportions_df, pd.DataFrame)
@@ -164,8 +164,8 @@ def test_plot_outlier_proportions_runs_and_shows(
     )
 
     with patch("matplotlib.pyplot.show") as mock_show:
-        outlier_proportions_df = detector.get_outlier_proportion_per_well()
-        detector.plot_outlier_proportions(df=outlier_proportions_df)
+        outlier_proportions_df = detector._get_outlier_proportion_per_well()
+        detector._plot_outlier_proportions(df=outlier_proportions_df)
         mock_show.assert_called_once()
 
 
