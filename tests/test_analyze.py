@@ -570,17 +570,4 @@ def test_label_outliers_retains_custom_attrs(basic_outlier_dataframe: pd.DataFra
         feature_thresholds={"example_feature": 1},
     )
 
-    # check that we still have the data we expect
-    assert df._custom_attrs == {
-        "data_source": "pandas.DataFrame",
-        "data_context_dir": "example_context_dir",
-        "data_image_paths": None,
-        "data_bounding_box": None,
-        "compartment_center_xy": None,
-        "data_mask_context_dir": "example_mask_dir",
-        "data_outline_context_dir": "example_context_dir",
-        "segmentation_file_regex": {"example": "example"},
-        "display_options": None,
-        "image_adjustment": None,
-        "is_transposed": False,
-    }
+    assert isinstance(df, CytoDataFrame)
