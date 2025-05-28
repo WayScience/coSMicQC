@@ -145,3 +145,6 @@ cython_debug/
 
 # jupyter notebook build files from myst-nb
 docs/jupyter_execute
+
+# ignore vscode files
+.vscode/

@@ -12,7 +12,7 @@ readme = "README.md"
 packages = [ { include = "cosmicqc", from = "src" } ]
 
 [tool.poetry.dependencies]
-python = ">=3.9,<3.13"
+python = ">=3.10,<3.13"
 pandas = [
   { version = "<2.2.2", python = "<3.9" },
   { version = "^2.2.2", python = ">=3.9" },
@@ -27,10 +27,10 @@ pyarrow = ">=16,<20"
 pyyaml = "^6.0.1"
 # used for CLI generation
 fire = ">=0.6,<0.8"
-# used for template capabilities
-jinja2 = "^3.1.4"
 # used for assisting single-cell profile and image analysis
 cytodataframe = ">=0.0.11"
+seaborn = "^0.13.2"
+matplotlib = "^3.10.3"
 
 [tool.poetry.group.dev.dependencies]
 # provides testing capabilities for project
@@ -54,7 +54,7 @@ coverage = "^7.6.0"
 # for standardizing various dev tasks
 poethepoet = ">=0.27,<0.35"
 # added for preparing data for cosmicqc in examples
-cytotable = ">=0.0.10,<0.0.15"
+cytotable = ">=0.0.10,<0.0.16"
 # used to avoid dependency resolution issues during installs
 botocore = ">=1.31.16,<1.31.65 || >=1.32.4,<1.34.35 || >=1.34.41,<1.34.163 || >=1.35.0,<1.35.8"
 # used for visualizing large plot data
@@ -142,7 +142,7 @@ lint.per-file-ignores."__init__.py" = [ "E402", "F401" ]
 lint.per-file-ignores."docs/src/examples/*.ipynb" = [ "E501", "E703", "PLR0913" ]
 lint.per-file-ignores."docs/src/examples/*.py" = [ "E501", "E703", "PLR0913" ]
 # ignore typing rules for tests
-lint.per-file-ignores."tests/*" = [ "ANN201", "PLR0913" ]
+lint.per-file-ignores."tests/*" = [ "ANN201", "ANN202", "PLR0913" ]
 
 [tool.isort]
 profile = "black"
