@@ -76,7 +76,7 @@ s3fs = ">=2024.9,<2026.0"
 
 [tool.poetry.group.docs.dependencies]
 # used for rendering docs into docsite
-sphinx = "^7.0.0"
+sphinx = ">=7,<9"
 # used for rendering markdown through sphinx
 myst-parser = ">=3,<5"
 # used for rendering notebooks through myst parser
