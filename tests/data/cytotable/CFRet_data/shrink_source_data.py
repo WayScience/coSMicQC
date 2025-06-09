@@ -2,7 +2,7 @@
 Module to shrink source data for testing.
 
 Original source of data:
-https://github.com/WayScience/CFReT_data/blob/
+https://github.com/cytomining/CFReT_data/blob/
 main/3.process_cfret_features/data/
 converted_profiles/localhost231120090001_converted.parquet
 """

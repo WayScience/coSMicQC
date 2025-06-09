@@ -2,7 +2,7 @@
 Module to shrink source data for testing.
 
 Original source of data (processing):
-https://github.com/WayScience/nuclear_speckle_image_profiling
+https://github.com/cytomining/nuclear_speckle_image_profiling
 """
 
 import os

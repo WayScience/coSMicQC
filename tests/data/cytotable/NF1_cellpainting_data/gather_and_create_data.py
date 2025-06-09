@@ -15,9 +15,9 @@ import pandas as pd
 
 # Define the paths
 test_data_path = "tests/data/cytotable/NF1_cellpainting_data/"
-sqlite_url = "https://github.com/WayScience/nf1_cellpainting_data/raw/main/2.cellprofiler_analysis/analysis_output/Plate_2/Plate_2_nf1_analysis.sqlite"
+sqlite_url = "https://github.com/cytomining/nf1_cellpainting_data/raw/main/2.cellprofiler_analysis/analysis_output/Plate_2/Plate_2_nf1_analysis.sqlite"
 sqlite_file_path = test_data_path + "Plate_2_nf1_analysis.sqlite"
-parquet_url = "https://github.com/WayScience/nf1_cellpainting_data/raw/main/3.processing_features/data/converted_data/Plate_2.parquet"
+parquet_url = "https://github.com/cytomining/nf1_cellpainting_data/raw/main/3.processing_features/data/converted_data/Plate_2.parquet"
 parquet_file_path = test_data_path + "Plate_2.parquet"
 image_zip_url = "https://figshare.com/ndownloader/articles/22233700/versions/4"
 image_zip_file_path = test_data_path + "Plate_2_images.zip"
