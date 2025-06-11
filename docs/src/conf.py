@@ -23,8 +23,8 @@ sys.path.insert(0, basedir)
 
 project = "coSMicQC"
 # is used here due to sphinx decision-making: https://github.com/sphinx-doc/sphinx/issues/8132
-copyright = "2024, WayScience Community"  # noqa: A001
-author = "WayScience Community"
+copyright = "2024, Cytomining Community"  # noqa: A001
+author = "Cytomining Community"
 
 # -- General configuration ---------------------------------------------------
 
@@ -73,16 +73,16 @@ html_css_files = ["custom.css"]
 html_theme_options = {
     "project_name": "coSMicQC",
     "logo": "just-icon.png",
-    "header_links": "<span class='fab fa-github'></span> GitHub Repository|https://github.com/WayScience/coSMicQC",
+    "header_links": "<span class='fab fa-github'></span> GitHub Repository|https://github.com/cytomining/coSMicQC",
     "logo_alt": "coSMicQC logo",
     "logo_height": 59,
-    "logo_url": "https://wayscience.github.io/coSMicQC",
+    "logo_url": "https://cytomining.github.io/coSMicQC",
     "logo_width": 45,
-    "github_url": "https://github.com/WayScience/coSMicQC/tree/main/docs/src",
+    "github_url": "https://github.com/cytomining/coSMicQC/tree/main/docs/src",
     "footer_links": ",".join(
         [
-            "Way Lab|https://www.waysciencelab.com/",
-            "coSMicQC GitHub Repository|https://github.com/WayScience/coSMicQC",
+            "Way Lab|https://www.cytomininglab.com/",
+            "coSMicQC GitHub Repository|https://github.com/cytomining/coSMicQC",
         ]
     ),
 }

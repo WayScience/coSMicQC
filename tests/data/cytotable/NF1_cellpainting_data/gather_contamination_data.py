@@ -14,7 +14,7 @@ import pandas as pd
 
 # Define the paths
 test_data_path = "tests/data/cytotable/NF1_cellpainting_data/"
-parquet_url = "https://github.com/WayScience/nf1_cellpainting_data/raw/main/3.processing_features/data/converted_data/Plate_3.parquet"
+parquet_url = "https://github.com/cytomining/nf1_cellpainting_data/raw/main/3.processing_features/data/converted_data/Plate_3.parquet"
 parquet_file_path = test_data_path + "Plate_3.parquet"
 filtered_file_path = test_data_path + "Plate_3_filtered.parquet"
 

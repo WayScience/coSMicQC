@@ -1,10 +1,10 @@
-<img height="200" src="https://raw.githubusercontent.com/WayScience/coSMicQC/main/media/logo/with-text-for-light-bg.png?raw=true">
+<img height="200" src="https://raw.githubusercontent.com/cytomining/coSMicQC/main/media/logo/with-text-for-light-bg.png?raw=true">
 
 # Single cell Morphology Quality Control
 
 ![PyPI - Version](https://img.shields.io/pypi/v/cosmicqc)
-[![Build Status](https://github.com/WayScience/coSMicQC/actions/workflows/run-tests.yml/badge.svg?branch=main)](https://github.com/WayScience/coSMicQC/actions/workflows/run-tests.yml?query=branch%3Amain)
-![Coverage Status](https://raw.githubusercontent.com/WayScience/coSMicQC/main/media/coverage-badge.svg)
+[![Build Status](https://github.com/cytomining/coSMicQC/actions/workflows/run-tests.yml/badge.svg?branch=main)](https://github.com/cytomining/coSMicQC/actions/workflows/run-tests.yml?query=branch%3Amain)
+![Coverage Status](https://raw.githubusercontent.com/cytomining/coSMicQC/main/media/coverage-badge.svg)
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 [![Poetry](https://img.shields.io/endpoint?url=https://python-poetry.org/badge/v0.json)](https://python-poetry.org/)
 [![Software DOI badge](https://zenodo.org/badge/DOI/10.5281/zenodo.14797008.svg)](https://doi.org/10.5281/zenodo.14797008)
@@ -22,7 +22,7 @@ However, technical outliers in the data can obscure these biological insights, c
 By utilizing specific morphological features extracted with CellProfiler, particularly AreaShape features, you can identify technically incorrect segmentations.
 These can then be labeled or removed before further preprocessing steps, such as those performed with pycytominer.
 
-> 🌟 Check out our [blog post](https://waysciencelab.com/2024/12/20/cosmicqc.html) on this for a greater understanding of the background and how coSMicQC can help you!
+> 🌟 Check out our [blog post](https://cytomininglab.com/2024/12/20/cosmicqc.html) on this for a greater understanding of the background and how coSMicQC can help you!
 
 ## Installation
 
@@ -33,12 +33,12 @@ Install coSMicQC from [PyPI](https://pypi.org/project/coSMicQC/) or from source:
 pip install coSMicQC
 
 # install directly from source
-pip install git+https://github.com/WayScience/coSMicQC.git
+pip install git+https://github.com/cytomining/coSMicQC.git
 ```
 
 ## Contributing, Development, and Testing
 
-Please see our [contributing](https://WayScience.github.io/coSMicQC/main/contributing) documentation for more details on contributions, development, and testing.
+Please see our [contributing](https://cytomining.github.io/coSMicQC/main/contributing) documentation for more details on contributions, development, and testing.
 
 ## References
 
